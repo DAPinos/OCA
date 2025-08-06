@@ -380,7 +380,7 @@
           
           setTimeout(() => {
             // Usar ruta absoluta desde la raíz del dominio para evitar problemas
-            const loginUrl = window.location.origin + window.location.pathname.replace('index.html', '') + 'auth/login.html';
+            const loginUrl = window.location.origin + window.location.pathname.replace('index.html', '') + 'views/login.html';
             console.log('Redirigiendo a:', loginUrl);
             window.location.replace(loginUrl);
           }, 100);
@@ -405,7 +405,7 @@
           localStorage.clear();
           setTimeout(() => {
             // Usar ruta absoluta desde la raíz del dominio para evitar problemas
-            const loginUrl = window.location.origin + window.location.pathname.replace('index.html', '') + 'auth/login.html';
+            const loginUrl = window.location.origin + window.location.pathname.replace('index.html', '') + 'views/login.html';
             console.log('Redirigiendo a login tras error:', loginUrl);
             window.location.replace(loginUrl);
           }, 100);
