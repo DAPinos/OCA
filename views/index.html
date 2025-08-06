@@ -1,20 +1,30 @@
-<html>
+<!DOCTYPE html>
+<html lang="es">
   <head>
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
-    <link
-      rel="stylesheet"
-      as="style"
-      onload="this.rel='stylesheet'"
-      href="https://fonts.googleapis.com/css2?display=swap&family=Inter%3Awght%40400%3B500%3B700%3B900&family=Noto+Sans%3Awght%40400%3B500%3B700%3B900"
-    />
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OCA Minimarkets - Dashboard</title>
-    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
-
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
+    
+    <!-- Fuentes de Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Noto+Sans:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="assets/css/main.css">
+    
+    <!-- Scripts -->
+    <script src="assets/js/app.js" defer></script>
   </head>
-  <body>
-    <div class="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
+  <body class="font-sans antialiased text-gray-900 bg-gray-50">
+    <!-- Contenedor principal -->
+    <div class="min-h-screen flex">
       <div class="layout-container flex h-full grow flex-col">
         <div class="gap-1 px-6 flex flex-1 justify-center py-5">
           <!-- Sidebar Navigation -->
@@ -340,5 +350,288 @@
         </div>
       </div>
     </div>
+    </div>
+    
+    <!-- Scripts adicionales específicos de la página -->
+    <script>
+      // Inicialización de componentes específicos del dashboard
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('Dashboard inicializado');
+        
+        // Verificar y manejar sesión de usuario
+        handleUserSession();
+        
+        // Verificar parámetros de URL del login
+        handleLoginRedirect();
+      });
+      
+      // Manejar sesión de usuario
+      function handleUserSession() {
+        const authToken = localStorage.getItem('authToken');
+        const userData = localStorage.getItem('userData');
+        const sessionActive = localStorage.getItem('sessionActive');
+        
+        console.log('Verificando sesión:', { authToken: !!authToken, userData: !!userData });
+        
+        if (!authToken || !userData) {
+          // No hay sesión activa, redirigir al login
+          console.log('No hay sesión activa, redirigiendo al login...');
+          console.log('Ruta actual:', window.location.pathname);
+          
+          setTimeout(() => {
+            // Usar ruta absoluta desde la raíz del dominio para evitar problemas
+            const loginUrl = window.location.origin + window.location.pathname.replace('index.html', '') + 'auth/login.html';
+            console.log('Redirigiendo a:', loginUrl);
+            window.location.replace(loginUrl);
+          }, 100);
+          return;
+        }
+        
+        try {
+          const user = JSON.parse(userData);
+          console.log('Usuario autenticado:', user);
+          
+          // Actualizar UI con información del usuario
+          updateUserInterface(user);
+          
+          // Mostrar mensaje de bienvenida si es una nueva sesión
+          if (sessionActive === 'true') {
+            showWelcomeMessage(user);
+            localStorage.removeItem('sessionActive'); // Limpiar flag
+          }
+          
+        } catch (error) {
+          console.error('Error al procesar datos de usuario:', error);
+          localStorage.clear();
+          setTimeout(() => {
+            // Usar ruta absoluta desde la raíz del dominio para evitar problemas
+            const loginUrl = window.location.origin + window.location.pathname.replace('index.html', '') + 'auth/login.html';
+            console.log('Redirigiendo a login tras error:', loginUrl);
+            window.location.replace(loginUrl);
+          }, 100);
+        }
+      }
+      
+      // Manejar redirección desde login
+      function handleLoginRedirect() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('sessionId');
+        const userId = urlParams.get('userId');
+        const role = urlParams.get('role');
+        
+        if (sessionId && userId && role) {
+          console.log('Redirección desde login detectada');
+          
+          // Limpiar parámetros de la URL
+          const cleanUrl = window.location.pathname;
+          window.history.replaceState({}, document.title, cleanUrl);
+          
+          // Mostrar notificación de login exitoso
+          showLoginSuccessNotification(role);
+        }
+      }
+      
+      // Actualizar interfaz con información del usuario
+      function updateUserInterface(user) {
+        // Actualizar nombre de usuario en la interfaz
+        const userNameElements = document.querySelectorAll('.user-name');
+        userNameElements.forEach(element => {
+          element.textContent = user.name || 'Usuario';
+        });
+        
+        // Actualizar rol del usuario
+        const userRoleElements = document.querySelectorAll('.user-role');
+        userRoleElements.forEach(element => {
+          element.textContent = user.role || 'Usuario';
+        });
+        
+        // Mostrar/ocultar elementos según el rol
+        adjustInterfaceByRole(user.role);
+        
+        // Agregar indicador de usuario demo si aplica
+        if (user.isDemo) {
+          addDemoIndicator();
+        }
+      }
+      
+      // Ajustar interfaz según el rol del usuario
+      function adjustInterfaceByRole(role) {
+        const adminElements = document.querySelectorAll('.admin-only');
+        const clientElements = document.querySelectorAll('.client-only');
+        const prodElements = document.querySelectorAll('.production-only');
+        
+        // Mostrar/ocultar elementos según el rol
+        if (role === 'administrador') {
+          adminElements.forEach(el => el.style.display = 'block');
+        } else {
+          adminElements.forEach(el => el.style.display = 'none');
+        }
+        
+        if (role === 'cliente') {
+          clientElements.forEach(el => el.style.display = 'block');
+        } else {
+          clientElements.forEach(el => el.style.display = 'none');
+        }
+        
+        if (role === 'produccion') {
+          prodElements.forEach(el => el.style.display = 'block');
+        } else {
+          prodElements.forEach(el => el.style.display = 'none');
+        }
+      }
+      
+      // Mostrar mensaje de bienvenida
+      function showWelcomeMessage(user) {
+        const welcomeMessages = {
+          administrador: `¡Bienvenido al panel de administración, ${user.name}!`,
+          produccion: `¡Hola ${user.name}! Bienvenido al área de producción.`,
+          cliente: `¡Bienvenido ${user.name}! Tu cuenta está lista.`,
+          vendedor: `¡Hola ${user.name}! Sistema de ventas listo.`,
+          cajero: `¡Bienvenido ${user.name}! Punto de venta activo.`,
+          inventario: `¡Hola ${user.name}! Sistema de inventario disponible.`
+        };
+        
+        const message = welcomeMessages[user.role] || `¡Bienvenido al sistema, ${user.name}!`;
+        
+        showNotification(message, 'success');
+      }
+      
+      // Mostrar notificación de login exitoso
+      function showLoginSuccessNotification(role) {
+        const roleMessages = {
+          administrador: 'Acceso de administrador concedido',
+          produccion: 'Acceso al área de producción',
+          cliente: 'Sesión de cliente iniciada',
+          vendedor: 'Sistema de ventas activo',
+          cajero: 'Punto de venta listo',
+          inventario: 'Sistema de inventario disponible'
+        };
+        
+        const message = roleMessages[role] || 'Sesión iniciada correctamente';
+        showNotification(message, 'info');
+      }
+      
+      // Agregar indicador de usuario demo
+      function addDemoIndicator() {
+        const demoIndicator = document.createElement('div');
+        demoIndicator.className = 'demo-indicator';
+        demoIndicator.innerHTML = `
+          <i class="fas fa-flask"></i>
+          <span>Modo Demo</span>
+        `;
+        demoIndicator.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: linear-gradient(135deg, #f59e0b, #d97706);
+          color: white;
+          padding: 0.5rem 1rem;
+          border-radius: 20px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          z-index: 1000;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        `;
+        
+        document.body.appendChild(demoIndicator);
+      }
+      
+      // Mostrar notificaciones
+      function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+          <div class="notification-content">
+            <i class="fas ${getNotificationIcon(type)}"></i>
+            <span>${message}</span>
+          </div>
+        `;
+        
+        notification.style.cssText = `
+          position: fixed;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: ${getNotificationColor(type)};
+          color: white;
+          padding: 1rem 1.5rem;
+          border-radius: 8px;
+          font-weight: 500;
+          z-index: 1001;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          animation: slideDown 0.3s ease-out;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto-remover después de 4 segundos
+        setTimeout(() => {
+          notification.style.animation = 'slideUp 0.3s ease-in';
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.parentNode.removeChild(notification);
+            }
+          }, 300);
+        }, 4000);
+      }
+      
+      // Obtener icono de notificación
+      function getNotificationIcon(type) {
+        const icons = {
+          success: 'fa-check-circle',
+          error: 'fa-exclamation-circle',
+          warning: 'fa-exclamation-triangle',
+          info: 'fa-info-circle'
+        };
+        return icons[type] || icons.info;
+      }
+      
+      // Obtener color de notificación
+      function getNotificationColor(type) {
+        const colors = {
+          success: '#10b981',
+          error: '#ef4444',
+          warning: '#f59e0b',
+          info: '#3b82f6'
+        };
+        return colors[type] || colors.info;
+      }
+      
+      // Agregar estilos de animación
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+          }
+        }
+        
+        @keyframes slideUp {
+          from {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+          }
+          to {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-20px);
+          }
+        }
+        
+        .notification-content {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+      `;
+      document.head.appendChild(style);
+    </script>
   </body>
 </html>

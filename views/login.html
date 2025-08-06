@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCA Minimarkets - Autenticación</title>
+    
+    <!-- Fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Estilos -->
+    <link rel="stylesheet" href="../assets/css/auth.css">
+    
+    <!-- Scripts -->
+    <script src="../assets/js/auth.js" defer></script>
+</head>
+<body>
+    <!-- Contenedor principal de autenticación -->
+    <div class="auth-container">
+        <!-- Header con logo -->
+        <div class="auth-header">
+            <img src="../assets/img/logo-oca.svg" alt="OCA Minimarkets" class="auth-logo">
+            <h1 class="auth-title">OCA Minimarkets</h1>
+            <p class="auth-subtitle">Sistema de gestión empresarial</p>
+        </div>
+
+        <!-- Formulario de Login -->
+        <div id="loginFormContainer" class="form-container active">
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="email" class="form-label">
+                        <i class="fas fa-envelope"></i> Correo electrónico
+                    </label>
+                    <input type="email" id="email" class="form-input" placeholder="tu@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">
+                        <i class="fas fa-lock"></i> Contraseña
+                    </label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" class="form-input" placeholder="Tu contraseña" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="custom-checkbox">
+                    <input type="checkbox" id="rememberMe">
+                    <label for="rememberMe" class="checkbox-label">
+                        <span class="checkbox-box"></span>
+                        Recordar mi sesión
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <span class="loading-spinner"></span>
+                    <i class="fas fa-sign-in-alt"></i>
+                    Iniciar Sesión
+                </button>
+                
+                <div class="text-center">
+                    <a href="#" id="showForgotPassword" class="auth-link">
+                        <i class="fas fa-question-circle"></i> ¿Olvidaste tu contraseña?
+                    </a>
+                </div>
+            </form>
+            
+            <div class="divider">
+                <span>O continúa con</span>
+            </div>
+            
+            <!-- Botones OAuth -->
+            <div class="oauth-buttons">
+                <button type="button" id="googleLoginBtn" class="btn btn-google">
+                    <i class="fab fa-google btn-icon"></i>
+                    Continuar con Google
+                </button>
+                
+                <button type="button" id="appleLoginBtn" class="btn btn-apple">
+                    <i class="fab fa-apple btn-icon"></i>
+                    Continuar con Apple
+                </button>
+            </div>
+            
+            <div class="auth-toggle">
+                ¿No tienes una cuenta? 
+                <a href="#" id="toggleToRegister" class="auth-link">Crear cuenta</a>
+            </div>
+        </div>
+
+        <!-- Sección de Usuarios de Demostración -->
+        <div class="demo-section">
+            <h4 class="demo-title">
+                <i class="fas fa-users"></i> Usuarios de Demostración
+            </h4>
+            <p class="demo-subtitle">Prueba el sistema con estos usuarios de ejemplo</p>
+            
+            <div class="demo-users">
+                <div class="demo-user" 
+                     data-email="admin@ocaminimarkets.com" 
+                     data-role="administrador"
+                     onclick="loginWithDemoUser('admin')">
+                    <div class="demo-user-info">
+                        <div class="demo-user-role">
+                            <i class="fas fa-crown"></i> Administrador
+                        </div>
+                        <div class="demo-user-credentials">admin@ocaminimarkets.com</div>
+                        <div class="demo-user-description">Acceso completo al sistema</div>
+                    </div>
+                    <div class="demo-user-actions">
+                        <button type="button" class="quick-demo-login btn-demo" 
+                                onclick="event.stopPropagation(); loginWithDemoUser('admin')">
+                            <i class="fas fa-sign-in-alt"></i> Acceso Rápido
+                        </button>
+                        <div class="demo-user-badge badge-admin">Admin</div>
+                    </div>
+                </div>
+                
+                <div class="demo-user" 
+                     data-email="cliente@ocaminimarkets.com" 
+                     data-role="cliente"
+                     onclick="loginWithDemoUser('cliente')">
+                    <div class="demo-user-info">
+                        <div class="demo-user-role">
+                            <i class="fas fa-user"></i> Cliente
+                        </div>
+                        <div class="demo-user-credentials">cliente@ocaminimarkets.com</div>
+                        <div class="demo-user-description">Vista de cliente del sistema</div>
+                    </div>
+                    <div class="demo-user-actions">
+                        <button type="button" class="quick-demo-login btn-demo" 
+                                onclick="event.stopPropagation(); loginWithDemoUser('cliente')">
+                            <i class="fas fa-sign-in-alt"></i> Acceso Rápido
+                        </button>
+                        <div class="demo-user-badge badge-cliente">Cliente</div>
+                    </div>
+                </div>
+                
+                <div class="demo-user" 
+                     data-email="produccion@ocaminimarkets.com" 
+                     data-role="produccion"
+                     onclick="loginWithDemoUser('produccion')">
+                    <div class="demo-user-info">
+                        <div class="demo-user-role">
+                            <i class="fas fa-cogs"></i> Producción
+                        </div>
+                        <div class="demo-user-credentials">produccion@ocaminimarkets.com</div>
+                        <div class="demo-user-description">Gestión de producción y procesos</div>
+                    </div>
+                    <div class="demo-user-actions">
+                        <button type="button" class="quick-demo-login btn-demo" 
+                                onclick="event.stopPropagation(); loginWithDemoUser('produccion')">
+                            <i class="fas fa-sign-in-alt"></i> Acceso Rápido
+                        </button>
+                        <div class="demo-user-badge badge-produccion">Prod</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de Registro -->
+        <div id="registerFormContainer" class="form-container">
+            <form id="registerForm" class="auth-form">
+                <div class="form-group">
+                    <label for="registerName" class="form-label">
+                        <i class="fas fa-user"></i> Nombre completo
+                    </label>
+                    <input type="text" id="registerName" class="form-input" placeholder="Tu nombre completo" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="registerEmail" class="form-label">
+                        <i class="fas fa-envelope"></i> Correo electrónico
+                    </label>
+                    <input type="email" id="registerEmail" class="form-input" placeholder="tu@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="registerPassword" class="form-label">
+                        <i class="fas fa-lock"></i> Contraseña
+                    </label>
+                    <div class="password-wrapper">
+                        <input type="password" id="registerPassword" class="form-input" placeholder="Mínimo 8 caracteres" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('registerPassword')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="password-strength" id="passwordStrength">
+                        <div class="strength-indicator">
+                            <div class="strength-bar"></div>
+                        </div>
+                        <span class="strength-text">Ingresa una contraseña segura</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword" class="form-label">
+                        <i class="fas fa-lock"></i> Confirmar contraseña
+                    </label>
+                    <div class="password-wrapper">
+                        <input type="password" id="confirmPassword" class="form-input" placeholder="Repite tu contraseña" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="custom-checkbox">
+                    <input type="checkbox" id="acceptTerms" required>
+                    <label for="acceptTerms" class="checkbox-label">
+                        <span class="checkbox-box"></span>
+                        Acepto los <a href="#" class="auth-link">términos y condiciones</a>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <span class="loading-spinner"></span>
+                    <i class="fas fa-user-plus"></i>
+                    Crear Cuenta
+                </button>
+            </form>
+            
+            <div class="divider">
+                <span>O regístrate con</span>
+            </div>
+            
+            <!-- Botones OAuth para registro -->
+            <div class="oauth-buttons">
+                <button type="button" id="googleRegisterBtn" class="btn btn-google">
+                    <i class="fab fa-google btn-icon"></i>
+                    Registrarse con Google
+                </button>
+                
+                <button type="button" id="appleRegisterBtn" class="btn btn-apple">
+                    <i class="fab fa-apple btn-icon"></i>
+                    Registrarse con Apple
+                </button>
+            </div>
+            
+            <div class="auth-toggle">
+                ¿Ya tienes una cuenta? 
+                <a href="#" id="toggleToLogin" class="auth-link">Iniciar sesión</a>
+            </div>
+        </div>
+
+        <!-- Formulario de Recuperación de Contraseña -->
+        <div id="forgotPasswordContainer" class="form-container">
+            <div class="auth-header">
+                <h2 class="auth-title">Recuperar Contraseña</h2>
+                <p class="auth-subtitle">Te enviaremos un enlace para restablecer tu contraseña</p>
+            </div>
+            
+            <form id="forgotPasswordForm" class="auth-form">
+                <div class="form-group">
+                    <label for="forgotEmail" class="form-label">
+                        <i class="fas fa-envelope"></i> Correo electrónico
+                    </label>
+                    <input type="email" id="forgotEmail" class="form-input" placeholder="tu@email.com" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <span class="loading-spinner"></span>
+                    <i class="fas fa-paper-plane"></i>
+                    Enviar Enlace
+                </button>
+                
+                <div class="text-center">
+                    <a href="#" id="backToLogin" class="auth-link">
+                        <i class="fas fa-arrow-left"></i> Volver al login
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts adicionales -->
+    <script>
+        // Función para actualizar el estado del login
+        function updateStatus(message, type = 'info') {
+            const status = document.getElementById('statusMessage');
+            if (!status) return;
+            
+            const statusClass = type === 'error' ? 'error-message' : 
+                              type === 'success' ? 'success-message' : 'info-message';
+            
+            status.innerHTML = message;
+            status.className = `auth-message ${statusClass} show`;
+            
+            // Ocultar después de 5 segundos si no es un error
+            if (type !== 'error') {
+                setTimeout(() => {
+                    status.classList.remove('show');
+                }, 5000);
+            }
+        }
+        
+        // Función para iniciar sesión con usuario demo
+        function loginWithDemoUser(userType) {
+            updateStatus('<i class="fas fa-spinner fa-spin"></i> Iniciando sesión...', 'info');
+            
+            const users = {
+                admin: {
+                    id: 'demo_admin_001',
+                    name: 'Administrador Demo',
+                    email: 'admin@ocaminimarkets.com',
+                    role: 'administrador',
+                    department: 'administracion',
+                    isDemo: true,
+                    permissions: ['all']
+                },
+                cliente: {
+                    id: 'demo_cliente_001',
+                    name: 'Cliente Demo',
+                    email: 'cliente@ocaminimarkets.com',
+                    role: 'cliente',
+                    department: null,
+                    isDemo: true,
+                    permissions: ['profile', 'orders']
+                },
+                produccion: {
+                    id: 'demo_produccion_001',
+                    name: 'Producción Demo',
+                    email: 'produccion@ocaminimarkets.com',
+                    role: 'produccion',
+                    department: 'produccion',
+                    isDemo: true,
+                    permissions: ['production', 'inventory']
+                }
+            };
+            
+            const user = users[userType];
+            if (!user) {
+                updateStatus('❌ Usuario de demo no válido', 'error');
+                return;
+            }
+            
+            // Crear token único
+            const timestamp = Date.now();
+            const token = `demo_${user.id}_${timestamp}`;
+            
+            // Limpiar cualquier sesión anterior
+            localStorage.clear();
+            
+            // Guardar datos de sesión
+            localStorage.setItem('authToken', token);
+            localStorage.setItem('userData', JSON.stringify(user));
+            localStorage.setItem('sessionActive', 'true');
+            localStorage.setItem('lastLogin', new Date().toISOString());
+            localStorage.setItem('loginTimestamp', timestamp.toString());
+            
+            updateStatus(`✅ Sesión iniciada como ${user.name}`, 'success');
+            
+            // Redirigir al sistema principal
+            setTimeout(() => {
+                updateStatus('<i class="fas fa-spinner fa-spin"></i> Accediendo al sistema...', 'info');
+                
+                // Construir URL de destino de forma absoluta
+                const currentUrl = window.location.href;
+                const baseUrl = currentUrl.replace('login.html', 'index.html');
+                
+                // Agregar parámetros de sesión
+                const params = new URLSearchParams({
+                    sessionId: token,
+                    userId: user.id,
+                    role: user.role,
+                    timestamp: timestamp,
+                    source: 'demo_login'
+                });
+                
+                const finalUrl = `${baseUrl}?${params.toString()}`;
+                
+                console.log('=== DEMO LOGIN ===');
+                console.log('Usuario:', user.name);
+                console.log('Token:', token);
+                console.log('Redirigiendo a:', finalUrl);
+                
+                // Usar replace para evitar problemas con el historial
+                window.location.replace(finalUrl);
+            }, 1000);
+        }
+        // Toggle password visibility
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const toggle = field.nextElementSibling.querySelector('i');
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                toggle.classList.remove('fa-eye');
+                toggle.classList.add('fa-eye-slash');
+            } else {
+                field.type = 'password';
+                toggle.classList.remove('fa-eye-slash');
+                toggle.classList.add('fa-eye');
+            }
+        }
+        
+        // Verificar sesión existente al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            const existingToken = localStorage.getItem('authToken');
+            const existingUser = localStorage.getItem('userData');
+            
+            if (existingToken && existingUser) {
+                try {
+                    const user = JSON.parse(existingUser);
+                    const confirmContinue = confirm(`Ya hay una sesión activa para ${user.name}. ¿Deseas continuar con esta sesión?`);
+                    
+                    if (confirmContinue) {
+                        // Redirigir al sistema principal
+                        const currentUrl = window.location.href;
+                        const baseUrl = currentUrl.replace('login.html', 'index.html');
+                        const params = new URLSearchParams({
+                            sessionId: existingToken,
+                            userId: user.id,
+                            role: user.role,
+                            timestamp: localStorage.getItem('loginTimestamp') || Date.now(),
+                            source: 'existing_session'
+                        });
+                        
+                        window.location.replace(`${baseUrl}?${params.toString()}`);
+                    } else {
+                        // Limpiar sesión si el usuario no quiere continuar
+                        localStorage.clear();
+                        sessionStorage.clear();
+                    }
+                } catch (e) {
+                    console.error('Error al verificar sesión existente:', e);
+                    localStorage.clear();
+                    sessionStorage.clear();
+                }
+            }
+        });
+        
+        // Password strength indicator
+        document.getElementById('registerPassword')?.addEventListener('input', function(e) {
+            const password = e.target.value;
+            const strengthIndicator = document.getElementById('passwordStrength');
+            const strengthBar = strengthIndicator.querySelector('.strength-bar');
+            const strengthText = strengthIndicator.querySelector('.strength-text');
+            
+            let strength = 0;
+            let text = '';
+            
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[@$!%*?&]/.test(password)) strength++;
+            
+            strengthIndicator.className = 'password-strength';
+            
+            if (strength < 3) {
+                strengthIndicator.classList.add('strength-weak');
+                text = 'Contraseña débil';
+            } else if (strength < 5) {
+                strengthIndicator.classList.add('strength-medium');
+                text = 'Contraseña media';
+            } else {
+                strengthIndicator.classList.add('strength-strong');
+                text = 'Contraseña fuerte';
+            }
+            
+            strengthText.textContent = text;
+        });
+        
+        // Form switching
+        document.getElementById('showForgotPassword')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('loginFormContainer').classList.remove('active');
+            document.getElementById('forgotPasswordContainer').classList.add('active');
+        });
+        
+        document.getElementById('backToLogin')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('forgotPasswordContainer').classList.remove('active');
+            document.getElementById('loginFormContainer').classList.add('active');
+        });
+        
+        // OAuth button handlers for register
+        document.getElementById('googleRegisterBtn')?.addEventListener('click', function() {
+            if (window.authSystem) {
+                window.authSystem.loginWithGoogle();
+            }
+        });
+        
+        document.getElementById('appleRegisterBtn')?.addEventListener('click', function() {
+            if (window.authSystem) {
+                window.authSystem.loginWithApple();
+            }
+        });
+    </script>
+</body>
+</html>
