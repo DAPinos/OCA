@@ -12,6 +12,7 @@
     <title>OCA Minimarkets - Pedidos</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../js/product-selector.js"></script>
     <script>
       // Funciones de ejemplo para los botones
       function mostrarMensaje(mensaje) {
@@ -121,9 +122,65 @@
               <p class="text-[#181710] tracking-light text-[32px] font-bold leading-tight min-w-72">Pedidos Externos</p>
               <button
                 class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#f5f4f0] text-[#181710] text-sm font-medium leading-normal"
+                onclick="createNewOrder()"
               >
-                <span class="truncate">New Order</span>
+                <span class="truncate">Nueva Orden</span>
               </button>
+            </div>
+
+            <!-- Current Order Section -->
+            <div class="px-4 py-3 mb-6">
+              <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="text-lg font-semibold text-gray-900">Pedido Actual</h3>
+                  <div class="flex space-x-2">
+                    <button onclick="clearCurrentOrder()" class="text-red-600 hover:text-red-800 text-sm font-medium">
+                      Limpiar
+                    </button>
+                    <button onclick="saveCurrentOrder()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium">
+                      Guardar Pedido
+                    </button>
+                  </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div>
+                    <label class="text-sm font-medium text-gray-700">ID del Pedido:</label>
+                    <p id="currentOrderId" class="text-sm text-gray-900">-</p>
+                  </div>
+                  <div>
+                    <label class="text-sm font-medium text-gray-700">Fecha:</label>
+                    <p id="currentOrderDate" class="text-sm text-gray-900">-</p>
+                  </div>
+                  <div>
+                    <label class="text-sm font-medium text-gray-700">Estado:</label>
+                    <p id="currentOrderStatus" class="text-sm text-gray-900">-</p>
+                  </div>
+                </div>
+                
+                <div class="mb-4">
+                  <label for="currentOrderCustomer" class="block text-sm font-medium text-gray-700 mb-1">Cliente:</label>
+                  <input 
+                    type="text" 
+                    id="currentOrderCustomer" 
+                    placeholder="Ingrese el nombre del cliente"
+                    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onchange="updateCustomerName(this.value)"
+                  >
+                </div>
+                
+                <div class="mb-4">
+                  <h4 class="text-sm font-medium text-gray-700 mb-2">Productos en el pedido:</h4>
+                  <div id="orderItemsList" class="space-y-2">
+                    <p class="text-gray-500 text-center py-4">No hay productos en el pedido actual</p>
+                  </div>
+                </div>
+                
+                <div class="flex justify-between items-center pt-4 border-t border-blue-200">
+                  <span class="text-lg font-semibold text-gray-900">Total:</span>
+                  <span id="orderTotal" class="text-xl font-bold text-blue-600">ARS 0.00</span>
+                </div>
+              </div>
             </div>
             <div class="px-4 py-3">
               <label class="flex flex-col min-w-40 h-12 w-full">
@@ -164,163 +221,1633 @@
               </div>
             </div>
             <div class="px-4 py-3 @container">
-              <div class="flex overflow-hidden rounded-lg border border-[#e7e5da] bg-white">
-                <table class="flex-1">
-                  <thead>
-                    <tr class="bg-white">
-                      <th class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-120 px-4 py-3 text-left text-[#181710] w-[400px] text-sm font-medium leading-normal">
-                        ID de Pedido
-                      </th>
-                      <th class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-240 px-4 py-3 text-left text-[#181710] w-[400px] text-sm font-medium leading-normal">Cliente</th>
-                      <th class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-360 px-4 py-3 text-left text-[#181710] w-[400px] text-sm font-medium leading-normal">Fecha</th>
-                      <th class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-480 px-4 py-3 text-left text-[#181710] w-60 text-sm font-medium leading-normal">Estado</th>
-                      <th class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-600 px-4 py-3 text-left text-[#181710] w-[400px] text-sm font-medium leading-normal">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="border-t border-t-[#e7e5da]">
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-120 h-[72px] px-4 py-2 w-[400px] text-[#181710] text-sm font-normal leading-normal">
-                        ORD-2023-001
-                      </td>
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-240 h-[72px] px-4 py-2 w-[400px] text-[#8d865e] text-sm font-normal leading-normal">
-                        Wholesale Supplier A
-                      </td>
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-360 h-[72px] px-4 py-2 w-[400px] text-[#8d865e] text-sm font-normal leading-normal">
-                        2023-10-26
-                      </td>
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-480 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
-                        <div class="flex gap-2">
-                          <button
-                            onclick="verDetallePedido('2023-001')"
-                            class="flex-1 min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-2 bg-blue-100 text-blue-700 text-sm font-medium leading-normal hover:bg-blue-200"
-                          >
-                            <span class="truncate">Ver</span>
-                          </button>
-                          <button
-                            onclick="if(confirmarAccion('marcar como completado', '2023-001')) this.innerHTML='<span class=\'truncate\'>Completado</span>'; this.className='flex-1 min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-2 bg-green-100 text-green-700 text-sm font-medium leading-normal'"
-                            class="flex-1 min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-2 bg-yellow-100 text-yellow-700 text-sm font-medium leading-normal hover:bg-yellow-200"
-                          >
-                            <span class="truncate">Pendiente</span>
-                          </button>
-                        </div>
-                      </td>
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-600 h-[72px] px-4 py-2 w-[400px] text-[#8d865e] text-sm font-normal leading-normal">$500.00</td>
-                    </tr>
-                    <tr class="border-t border-t-[#e7e5da]">
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-120 h-[72px] px-4 py-2 w-[400px] text-[#181710] text-sm font-normal leading-normal">
-                        ORD-2023-002
-                      </td>
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-240 h-[72px] px-4 py-2 w-[400px] text-[#8d865e] text-sm font-normal leading-normal">
-                        External Location 1
-                      </td>
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-360 h-[72px] px-4 py-2 w-[400px] text-[#8d865e] text-sm font-normal leading-normal">
-                        2023-10-25
-                      </td>
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-480 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
-                        <div class="flex gap-2">
-                          <button
-                            onclick="verDetallePedido('2023-002')"
-                            class="flex-1 min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-2 bg-blue-100 text-blue-700 text-sm font-medium leading-normal hover:bg-blue-200"
-                          >
-                            <span class="truncate">Ver</span>
-                          </button>
-                          <button
-                            class="flex-1 min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-2 bg-green-100 text-green-700 text-sm font-medium leading-normal"
-                          >
-                            <span class="truncate">Completado</span>
-                          </button>
-                        </div>
-                      </td>
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-600 h-[72px] px-4 py-2 w-[400px] text-[#8d865e] text-sm font-normal leading-normal">$250.00</td>
-                    </tr>
-                    <tr class="border-t border-t-[#e7e5da]">
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-120 h-[72px] px-4 py-2 w-[400px] text-[#181710] text-sm font-normal leading-normal">
-                        ORD-2023-003
-                      </td>
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-240 h-[72px] px-4 py-2 w-[400px] text-[#8d865e] text-sm font-normal leading-normal">
-                        Wholesale Supplier B
-                      </td>
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-360 h-[72px] px-4 py-2 w-[400px] text-[#8d865e] text-sm font-normal leading-normal">
-                        2023-10-24
-                      </td>
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-480 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
-                        <div class="flex gap-2">
-                          <button
-                            onclick="verDetallePedido('2023-001')"
-                            class="flex-1 min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-2 bg-blue-100 text-blue-700 text-sm font-medium leading-normal hover:bg-blue-200"
-                          >
-                            <span class="truncate">Ver</span>
-                          </button>
-                          <button
-                            onclick="if(confirmarAccion('marcar como completado', '2023-001')) this.innerHTML='<span class=\'truncate\'>Completado</span>'; this.className='flex-1 min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-2 bg-green-100 text-green-700 text-sm font-medium leading-normal'"
-                            class="flex-1 min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-2 bg-yellow-100 text-yellow-700 text-sm font-medium leading-normal hover:bg-yellow-200"
-                          >
-                            <span class="truncate">Pendiente</span>
-                          </button>
-                        </div>
-                      </td>
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-600 h-[72px] px-4 py-2 w-[400px] text-[#8d865e] text-sm font-normal leading-normal">$750.00</td>
-                    </tr>
-                    <tr class="border-t border-t-[#e7e5da]">
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-120 h-[72px] px-4 py-2 w-[400px] text-[#181710] text-sm font-normal leading-normal">
-                        ORD-2023-004
-                      </td>
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-240 h-[72px] px-4 py-2 w-[400px] text-[#8d865e] text-sm font-normal leading-normal">
-                        External Location 2
-                      </td>
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-360 h-[72px] px-4 py-2 w-[400px] text-[#8d865e] text-sm font-normal leading-normal">
-                        2023-10-23
-                      </td>
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-480 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
-                        <div class="flex gap-2">
-                          <button
-                            onclick="verDetallePedido('2023-002')"
-                            class="flex-1 min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-2 bg-blue-100 text-blue-700 text-sm font-medium leading-normal hover:bg-blue-200"
-                          >
-                            <span class="truncate">Ver</span>
-                          </button>
-                          <button
-                            class="flex-1 min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-2 bg-green-100 text-green-700 text-sm font-medium leading-normal"
-                          >
-                            <span class="truncate">Completado</span>
-                          </button>
-                        </div>
-                      </td>
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-600 h-[72px] px-4 py-2 w-[400px] text-[#8d865e] text-sm font-normal leading-normal">$300.00</td>
-                    </tr>
-                    <tr class="border-t border-t-[#e7e5da]">
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-120 h-[72px] px-4 py-2 w-[400px] text-[#181710] text-sm font-normal leading-normal">
-                        ORD-2023-005
-                      </td>
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-240 h-[72px] px-4 py-2 w-[400px] text-[#8d865e] text-sm font-normal leading-normal">
-                        Wholesale Supplier A
-                      </td>
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-360 h-[72px] px-4 py-2 w-[400px] text-[#8d865e] text-sm font-normal leading-normal">
-                        2023-10-22
-                      </td>
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-480 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
-                        <button
-                          class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#f5f4f0] text-[#181710] text-sm font-medium leading-normal w-full"
-                        >
-                          <span class="truncate">Completed</span>
-                        </button>
-                      </td>
-                      <td class="table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-600 h-[72px] px-4 py-2 w-[400px] text-[#8d865e] text-sm font-normal leading-normal">$400.00</td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div class="overflow-hidden rounded-lg border border-[#e7e5da] bg-white">
+                <div class="overflow-x-auto">
+                  <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                      <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          ID de Pedido
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Cliente
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Fecha
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Productos
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Total
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Estado
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Acciones
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody id="ordersTableBody" class="bg-white divide-y divide-gray-200">
+                      <!-- Orders will be dynamically inserted here -->
+                    </tbody>
+                  </table>
+                </div>
+                <div id="noOrdersMessage" class="p-8 text-center text-gray-500 hidden">
+                  <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                  <h3 class="mt-2 text-sm font-medium text-gray-900">No hay pedidos</h3>
+                  <p class="mt-1 text-sm text-gray-500">Empieza creando un nuevo pedido.</p>
+                  <div class="mt-6">
+                    <button type="button" onclick="createNewOrder()" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#181710] hover:bg-[#2a2922] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#181710]">
+                      <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                      </svg>
+                      Nuevo Pedido
+                    </button>
+                  </div>
+                </div>
               </div>
-              <style>
-                          @container(max-width:120px){.table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-120{display: none;}}
-                @container(max-width:240px){.table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-240{display: none;}}
-                @container(max-width:360px){.table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-360{display: none;}}
-                @container(max-width:480px){.table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-480{display: none;}}
-                @container(max-width:600px){.table-6d675594-dce0-4ec0-b002-d15707aa7aff-column-600{display: none;}}
-              </style>
             </div>
           </div>
         </div>
       </div>
+    <!-- Order Creation Modal -->
+    <div id="orderModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
+      <div class="relative bg-white rounded-lg shadow max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <!-- Modal header -->
+        <div class="flex items-center justify-between p-5 border-b rounded-t">
+          <h3 class="text-xl font-semibold text-gray-900">
+            Crear Nueva Orden
+          </h3>
+          <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" onclick="closeOrderModal()">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        </div>
+        <!-- Modal body -->
+        <div class="p-6 space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h4 class="font-semibold text-gray-900 mb-4">Información de la Orden</h4>
+              <div class="space-y-4">
+                <div>
+                  <label for="orderClient" class="block text-sm font-medium text-gray-700 mb-1">Cliente *</label>
+                  <input type="text" id="orderClient" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#181710] focus:border-[#181710] sm:text-sm">
+                </div>
+                <div>
+                  <label for="orderDate" class="block text-sm font-medium text-gray-700 mb-1">Fecha *</label>
+                  <input type="date" id="orderDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#181710] focus:border-[#181710] sm:text-sm">
+                </div>
+                <div>
+                  <label for="orderNotes" class="block text-sm font-medium text-gray-700 mb-1">Notas</label>
+                  <textarea id="orderNotes" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#181710] focus:border-[#181710] sm:text-sm"></textarea>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h4 class="font-semibold text-gray-900 mb-4">Productos</h4>
+              <div class="mb-4">
+                <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-[#181710] hover:bg-[#2a2922] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#181710]" onclick="openProductSelector()">
+                  <svg class="-ml-0.5 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                  </svg>
+                  Agregar Producto
+                </button>
+              </div>
+              
+              <div class="border border-gray-200 rounded-lg overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
+                      <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+                      <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
+                      <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                      <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="orderItems" class="bg-white divide-y divide-gray-200">
+                    <!-- Order items will be added here dynamically -->
+                  </tbody>
+                  <tfoot class="bg-gray-50">
+                    <tr>
+                      <td colspan="3" class="px-6 py-3 text-right text-sm font-medium text-gray-900">Total:</td>
+                      <td id="orderTotal" class="px-6 py-3 text-left text-sm font-medium text-gray-900">ARS 0.00</td>
+                      <td></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Modal footer -->
+        <div class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b">
+          <button type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10" onclick="closeOrderModal()">
+            Cancelar
+          </button>
+          <button type="button" class="text-white bg-[#181710] hover:bg-[#2a2922] focus:ring-4 focus:outline-none focus:ring-[#181710] font-medium rounded-lg text-sm px-5 py-2.5 text-center" onclick="saveOrder()">
+            Guardar Orden
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Product Selector Modal -->
+    <div id="productSelectorModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
+      <div class="relative bg-white rounded-lg shadow max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <!-- Modal header -->
+        <div class="flex items-center justify-between p-5 border-b rounded-t">
+          <h3 class="text-xl font-semibold text-gray-900">
+            Seleccionar Productos
+          </h3>
+          <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" onclick="closeProductSelector()">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        </div>
+        <!-- Modal body -->
+        <div class="p-6 space-y-6">
+          <div class="flex flex-col md:flex-row gap-4">
+            <div class="md:w-1/3">
+              <label for="productSearch" class="block text-sm font-medium text-gray-700 mb-1">Buscar Producto</label>
+              <div class="flex rounded-md shadow-sm">
+                <input type="text" id="productSearch" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-l-md border border-gray-300 shadow-sm focus:outline-none focus:ring-[#181710] focus:border-[#181710] sm:text-sm" placeholder="Nombre del producto...">
+                <button class="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm" onclick="searchProducts()">
+                  <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="md:w-1/3">
+              <label for="productCategory" class="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+              <select id="productCategory" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#181710] focus:border-[#181710] sm:text-sm">
+                <option value="">Todas las categorías</option>
+                <option value="Frutas y Verduras">Frutas y Verduras</option>
+                <option value="Lácteos">Lácteos</option>
+                <option value="Carnes">Carnes</option>
+                <option value="Panadería">Panadería</option>
+                <option value="Bebidas">Bebidas</option>
+                <option value="Snacks">Snacks</option>
+                <option value="Productos de Limpieza">Productos de Limpieza</option>
+                <option value="Cuidado Personal">Cuidado Personal</option>
+                <option value="Pastelería y Panadería">Pastelería y Panadería</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="border border-gray-200 rounded-lg overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="productList" class="bg-white divide-y divide-gray-200">
+                <!-- Products will be loaded here dynamically -->
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Selected Products Summary -->
+          <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+            <h4 class="font-semibold text-gray-900 mb-3">Productos Seleccionados</h4>
+            <div id="selectedProductsList" class="space-y-2">
+              <p class="text-gray-500 text-sm">No hay productos seleccionados</p>
+            </div>
+            <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-200">
+              <span class="font-semibold text-gray-900">Total:</span>
+              <span id="selectedProductsTotal" class="text-lg font-bold text-blue-600">ARS 0.00</span>
+            </div>
+          </div>
+        </div>
+        <!-- Modal footer -->
+        <div class="flex items-center justify-between p-6 space-x-2 border-t border-gray-200 rounded-b">
+          <button type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10" onclick="closeProductSelector()">
+            Cerrar
+          </button>
+          <div class="flex space-x-2">
+            <button type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900" onclick="clearAllSelections()">
+              Limpiar Selecciones
+            </button>
+            <button type="button" id="addAllSelectedBtn" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center opacity-50 cursor-not-allowed" onclick="addAllSelectedProducts()" disabled>
+              Agregar Seleccionados
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <script>
+      // Initialize the page when DOM is loaded
+      document.addEventListener('DOMContentLoaded', function() {
+        loadOrders();
+        setupEventListeners();
+      });
+
+      // Load orders from localStorage and display them
+      function loadOrders() {
+        const orders = JSON.parse(localStorage.getItem('orders')) || [];
+        const tbody = document.getElementById('ordersTableBody');
+        const noOrdersMessage = document.getElementById('noOrdersMessage');
+        
+        // Clear existing rows
+        tbody.innerHTML = '';
+        
+        if (orders.length === 0) {
+          noOrdersMessage.classList.remove('hidden');
+          return;
+        }
+        
+        noOrdersMessage.classList.add('hidden');
+        
+        // Sort orders by date (newest first)
+        orders.sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        // Add each order to the table
+        orders.forEach(order => {
+          const row = document.createElement('tr');
+          row.className = 'hover:bg-gray-50';
+          
+          // Calculate total items
+          const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
+          
+          // Format date
+          const orderDate = new Date(order.date);
+          const formattedDate = orderDate.toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+          
+          // Format total
+          const formattedTotal = new Intl.NumberFormat('es-ES', {
+            style: 'currency',
+            currency: 'USD'
+          }).format(order.total);
+          
+          // Status badge
+          let statusBadge = '';
+          if (order.status === 'completed') {
+            statusBadge = '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Completado</span>';
+          } else if (order.status === 'pending') {
+            statusBadge = '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pendiente</span>';
+          } else if (order.status === 'cancelled') {
+            statusBadge = '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Cancelado</span>';
+          } else {
+            statusBadge = '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">' + order.status + '</span>';
+          }
+          
+          row.innerHTML = `
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              ${order.id || 'N/A'}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              ${order.customerName || 'Cliente no especificado'}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              ${formattedDate}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              ${totalItems} ${totalItems === 1 ? 'producto' : 'productos'}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              ${formattedTotal}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              ${statusBadge}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <div class="flex justify-end space-x-2">
+                <button onclick="viewOrderDetails('${order.id}')" class="text-blue-600 hover:text-blue-900" title="Ver detalles">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+                <button onclick="editOrder('${order.id}')" class="text-blue-600 hover:text-blue-900" title="Editar">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                  </svg>
+                </button>
+                <button onclick="deleteOrder('${order.id}')" class="text-red-600 hover:text-red-900" title="Eliminar">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          `;
+          
+          tbody.appendChild(row);
+        });
+      }
+      
+      // View order details
+      function viewOrderDetails(orderId) {
+        const orders = JSON.parse(localStorage.getItem('orders')) || [];
+        const order = orders.find(o => o.id === orderId);
+        
+        if (!order) {
+          alert('No se encontró el pedido seleccionado');
+          return;
+        }
+        
+        // Format date
+        const orderDate = new Date(order.date);
+        const formattedDate = orderDate.toLocaleDateString('es-ES', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        
+        // Format total
+        const formattedTotal = new Intl.NumberFormat('es-ES', {
+          style: 'currency',
+          currency: 'USD'
+        }).format(order.total);
+        
+        // Create items list
+        let itemsHtml = '';
+        order.items.forEach(item => {
+          const itemTotal = item.price * item.quantity;
+          itemsHtml += `
+            <tr class="border-t border-gray-200">
+              <td class="py-4 px-6">
+                <div class="flex items-center">
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900">${item.name}</div>
+                    <div class="text-sm text-gray-500">${item.id}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="py-4 px-6 text-sm text-gray-500">
+                ${item.quantity}
+              </td>
+              <td class="py-4 px-6 text-sm text-gray-500">
+                ${new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'USD' }).format(item.price)}
+              </td>
+              <td class="py-4 px-6 text-sm font-medium text-gray-900">
+                ${new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'USD' }).format(itemTotal)}
+              </td>
+            </tr>
+          `;
+        });
+        
+        // Create modal content
+        const modalContent = `
+          <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all max-w-4xl w-full">
+            <div class="px-6 py-4 border-b border-gray-200">
+              <h3 class="text-lg font-medium text-gray-900">Detalles del Pedido #${order.id}</h3>
+              <p class="mt-1 text-sm text-gray-500">Realizado el ${formattedDate}</p>
+            </div>
+            <div class="px-6 py-4">
+              <div class="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                  <h4 class="text-sm font-medium text-gray-500">Cliente</h4>
+                  <p class="mt-1 text-sm text-gray-900">${order.customerName || 'No especificado'}</p>
+                </div>
+                <div>
+                  <h4 class="text-sm font-medium text-gray-500">Estado</h4>
+                  <p class="mt-1">
+                    ${order.status === 'completed' ? 
+                      '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Completado</span>' : 
+                      order.status === 'pending' ? 
+                      '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pendiente</span>' :
+                      '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">' + order.status + '</span>'
+                    }
+                  </p>
+                </div>
+              </div>
+              
+              <div class="mt-6">
+                <h4 class="text-sm font-medium text-gray-500 mb-2">Productos</h4>
+                <div class="overflow-hidden border border-gray-200 rounded-lg">
+                  <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                      <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio Unitario</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                      ${itemsHtml}
+                    </tbody>
+                    <tfoot class="bg-gray-50">
+                      <tr>
+                        <td colspan="3" class="px-6 py-4 text-right text-sm font-medium text-gray-900">Total:</td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">${formattedTotal}</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+              
+              ${order.notes ? `
+                <div class="mt-6">
+                  <h4 class="text-sm font-medium text-gray-500">Notas</h4>
+                  <p class="mt-1 text-sm text-gray-900">${order.notes}</p>
+                </div>
+              ` : ''}
+            </div>
+            <div class="px-6 py-4 bg-gray-50 text-right">
+              <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Cerrar
+              </button>
+              ${order.status !== 'completed' ? `
+                <button type="button" onclick="markAsCompleted('${order.id}')" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                  Marcar como Completado
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+        
+        // Show modal
+        showModal(modalContent);
+      }
+      
+      // Edit order
+      function editOrder(orderId) {
+        // For now, just show a message
+        alert('Editar pedido ' + orderId);
+        // In a real implementation, you would open an edit form with the order data
+      }
+      
+      // Delete order with confirmation
+      function deleteOrder(orderId) {
+        if (!confirm('¿Está seguro de que desea eliminar este pedido? Esta acción no se puede deshacer.')) {
+          return;
+        }
+        
+        const orders = JSON.parse(localStorage.getItem('orders')) || [];
+        const updatedOrders = orders.filter(order => order.id !== orderId);
+        
+        localStorage.setItem('orders', JSON.stringify(updatedOrders));
+        loadOrders();
+        
+        // Show success message
+        showNotification('Pedido eliminado correctamente', 'success');
+      }
+      
+      // Mark order as completed
+      function markAsCompleted(orderId) {
+        const orders = JSON.parse(localStorage.getItem('orders')) || [];
+        const orderIndex = orders.findIndex(order => order.id === orderId);
+        
+        if (orderIndex !== -1) {
+          orders[orderIndex].status = 'completed';
+          localStorage.setItem('orders', JSON.stringify(orders));
+          loadOrders();
+          closeModal();
+          showNotification('Pedido marcado como completado', 'success');
+        }
+      }
+      
+      // Show modal with custom content
+      function showModal(content) {
+        const modal = document.createElement('div');
+        modal.id = 'customModal';
+        modal.className = 'fixed z-50 inset-0 overflow-y-auto';
+        modal.innerHTML = `
+          <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+              <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+              ${content}
+            </div>
+          </div>
+        `;
+        
+        // Add click outside to close
+        modal.querySelector('.fixed.inset-0').addEventListener('click', closeModal);
+        
+        // Add to body and show
+        document.body.appendChild(modal);
+        document.body.classList.add('overflow-hidden');
+      }
+      
+      // Close modal
+      function closeModal() {
+        const modal = document.getElementById('customModal');
+        if (modal) {
+          document.body.removeChild(modal);
+          document.body.classList.remove('overflow-hidden');
+        }
+      }
+      
+      // Show notification
+      function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed bottom-4 right-4 p-4 rounded-md shadow-lg ${
+          type === 'success' ? 'bg-green-50 text-green-800' : 
+          type === 'error' ? 'bg-red-50 text-red-800' : 
+          'bg-blue-50 text-blue-800'
+        }`;
+        notification.innerHTML = `
+          <div class="flex">
+            <div class="flex-shrink-0">
+              ${type === 'success' ? `
+                <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+              ` : type === 'error' ? `
+                <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+              ` : `
+                <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h2a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+              `}
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium">${message}</p>
+            </div>
+            <div class="ml-4 flex-shrink-0 flex">
+              <button class="inline-flex text-gray-400 hover:text-gray-500 focus:outline-none" onclick="this.parentElement.parentElement.remove()">
+                <span class="sr-only">Cerrar</span>
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 5000);
+      }
+      
+      // Set up event listeners
+      function setupEventListeners() {
+        // Add any additional event listeners here
+      }
+      
+      // Order management functions
+      let currentOrder = {
+        id: '',
+        items: [],
+        total: 0,
+        customer: '',
+        status: 'Pendiente'
+      };
+      
+      let selectedProducts = [];
+
+      // Initialize order management on page load
+      document.addEventListener('DOMContentLoaded', function() {
+        loadCurrentOrder();
+        setupOrderEventListeners();
+        updateOrderDisplay();
+      });
+
+      // Load current order from localStorage
+      function loadCurrentOrder() {
+        const savedOrder = localStorage.getItem('currentOrder');
+        if (savedOrder) {
+          currentOrder = JSON.parse(savedOrder);
+          updateOrderDisplay();
+        }
+      }
+
+      // Setup event listeners for cross-window communication
+      function setupOrderEventListeners() {
+        // Listen for order updates from products page
+        window.addEventListener('orderUpdated', function(event) {
+          currentOrder = event.detail;
+          updateOrderDisplay();
+        });
+
+        // Listen for storage changes (cross-tab communication)
+        window.addEventListener('storage', function(event) {
+          if (event.key === 'currentOrder') {
+            loadCurrentOrder();
+          }
+        });
+      }
+
+      // Update order display in real-time
+      function updateOrderDisplay() {
+        updateOrderHeader();
+        updateOrderItemsList();
+        updateOrderTotal();
+      }
+
+      // Update order header information
+      function updateOrderHeader() {
+        if (currentOrder.id) {
+          const orderIdEl = document.getElementById('currentOrderId');
+          const orderDateEl = document.getElementById('currentOrderDate');
+          const orderStatusEl = document.getElementById('currentOrderStatus');
+          const orderCustomerEl = document.getElementById('currentOrderCustomer');
+          
+          if (orderIdEl) orderIdEl.textContent = currentOrder.id;
+          if (orderDateEl) orderDateEl.textContent = new Date(currentOrder.createdAt).toLocaleString('es-ES');
+          if (orderStatusEl) orderStatusEl.textContent = currentOrder.status;
+          if (orderCustomerEl) orderCustomerEl.value = currentOrder.customer || '';
+        }
+      }
+
+      // Update order items list
+      function updateOrderItemsList() {
+        const container = document.getElementById('orderItemsList');
+        if (!container) return;
+
+        if (!currentOrder.items || currentOrder.items.length === 0) {
+          container.innerHTML = '<p class="text-gray-500 text-center py-4">No hay productos en el pedido actual</p>';
+          return;
+        }
+
+        container.innerHTML = currentOrder.items.map(item => `
+          <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg mb-2">
+            <div class="flex items-center space-x-3">
+              <img src="${item.image || 'https://via.placeholder.com/40'}" alt="${item.name}" class="w-10 h-10 rounded-md object-cover">
+              <div>
+                <h5 class="font-medium text-gray-900">${item.name}</h5>
+                <p class="text-sm text-gray-600">ARS ${item.price.toFixed(2)}/${item.priceType}</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-3">
+              <div class="flex items-center space-x-2">
+                <button onclick="updateItemQuantity('${item.productId}', ${item.quantity - 1})" class="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm">-</button>
+                <span class="w-8 text-center">${item.quantity}</span>
+                <button onclick="updateItemQuantity('${item.productId}', ${item.quantity + 1})" class="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm">+</button>
+              </div>
+              <div class="text-right">
+                <p class="font-semibold">ARS ${item.subtotal.toFixed(2)}</p>
+              </div>
+              <button onclick="removeItemFromOrder('${item.productId}')" class="text-red-600 hover:text-red-800 p-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Update order total
+      function updateOrderTotal() {
+        const totalElement = document.getElementById('orderTotal');
+        if (totalElement) {
+          totalElement.textContent = `ARS ${currentOrder.total.toFixed(2)}`;
+        }
+      }
+
+      // Update item quantity
+      function updateItemQuantity(productId, newQuantity) {
+        if (newQuantity <= 0) {
+          removeItemFromOrder(productId);
+          return;
+        }
+
+        const itemIndex = currentOrder.items.findIndex(item => item.productId === productId);
+        if (itemIndex >= 0) {
+          currentOrder.items[itemIndex].quantity = newQuantity;
+          currentOrder.items[itemIndex].subtotal = currentOrder.items[itemIndex].price * newQuantity;
+          
+          // Recalculate total
+          currentOrder.total = currentOrder.items.reduce((sum, item) => sum + item.subtotal, 0);
+          currentOrder.updatedAt = new Date().toISOString();
+          
+          // Save and update display
+          localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
+          updateOrderDisplay();
+        }
+      }
+
+      // Remove item from order
+      function removeItemFromOrder(productId) {
+        currentOrder.items = currentOrder.items.filter(item => item.productId !== productId);
+        
+        // Recalculate total
+        currentOrder.total = currentOrder.items.reduce((sum, item) => sum + item.subtotal, 0);
+        currentOrder.updatedAt = new Date().toISOString();
+        
+        // Save and update display
+        localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
+        updateOrderDisplay();
+        
+        // Show notification
+        showOrderNotification('Producto eliminado del pedido');
+      }
+
+      // Clear current order
+      function clearCurrentOrder() {
+        if (confirm('¿Está seguro de que desea limpiar el pedido actual?')) {
+          currentOrder = {
+            id: '',
+            items: [],
+            total: 0,
+            customer: '',
+            status: 'Pendiente'
+          };
+          localStorage.removeItem('currentOrder');
+          updateOrderDisplay();
+          showOrderNotification('Pedido limpiado');
+        }
+      }
+
+      // Save current order to orders list
+      function saveCurrentOrder() {
+        if (!currentOrder.items || currentOrder.items.length === 0) {
+          alert('No hay productos en el pedido para guardar');
+          return;
+        }
+
+        if (!currentOrder.customer.trim()) {
+          alert('Por favor ingrese el nombre del cliente');
+          return;
+        }
+
+        // Get existing orders
+        const existingOrders = JSON.parse(localStorage.getItem('savedOrders') || '[]');
+        
+        // Add current order to saved orders
+        const orderToSave = {
+          ...currentOrder,
+          savedAt: new Date().toISOString(),
+          status: 'Confirmado'
+        };
+        
+        existingOrders.push(orderToSave);
+        localStorage.setItem('savedOrders', JSON.stringify(existingOrders));
+        
+        // Clear current order
+        currentOrder = {
+          id: '',
+          items: [],
+          total: 0,
+          customer: '',
+          status: 'Pendiente'
+        };
+        localStorage.removeItem('currentOrder');
+        updateOrderDisplay();
+        
+        showOrderNotification('Pedido guardado exitosamente');
+        
+        // Refresh orders table if it exists
+        if (typeof refreshOrdersTable === 'function') {
+          refreshOrdersTable();
+        }
+      }
+
+      // Update customer name
+      function updateCustomerName(customerName) {
+        currentOrder.customer = customerName;
+        localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
+      }
+
+      // Show notification
+      function showOrderNotification(message) {
+        // Create notification element if it doesn't exist
+        let notification = document.getElementById('orderNotification');
+        if (!notification) {
+          notification = document.createElement('div');
+          notification.id = 'orderNotification';
+          notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+          document.body.appendChild(notification);
+        }
+        
+        notification.textContent = message;
+        notification.classList.remove('translate-x-full');
+        
+        setTimeout(() => {
+          notification.classList.add('translate-x-full');
+        }, 3000);
+      }
+
+      // Refresh current order (called from products page)
+      window.refreshCurrentOrder = function() {
+        loadCurrentOrder();
+      };
+      
+      function createNewOrder() {
+        // Reset order
+        currentOrder = {
+          id: '',
+          items: [],
+          total: 0,
+          customer: '',
+          status: 'Pendiente'
+        };
+        
+        // Clear localStorage
+        localStorage.removeItem('currentOrder');
+        updateOrderDisplay();
+        
+        // Clear form fields
+        document.getElementById('orderClient').value = '';
+        document.getElementById('orderDate').value = '';
+        document.getElementById('orderNotes').value = '';
+        
+        // Show order modal
+        document.getElementById('orderModal').classList.remove('hidden');
+      }
+      
+      function closeOrderModal() {
+        document.getElementById('orderModal').classList.add('hidden');
+      }
+      
+      function openProductSelector() {
+        // Load available products
+        const products = JSON.parse(localStorage.getItem('products') || '[]');
+        
+        // Clear and populate product list
+        const productList = document.getElementById('productList');
+        if (productList) {
+          productList.innerHTML = '';
+          
+          products.forEach(product => {
+            const row = document.createElement('tr');
+            row.className = 'hover:bg-gray-50';
+            
+            // Determine stock status
+            let stockStatus = 'En Stock';
+            let stockStatusClass = 'bg-green-100 text-green-800';
+            
+            if (product.stock === 0) {
+              stockStatus = 'Sin Stock';
+              stockStatusClass = 'bg-red-100 text-red-800';
+            } else if (product.stock < 10) {
+              stockStatus = 'Stock Bajo';
+              stockStatusClass = 'bg-yellow-100 text-yellow-800';
+            }
+            
+            const stockDisplay = `${product.stock} ${product.stockUnit}`;
+            const priceDisplay = `ARS ${product.price.toFixed(2)}/${product.priceType}`;
+            
+            row.innerHTML = `
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <img src="${product.image || 'https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80'}" alt="${product.name}" class="flex-shrink-0 h-10 w-10 rounded-md object-cover">
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900">${product.name}</div>
+                    <div class="text-sm text-gray-500">${product.barcode || 'N/A'}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                ${product.category}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                ${priceDisplay}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">${stockDisplay}</div>
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${stockStatusClass}">
+                  ${stockStatus}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center space-x-2">
+                  <button onclick="decreaseQuantity('${product.id}')" class="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm ${product.stock === 0 ? 'opacity-50 cursor-not-allowed' : ''}" ${product.stock === 0 ? 'disabled' : ''}>-</button>
+                  <input 
+                    type="number" 
+                    id="qty_${product.id}" 
+                    min="0" 
+                    max="${product.stock}" 
+                    value="0" 
+                    class="w-16 text-center border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onchange="updateQuantity('${product.id}', this.value)"
+                    ${product.stock === 0 ? 'disabled' : ''}
+                  >
+                  <button onclick="increaseQuantity('${product.id}')" class="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm ${product.stock === 0 ? 'opacity-50 cursor-not-allowed' : ''}" ${product.stock === 0 ? 'disabled' : ''}>+</button>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <button id="addBtn_${product.id}" class="text-blue-600 hover:text-blue-900 opacity-50 cursor-not-allowed" onclick="addToOrder('${product.id}')" disabled>
+                  Agregar
+                </button>
+              </td>
+            `;
+            
+            productList.appendChild(row);
+          });
+        }
+        
+        // Show modal
+        document.getElementById('productSelectorModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+      
+      function closeProductSelector() {
+        // Use the new system if available
+        if (typeof window.closeProductSelectorModal !== 'undefined') {
+          window.closeProductSelectorModal();
+        } else {
+          // Fallback
+          document.getElementById('productSelectorModal').classList.add('hidden');
+          document.body.style.overflow = 'auto';
+        }
+      }
+      
+      function loadProducts() {
+        // This function is now handled by product-selector.js
+        // Call the new render function
+        if (typeof renderProductSelectorTable === 'function') {
+          renderProductSelectorTable();
+        }
+      }
+      
+      function searchProducts() {
+        // This function is now handled by product-selector.js
+        // Call the new search function from the external script
+        if (typeof window.searchProducts !== 'undefined') {
+          window.searchProducts();
+        }
+      }
+      
+      // Notification function for user feedback
+      function showOrderNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 ${
+          type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+        }`;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+          notification.style.opacity = '0';
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.parentNode.removeChild(notification);
+            }
+          }, 300);
+        }, 3000);
+      }
+
+      // Quantity management functions
+      function decreaseQuantity(productId) {
+        const input = document.getElementById(`qty_${productId}`);
+        const currentValue = parseInt(input.value) || 0;
+        if (currentValue > 0) {
+          input.value = currentValue - 1;
+          updateQuantity(productId, currentValue - 1);
+        }
+      }
+
+      function increaseQuantity(productId) {
+        const input = document.getElementById(`qty_${productId}`);
+        const currentValue = parseInt(input.value) || 0;
+        const maxValue = parseInt(input.max) || 0;
+        if (currentValue < maxValue) {
+          input.value = currentValue + 1;
+          updateQuantity(productId, currentValue + 1);
+        }
+      }
+
+      function updateQuantity(productId, quantity) {
+        const qty = parseInt(quantity) || 0;
+        const addBtn = document.getElementById(`addBtn_${productId}`);
+        
+        if (qty > 0) {
+          addBtn.disabled = false;
+          addBtn.className = 'text-blue-600 hover:text-blue-900';
+        } else {
+          addBtn.disabled = true;
+          addBtn.className = 'text-blue-600 hover:text-blue-900 opacity-50 cursor-not-allowed';
+        }
+        
+        // Update selected products display
+        updateSelectedProductsDisplay();
+      }
+
+      function addToOrder(productId) {
+        const input = document.getElementById(`qty_${productId}`);
+        const quantity = parseInt(input.value) || 0;
+        
+        if (quantity <= 0) return;
+        
+        // Get product data
+        const products = JSON.parse(localStorage.getItem('products') || '[]');
+        const product = products.find(p => p.id === productId);
+        
+        if (!product) return;
+        
+        // Add to current order
+        const existingItem = currentOrder.items.find(item => item.productId === productId);
+        
+        if (existingItem) {
+          existingItem.quantity += quantity;
+        } else {
+          currentOrder.items.push({
+            productId: product.id,
+            productName: product.name,
+            productImage: product.image,
+            price: product.price,
+            priceType: product.priceType,
+            quantity: quantity
+          });
+        }
+        
+        // Update order total and display
+        updateOrderTotal();
+        updateOrderItemsTable();
+        
+        // Save to localStorage
+        localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
+        
+        // Reset quantity input
+        input.value = 0;
+        updateQuantity(productId, 0);
+        
+        // Show notification
+        showOrderNotification(`${product.name} agregado al pedido (${quantity} unidades)`);
+        
+        // Dispatch event for cross-window communication
+        window.dispatchEvent(new CustomEvent('orderUpdated', { detail: currentOrder }));
+      }
+
+      function clearAllSelections() {
+        const inputs = document.querySelectorAll('[id^="qty_"]');
+        inputs.forEach(input => {
+          input.value = 0;
+          const productId = input.id.replace('qty_', '');
+          updateQuantity(productId, 0);
+        });
+      }
+
+      function addAllSelectedProducts() {
+        const inputs = document.querySelectorAll('[id^="qty_"]');
+        let addedCount = 0;
+        let totalQuantity = 0;
+        
+        inputs.forEach(input => {
+          const quantity = parseInt(input.value) || 0;
+          if (quantity > 0) {
+            const productId = input.id.replace('qty_', '');
+            
+            // Get product data
+            const products = JSON.parse(localStorage.getItem('products') || '[]');
+            const product = products.find(p => p.id === productId);
+            
+            if (product) {
+              // Add to current order
+              const existingItem = currentOrder.items.find(item => item.productId === productId);
+              
+              if (existingItem) {
+                existingItem.quantity += quantity;
+              } else {
+                currentOrder.items.push({
+                  productId: product.id,
+                  productName: product.name,
+                  productImage: product.image,
+                  price: product.price,
+                  priceType: product.priceType,
+                  quantity: quantity
+                });
+              }
+              
+              addedCount++;
+              totalQuantity += quantity;
+              
+              // Reset quantity input
+              input.value = 0;
+              updateQuantity(productId, 0);
+            }
+          }
+        });
+        
+        if (addedCount > 0) {
+          // Update order total and display
+          updateOrderTotal();
+          updateOrderItemsTable();
+          
+          // Save to localStorage
+          localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
+          
+          // Show notification
+          showOrderNotification(`${addedCount} productos agregados al pedido (${totalQuantity} unidades total)`);
+          
+          // Dispatch event for cross-window communication
+          window.dispatchEvent(new CustomEvent('orderUpdated', { detail: currentOrder }));
+          
+          // Update selected products display
+          updateSelectedProductsDisplay();
+        } else {
+          showOrderNotification('No hay productos seleccionados para agregar', 'error');
+        }
+      }
+
+      // Update selected products display in modal
+      function updateSelectedProductsDisplay() {
+        const container = document.getElementById('selectedProductsList');
+        const totalElement = document.getElementById('selectedProductsTotal');
+        
+        if (!container || !totalElement) return;
+        
+        // Get selected quantities from inputs
+        const inputs = document.querySelectorAll('[id^="qty_"]');
+        const selectedItems = [];
+        let total = 0;
+        
+        inputs.forEach(input => {
+          const quantity = parseInt(input.value) || 0;
+          if (quantity > 0) {
+            const productId = input.id.replace('qty_', '');
+            const products = JSON.parse(localStorage.getItem('products') || '[]');
+            const product = products.find(p => p.id === productId);
+            
+            if (product) {
+              const subtotal = product.price * quantity;
+              selectedItems.push({
+                ...product,
+                quantity: quantity,
+                subtotal: subtotal
+              });
+              total += subtotal;
+            }
+          }
+        });
+        
+        if (selectedItems.length === 0) {
+          container.innerHTML = '<p class="text-gray-500 text-sm">No hay productos seleccionados</p>';
+          totalElement.textContent = 'ARS 0.00';
+          
+          // Disable "Agregar Seleccionados" button
+          const addAllBtn = document.getElementById('addAllSelectedBtn');
+          if (addAllBtn) {
+            addAllBtn.disabled = true;
+            addAllBtn.className = 'text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center opacity-50 cursor-not-allowed';
+          }
+        } else {
+          container.innerHTML = selectedItems.map(item => `
+            <div class="flex items-center justify-between p-2 bg-white rounded border">
+              <div class="flex items-center space-x-3">
+                <img src="${item.image || 'https://via.placeholder.com/32'}" alt="${item.name}" class="w-8 h-8 rounded object-cover">
+                <div>
+                  <span class="text-sm font-medium text-gray-900">${item.name}</span>
+                  <span class="text-xs text-gray-500 ml-2">x${item.quantity}</span>
+                </div>
+              </div>
+              <div class="text-sm font-semibold text-gray-900">ARS ${item.subtotal.toFixed(2)}</div>
+            </div>
+          `).join('');
+          
+          totalElement.textContent = `ARS ${total.toFixed(2)}`;
+          
+          // Enable "Agregar Seleccionados" button
+          const addAllBtn = document.getElementById('addAllSelectedBtn');
+          if (addAllBtn) {
+            addAllBtn.disabled = false;
+            addAllBtn.className = 'text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center';
+          }
+        }
+      }
+
+      function addProductToOrder(productId) {
+        // Get products from localStorage
+        const products = JSON.parse(localStorage.getItem('products') || '[]');
+        
+        // Find the product
+        const product = products.find(p => p.id === productId);
+        
+        if (!product) return;
+        
+        // Check if product is already in the order
+        const existingItem = currentOrder.items.find(item => item.productId === productId);
+        
+        if (existingItem) {
+          // Increase quantity
+          existingItem.quantity += 1;
+        } else {
+          // Add new item to order
+          currentOrder.items.push({
+            productId: product.id,
+            productName: product.name,
+            productImage: product.image,
+            price: product.price,
+            priceType: product.priceType,
+            quantity: 1
+          });
+        }
+        
+        // Update order total
+        updateOrderTotal();
+        
+        // Update order items table
+        updateOrderItemsTable();
+        
+        // Show success message
+        alert(`Producto "${product.name}" agregado a la orden`);
+      }
+      
+      function updateOrderTotal() {
+        currentOrder.total = currentOrder.items.reduce((total, item) => {
+          return total + (item.price * item.quantity);
+        }, 0);
+      }
+      
+      function updateOrderItemsTable() {
+        const orderItemsList = document.getElementById('orderItemsList');
+        
+        if (!orderItemsList) return;
+        
+        if (currentOrder.items.length === 0) {
+          orderItemsList.innerHTML = '<p class="text-gray-500 text-center py-4">No hay productos en el pedido actual</p>';
+        } else {
+          orderItemsList.innerHTML = '';
+          
+          currentOrder.items.forEach((item, index) => {
+            const itemTotal = item.price * item.quantity;
+            
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200';
+            
+            itemDiv.innerHTML = `
+              <div class="flex items-center space-x-3">
+                <img src="${item.productImage || 'https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80'}" alt="${item.productName}" class="w-12 h-12 rounded-lg object-cover">
+                <div>
+                  <div class="text-sm font-medium text-gray-900">${item.productName}</div>
+                  <div class="text-xs text-gray-500">ARS ${item.price.toFixed(2)}/${item.priceType}</div>
+                </div>
+              </div>
+              <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-2">
+                  <button onclick="decreaseOrderItemQuantity(${index})" class="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm">-</button>
+                  <span class="w-8 text-center text-sm font-medium">${item.quantity}</span>
+                  <button onclick="increaseOrderItemQuantity(${index})" class="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm">+</button>
+                </div>
+                <div class="text-sm font-semibold text-gray-900 w-20 text-right">ARS ${itemTotal.toFixed(2)}</div>
+                <button onclick="removeItemFromOrder(${index})" class="text-red-600 hover:text-red-800 text-sm">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                </button>
+              </div>
+            `;
+            
+            orderItemsList.appendChild(itemDiv);
+          });
+        }
+        
+        // Update total display
+        document.getElementById('orderTotal').textContent = `ARS ${currentOrder.total.toFixed(2)}`;
+      }
+
+      // Functions for managing order item quantities
+      function decreaseOrderItemQuantity(index) {
+        if (currentOrder.items[index].quantity > 1) {
+          currentOrder.items[index].quantity--;
+          updateOrderTotal();
+          updateOrderItemsTable();
+          localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
+        }
+      }
+
+      function increaseOrderItemQuantity(index) {
+        currentOrder.items[index].quantity++;
+        updateOrderTotal();
+        updateOrderItemsTable();
+        localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
+      }
+
+      function removeItemFromOrder(index) {
+        if (confirm('¿Está seguro que desea eliminar este producto del pedido?')) {
+          currentOrder.items.splice(index, 1);
+          updateOrderTotal();
+          updateOrderItemsTable();
+          localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
+          showOrderNotification('Producto eliminado del pedido');
+        }
+      }
+
+      // Save current order to orders list
+      function saveCurrentOrder() {
+        // Validate customer name
+        const customerName = document.getElementById('currentOrderCustomer').value.trim();
+        if (!customerName) {
+          alert('Por favor ingrese el nombre del cliente');
+          document.getElementById('currentOrderCustomer').focus();
+          return;
+        }
+
+        // Validate that there are items in the order
+        if (currentOrder.items.length === 0) {
+          alert('Por favor agregue al menos un producto al pedido');
+          return;
+        }
+
+        // Update customer in current order
+        currentOrder.customer = customerName;
+        currentOrder.status = 'Pendiente';
+        currentOrder.createdAt = new Date().toISOString();
+
+        // Generate order ID if not exists
+        if (!currentOrder.id) {
+          currentOrder.id = 'ORD-' + new Date().getFullYear() + '-' + String(Date.now()).slice(-6);
+        }
+
+        // Get existing orders from localStorage
+        const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        
+        // Add new order
+        orders.push({...currentOrder});
+        
+        // Save to localStorage
+        localStorage.setItem('orders', JSON.stringify(orders));
+        
+        // Clear current order
+        clearCurrentOrder();
+        
+        // Show success message
+        showOrderNotification('Pedido guardado exitosamente', 'success');
+        
+        // Refresh orders table if it exists
+        if (typeof refreshOrdersTable === 'function') {
+          refreshOrdersTable();
+        }
+      }
+
+      // Clear current order
+      function clearCurrentOrder() {
+        if (currentOrder.items.length > 0) {
+          if (!confirm('¿Está seguro que desea limpiar el pedido actual? Se perderán todos los productos agregados.')) {
+            return;
+          }
+        }
+
+        // Reset current order
+        currentOrder = {
+          id: '',
+          items: [],
+          total: 0,
+          customer: '',
+          status: 'Pendiente'
+        };
+
+        // Clear localStorage
+        localStorage.removeItem('currentOrder');
+        
+        // Clear customer input
+        document.getElementById('currentOrderCustomer').value = '';
+        
+        // Update displays
+        updateOrderDisplay();
+        updateOrderItemsTable();
+        
+        showOrderNotification('Pedido limpiado', 'success');
+      }
+
+      // Update customer name in current order
+      function updateCustomerName(customerName) {
+        currentOrder.customer = customerName;
+        localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
+      }
+
+      // Refresh orders table with saved orders
+      function refreshOrdersTable() {
+        const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        const ordersTableBody = document.querySelector('#ordersTable tbody');
+        
+        if (!ordersTableBody) return;
+        
+        ordersTableBody.innerHTML = '';
+        
+        if (orders.length === 0) {
+          const emptyRow = document.createElement('tr');
+          emptyRow.innerHTML = `
+            <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+              No hay órdenes registradas
+            </td>
+          `;
+          ordersTableBody.appendChild(emptyRow);
+          return;
+        }
+        
+        orders.forEach((order, index) => {
+          const row = document.createElement('tr');
+          row.className = 'hover:bg-gray-50';
+          
+          const orderDate = new Date(order.createdAt || order.date).toLocaleDateString('es-ES');
+          const statusClass = order.status === 'Pendiente' ? 'bg-yellow-100 text-yellow-800' : 
+                             order.status === 'Completado' ? 'bg-green-100 text-green-800' : 
+                             'bg-red-100 text-red-800';
+          
+          row.innerHTML = `
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              ${order.id}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              ${order.customer || order.client || 'N/A'}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              ${orderDate}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+                ${order.status}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              ARS ${order.total.toFixed(2)}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <button onclick="viewOrderDetails('${order.id}')" class="text-blue-600 hover:text-blue-900 mr-3">
+                Ver
+              </button>
+              <button onclick="deleteOrder('${order.id}')" class="text-red-600 hover:text-red-900">
+                Eliminar
+              </button>
+            </td>
+          `;
+          
+          ordersTableBody.appendChild(row);
+        });
+      }
+
+      // View order details
+      function viewOrderDetails(orderId) {
+        const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        const order = orders.find(o => o.id === orderId);
+        
+        if (!order) {
+          alert('Orden no encontrada');
+          return;
+        }
+        
+        let itemsList = order.items.map(item => 
+          `• ${item.productName} - Cantidad: ${item.quantity} - Precio: ARS ${item.price.toFixed(2)} - Subtotal: ARS ${(item.price * item.quantity).toFixed(2)}`
+        ).join('\n');
+        
+        alert(`Detalles de la Orden ${order.id}:
+        
+Cliente: ${order.customer || order.client}
+Fecha: ${new Date(order.createdAt || order.date).toLocaleDateString('es-ES')}
+Estado: ${order.status}
+Total: ARS ${order.total.toFixed(2)}
+
+Productos:
+${itemsList}`);
+      }
+
+      // Delete order
+      function deleteOrder(orderId) {
+        if (!confirm('¿Está seguro que desea eliminar esta orden?')) {
+          return;
+        }
+        
+        const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        const filteredOrders = orders.filter(o => o.id !== orderId);
+        
+        localStorage.setItem('orders', JSON.stringify(filteredOrders));
+        refreshOrdersTable();
+        showOrderNotification('Orden eliminada exitosamente');
+      }
+
+      // Initialize page
+      function initializePage() {
+        // Load current order from localStorage if exists
+        const savedOrder = localStorage.getItem('currentOrder');
+        if (savedOrder) {
+          currentOrder = JSON.parse(savedOrder);
+          updateOrderDisplay();
+          updateOrderItemsTable();
+        }
+        
+        // Refresh orders table
+        refreshOrdersTable();
+      }
+
+      // Update order display (ID, date, status)
+      function updateOrderDisplay() {
+        document.getElementById('currentOrderId').textContent = currentOrder.id || '-';
+        document.getElementById('currentOrderDate').textContent = currentOrder.createdAt ? 
+          new Date(currentOrder.createdAt).toLocaleDateString('es-ES') : '-';
+        document.getElementById('currentOrderStatus').textContent = currentOrder.status || '-';
+        document.getElementById('currentOrderCustomer').value = currentOrder.customer || '';
+      }
+
+      // Initialize when page loads
+      document.addEventListener('DOMContentLoaded', function() {
+        initializePage();
+      });
+      
+      function updateItemQuantity(index, quantity) {
+        const newQuantity = parseInt(quantity);
+        
+        if (isNaN(newQuantity) || newQuantity <= 0) {
+          alert('La cantidad debe ser un número mayor a cero');
+          return;
+        }
+        
+        currentOrder.items[index].quantity = newQuantity;
+        
+        // Update order total
+        updateOrderTotal();
+        
+        // Update order items table
+        updateOrderItemsTable();
+      }
+      
+      function removeItemFromOrder(index) {
+        currentOrder.items.splice(index, 1);
+        
+        // Update order total
+        updateOrderTotal();
+        
+        // Update order items table
+        updateOrderItemsTable();
+      }
+      
+      function saveOrder() {
+        // Validate required fields
+        const client = document.getElementById('orderClient').value.trim();
+        const date = document.getElementById('orderDate').value;
+        
+        if (!client) {
+          alert('Por favor ingrese el nombre del cliente');
+          return;
+        }
+        
+        if (!date) {
+          alert('Por favor seleccione la fecha de la orden');
+          return;
+        }
+        
+        if (currentOrder.items.length === 0) {
+          alert('Por favor agregue al menos un producto a la orden');
+          return;
+        }
+        
+        // Create order object
+        const order = {
+          id: 'ORD-' + new Date().getFullYear() + '-' + (Math.floor(Math.random() * 1000) + 1000),
+          client: client,
+          date: date,
+          notes: document.getElementById('orderNotes').value.trim(),
+          items: currentOrder.items,
+          total: currentOrder.total,
+          status: 'Pendiente'
+        };
+        
+        // Get existing orders from localStorage
+        const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        
+        // Add new order
+        orders.push(order);
+        
+        // Save to localStorage
+        localStorage.setItem('orders', JSON.stringify(orders));
+        
+        // Close modal
+        closeOrderModal();
+        
+        // Show success message
+        alert('Orden guardada exitosamente');
+        
+        // Refresh orders list (in a real app, this would reload the page or update the table)
+        location.reload();
+      }
+      
+      // Add event listeners
+      document.addEventListener('DOMContentLoaded', function() {
+        // Add event listener for product search input
+        document.getElementById('productSearch').addEventListener('keyup', function(event) {
+          if (event.key === 'Enter') {
+            searchProducts();
+          }
+        });
+        
+        // Add event listener for category filter
+        document.getElementById('productCategory').addEventListener('change', searchProducts);
+        
+        // Set today's date as default
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('orderDate').value = today;
+      });
+    </script>
+    
     </div>
   </body>
 </html>
