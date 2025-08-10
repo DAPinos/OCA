@@ -16,9 +16,9 @@
   <body>
     <div class="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
       <div class="layout-container flex h-full grow flex-col">
-        <div class="gap-1 px-6 flex flex-1 justify-center py-5">
+        <div class="px-6 py-5 flex gap-6 items-start w-full">
           <!-- Sidebar Navigation -->
-          <div class="layout-content-container flex flex-col w-80">
+          <div class="layout-content-container flex flex-col w-64 shrink-0">
             <div class="flex h-full min-h-[700px] flex-col justify-between bg-white p-4">
               <div class="flex flex-col gap-4">
                 <h1 class="text-[#181710] text-base font-medium leading-normal">OCA Minimarkets</h1>
@@ -86,30 +86,29 @@
               </div>
             </div>
           </div>
-          
-          <!-- Main Content Area -->
-          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
-            <!-- Page Header -->
-            <div class="flex flex-wrap justify-between gap-3 p-4">
-              <h1 class="text-[#181710] tracking-light text-[32px] font-bold leading-tight min-w-72">Clientes</h1>
-              <div class="flex gap-2">
-                <div class="relative">
-                  <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 19l-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-                    </svg>
-                  </div>
-                  <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5" placeholder="Buscar clientes...">
-                </div>
-                <button class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300">
-                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                  </svg>
-                  Agregar Cliente
-                </button>
-              </div>
-            </div>
             
+            <!-- Main Content Area -->
+            <div class="layout-content-container flex flex-col min-w-0 flex-1">
+              <!-- Page Header -->
+              <div class="flex flex-wrap justify-between gap-3 p-4">
+                <h1 class="text-[#181710] tracking-light text-[32px] font-bold leading-tight min-w-72">Clientes</h1>
+                <div class="flex gap-2">
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                      <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 19l-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                      </svg>
+                    </div>
+                    <input id="clientSearchInput" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5" placeholder="Buscar clientes...">
+                  </div>
+                </div>
+              </div>
+
+            <!-- Client KPIs / Splash Cards -->
+            <div class="px-4 mb-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="clientKpis">
+              <!-- KPI cards will be rendered by JS -->
+            </div>
+
             <!-- Client Filters -->
             <div class="flex flex-wrap items-center gap-3 px-4 mb-4">
               <div class="relative">
@@ -138,150 +137,29 @@
             
             <!-- Clients List -->
             <div class="px-4">
+              <div class="flex items-center justify-between mb-3">
+                <h2 class="text-lg font-semibold text-[#181710]">Listado de Clientes</h2>
+                <button id="addClientBtn" class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-[#181710] hover:bg-[#2a2922] rounded-lg">
+                  + Agregar Cliente
+                </button>
+              </div>
               <div class="overflow-hidden rounded-lg border border-[#e7e5da] bg-white">
                 <div class="overflow-x-auto">
                   <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                       <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Foto</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID de cliente</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Correo</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teléfono</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Gastado</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Último Pedido</th>
-                        <th scope="col" class="relative px-6 py-3">
-                          <span class="sr-only">Acciones</span>
-                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo de cliente</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total gastado</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado último pedido</th>
+                        <th scope="col" class="relative px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                       </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                      <!-- Client 1 -->
-                      <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="flex items-center">
-                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="John Doe" class="h-10 w-10 rounded-full object-cover">
-                            <div class="ml-4">
-                              <div class="text-sm font-medium text-gray-900">John Doe</div>
-                              <div class="text-sm text-gray-500">#CLT-1001</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="text-sm text-gray-900">john.doe@example.com</div>
-                          <div class="text-sm text-gray-500">+1 (555) 123-4567</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                            Minorista
-                          </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">24 pedidos</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            Activo
-                          </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <button class="text-blue-600 hover:text-blue-900 mr-3">Ver</button>
-                          <button class="text-blue-600 hover:text-blue-900">Editar</button>
-                        </td>
-                      </tr>
-                      
-                      <!-- Client 2 -->
-                      <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="flex items-center">
-                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Jane Smith" class="h-10 w-10 rounded-full object-cover">
-                            <div class="ml-4">
-                              <div class="text-sm font-medium text-gray-900">Jane Smith</div>
-                              <div class="text-sm text-gray-500">#CLT-1002</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="text-sm text-gray-900">jane.smith@example.com</div>
-                          <div class="text-sm text-gray-500">+1 (555) 987-6543</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                            Wholesale
-                          </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">156 orders</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            Active
-                          </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <button class="text-blue-600 hover:text-blue-900 mr-3">View</button>
-                          <button class="text-blue-600 hover:text-blue-900">Edit</button>
-                        </td>
-                      </tr>
-                      
-                      <!-- Client 3 -->
-                      <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="flex items-center">
-                            <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Robert Johnson" class="h-10 w-10 rounded-full object-cover">
-                            <div class="ml-4">
-                              <div class="text-sm font-medium text-gray-900">Robert Johnson</div>
-                              <div class="text-sm text-gray-500">#CLT-1003</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="text-sm text-gray-900">robert.j@example.com</div>
-                          <div class="text-sm text-gray-500">+1 (555) 456-7890</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                            Corporate
-                          </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">12 orders</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                            Pending
-                          </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <button class="text-blue-600 hover:text-blue-900 mr-3">View</button>
-                          <button class="text-blue-600 hover:text-blue-900">Edit</button>
-                        </td>
-                      </tr>
-                      
-                      <!-- Client 4 -->
-                      <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="flex items-center">
-                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Maria Brown" class="h-10 w-10 rounded-full object-cover">
-                            <div class="ml-4">
-                              <div class="text-sm font-medium text-gray-900">Maria Brown</div>
-                              <div class="text-sm text-gray-500">#CLT-1004</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="text-sm text-gray-900">maria.b@example.com</div>
-                          <div class="text-sm text-gray-500">+1 (555) 234-5678</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                            Retail
-                          </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">42 orders</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                            Inactive
-                          </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <button class="text-blue-600 hover:text-blue-900 mr-3">View</button>
-                          <button class="text-blue-600 hover:text-blue-900">Edit</button>
-                        </td>
-                      </tr>
-                    </tbody>
+                    <tbody id="clientsTableBody" class="bg-white divide-y divide-gray-200"></tbody>
                   </table>
                 </div>
                 
@@ -340,5 +218,366 @@
         </div>
       </div>
     </div>
+    <!-- Modal: Agregar/Editar Cliente -->
+    <div id="clientModal" class="fixed inset-0 z-50 hidden">
+      <div class="absolute inset-0 bg-black/40" id="clientModalOverlay"></div>
+      <div class="relative mx-auto mt-16 w-full max-w-xl rounded-xl bg-white shadow-lg">
+        <div class="flex items-center justify-between border-b px-6 py-4">
+          <h3 id="clientModalTitle" class="text-lg font-semibold text-[#181710]">Agregar Cliente</h3>
+          <button id="clientModalClose" class="text-gray-500 hover:text-gray-700">✕</button>
+        </div>
+        <div class="p-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+              <input id="clName" type="text" class="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Nombre completo" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Correo</label>
+              <input id="clEmail" type="email" class="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="correo@ejemplo.com" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+              <input id="clPhone" type="text" class="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="+56 9 1234 5678" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de cliente</label>
+              <select id="clType" class="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500">
+                <option value="Minorista">Minorista</option>
+                <option value="Wholesale">Wholesale</option>
+                <option value="Corporate">Corporate</option>
+                <option value="Retail">Retail</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Total gastado</label>
+              <input id="clTotal" type="number" min="0" step="0.01" class="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="0.00" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Estado último pedido</label>
+              <select id="clStatus" class="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500">
+                <option value="Activo">Activo</option>
+                <option value="Inactivo">Inactivo</option>
+                <option value="Pendiente">Pendiente</option>
+              </select>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">URL de foto (opcional)</label>
+              <input id="clPhoto" type="url" class="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="https://..." />
+            </div>
+          </div>
+          <p id="clientFormError" class="mt-3 hidden text-sm text-red-600"></p>
+        </div>
+        <div class="flex justify-end gap-3 border-t px-6 py-4">
+          <button id="clientCancelBtn" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">Cancelar</button>
+          <button id="clientSaveBtn" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const LS_KEY = 'clients';
+        let editingId = null;
+
+        function seedSampleClients() {
+          const samples = [
+            {
+              id: 'CLT-1001',
+              name: 'John Doe',
+              email: 'john.doe@example.com',
+              phone: '+1 (555) 123-4567',
+              type: 'Minorista',
+              totalSpent: 1240.55,
+              lastOrderStatus: 'Activo',
+              photoUrl: 'https://randomuser.me/api/portraits/men/32.jpg',
+              createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString()
+            },
+            {
+              id: 'CLT-1002',
+              name: 'Jane Smith',
+              email: 'jane.smith@example.com',
+              phone: '+1 (555) 987-6543',
+              type: 'Wholesale',
+              totalSpent: 8450.0,
+              lastOrderStatus: 'Activo',
+              photoUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
+              createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString()
+            },
+            {
+              id: 'CLT-1003',
+              name: 'Robert Johnson',
+              email: 'robert.j@example.com',
+              phone: '+1 (555) 456-7890',
+              type: 'Corporate',
+              totalSpent: 312.99,
+              lastOrderStatus: 'Pendiente',
+              photoUrl: 'https://randomuser.me/api/portraits/men/75.jpg',
+              createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1).toISOString()
+            },
+            {
+              id: 'CLT-1004',
+              name: 'Maria Brown',
+              email: 'maria.b@example.com',
+              phone: '+1 (555) 234-5678',
+              type: 'Retail',
+              totalSpent: 0,
+              lastOrderStatus: 'Inactivo',
+              photoUrl: 'https://randomuser.me/api/portraits/women/68.jpg',
+              createdAt: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString()
+            }
+          ];
+          localStorage.setItem(LS_KEY, JSON.stringify(samples));
+          return samples;
+        }
+
+        function getClients() {
+          try {
+            const raw = localStorage.getItem(LS_KEY);
+            if (!raw) return seedSampleClients();
+            const parsed = JSON.parse(raw);
+            if (!Array.isArray(parsed) || parsed.length === 0) return seedSampleClients();
+            // Migration: ensure createdAt exists
+            let changed = false;
+            const migrated = parsed.map((c, i) => {
+              if (!c.createdAt) {
+                changed = true;
+                return { ...c, createdAt: new Date(Date.now() - i * 1000).toISOString() };
+              }
+              return c;
+            });
+            if (changed) localStorage.setItem(LS_KEY, JSON.stringify(migrated));
+            return migrated;
+          } catch (e) {
+            console.warn('Clientes corruptos, resembrando', e);
+            return seedSampleClients();
+          }
+        }
+
+        function typeTag(type) {
+          const map = {
+            'Minorista': 'bg-blue-100 text-blue-800',
+            'Retail': 'bg-blue-100 text-blue-800',
+            'Wholesale': 'bg-purple-100 text-purple-800',
+            'Corporate': 'bg-gray-100 text-gray-800',
+            'Corporativo': 'bg-gray-100 text-gray-800'
+          };
+          return map[type] || 'bg-gray-100 text-gray-800';
+        }
+
+        function statusTag(status) {
+          const map = {
+            'Activo': 'bg-green-100 text-green-800',
+            'Inactivo': 'bg-red-100 text-red-800',
+            'Pendiente': 'bg-yellow-100 text-yellow-800'
+          };
+          return map[status] || 'bg-gray-100 text-gray-800';
+        }
+
+        function formatCurrency(n) {
+          try { return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'USD' }).format(n || 0); }
+          catch { return `$${Number(n || 0).toFixed(2)}`; }
+        }
+
+        function renderClientsTable(clients) {
+          const tbody = document.getElementById('clientsTableBody');
+          if (!tbody) return;
+          const sorted = [...clients].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+          tbody.innerHTML = sorted.map(c => `
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <img src="${c.photoUrl || 'https://via.placeholder.com/40'}" alt="${c.name || ''}" class="h-10 w-10 rounded-full object-cover">
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900">${c.name || ''}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${c.id || ''}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${c.email || ''}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${c.phone || ''}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${typeTag(c.type)}">${c.type || ''}</span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatCurrency(c.totalSpent)}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusTag(c.lastOrderStatus)}">${c.lastOrderStatus || ''}</span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <button class="text-blue-600 hover:text-blue-900 mr-3" data-action="view" data-id="${c.id}">Ver</button>
+                <button class="text-blue-600 hover:text-blue-900 mr-3" data-action="edit" data-id="${c.id}">Editar</button>
+                <button class="text-red-600 hover:text-red-800" data-action="delete" data-id="${c.id}">Eliminar</button>
+              </td>
+            </tr>
+          `).join('');
+        }
+
+        function renderClientKpis(clients) {
+          const el = document.getElementById('clientKpis');
+          if (!el) return;
+          const total = clients.length;
+          const activos = clients.filter(c => c.lastOrderStatus === 'Activo').length;
+          const inactivos = clients.filter(c => c.lastOrderStatus === 'Inactivo').length;
+          const pendientes = clients.filter(c => c.lastOrderStatus === 'Pendiente').length;
+          const totalGastado = clients.reduce((sum, c) => sum + (Number(c.totalSpent) || 0), 0);
+          el.innerHTML = `
+            <div class="rounded-xl border border-[#e7e5da] bg-white p-4">
+              <p class="text-sm text-gray-500">Total Clientes</p>
+              <p class="mt-1 text-2xl font-bold text-[#181710]">${total}</p>
+            </div>
+            <div class="rounded-xl border border-[#e7e5da] bg-white p-4">
+              <p class="text-sm text-gray-500">Activos</p>
+              <p class="mt-1 text-2xl font-bold text-green-700">${activos}</p>
+            </div>
+            <div class="rounded-xl border border-[#e7e5da] bg-white p-4">
+              <p class="text-sm text-gray-500">Inactivos</p>
+              <p class="mt-1 text-2xl font-bold text-red-700">${inactivos}</p>
+            </div>
+            <div class="rounded-xl border border-[#e7e5da] bg-white p-4">
+              <p class="text-sm text-gray-500">Pendientes</p>
+              <p class="mt-1 text-2xl font-bold text-yellow-700">${pendientes}</p>
+            </div>
+            <div class="rounded-xl border border-[#e7e5da] bg-white p-4 sm:col-span-2 lg:col-span-4">
+              <p class="text-sm text-gray-500">Total Gastado</p>
+              <p class="mt-1 text-2xl font-bold text-[#181710]">${formatCurrency(totalGastado)}</p>
+            </div>
+          `;
+        }
+
+        function fillForm(client) {
+          document.getElementById('clName').value = client.name || '';
+          document.getElementById('clEmail').value = client.email || '';
+          document.getElementById('clPhone').value = client.phone || '';
+          document.getElementById('clType').value = client.type || 'Minorista';
+          document.getElementById('clTotal').value = client.totalSpent != null ? client.totalSpent : '';
+          document.getElementById('clStatus').value = client.lastOrderStatus || 'Activo';
+          document.getElementById('clPhoto').value = client.photoUrl || '';
+          const err = document.getElementById('clientFormError');
+          err.textContent = '';
+          err.classList.add('hidden');
+        }
+
+        function showModal(show) {
+          const m = document.getElementById('clientModal');
+          if (!m) return;
+          m.classList.toggle('hidden', !show);
+        }
+
+        function clearForm() {
+          document.getElementById('clName').value = '';
+          document.getElementById('clEmail').value = '';
+          document.getElementById('clPhone').value = '';
+          document.getElementById('clType').value = 'Minorista';
+          document.getElementById('clTotal').value = '';
+          document.getElementById('clStatus').value = 'Activo';
+          document.getElementById('clPhoto').value = '';
+          const err = document.getElementById('clientFormError');
+          err.textContent = '';
+          err.classList.add('hidden');
+        }
+
+        function validateEmail(email) {
+          return /[^\s@]+@[^\s@]+\.[^\s@]+/.test(email);
+        }
+
+        function saveClient() {
+          const name = document.getElementById('clName').value.trim();
+          const email = document.getElementById('clEmail').value.trim();
+          const phone = document.getElementById('clPhone').value.trim();
+          const type = document.getElementById('clType').value;
+          const totalSpent = parseFloat(document.getElementById('clTotal').value || '0');
+          const status = document.getElementById('clStatus').value;
+          const photoUrl = document.getElementById('clPhoto').value.trim();
+
+          const err = document.getElementById('clientFormError');
+          err.textContent = '';
+          err.classList.add('hidden');
+
+          if (!name) { err.textContent = 'El nombre es obligatorio.'; err.classList.remove('hidden'); return; }
+          if (!email || !validateEmail(email)) { err.textContent = 'Ingrese un correo válido.'; err.classList.remove('hidden'); return; }
+          if (Number.isNaN(totalSpent) || totalSpent < 0) { err.textContent = 'Total gastado debe ser un número válido mayor o igual a 0.'; err.classList.remove('hidden'); return; }
+
+          const clients = getClients();
+          if (editingId) {
+            const idx = clients.findIndex(c => c.id === editingId);
+            if (idx !== -1) {
+              clients[idx] = {
+                ...clients[idx],
+                name, email, phone, type,
+                totalSpent, lastOrderStatus: status,
+                photoUrl: photoUrl || clients[idx].photoUrl || 'https://via.placeholder.com/80'
+              };
+            }
+          } else {
+            const newClient = {
+              id: 'CLT-' + Date.now().toString().slice(-6),
+              name, email, phone, type,
+              totalSpent, lastOrderStatus: status,
+              photoUrl: photoUrl || 'https://via.placeholder.com/80',
+              createdAt: new Date().toISOString()
+            };
+            clients.push(newClient);
+          }
+          localStorage.setItem(LS_KEY, JSON.stringify(clients));
+          renderClientsTable(clients);
+          renderClientKpis(clients);
+          showModal(false);
+          editingId = null;
+        }
+
+        function init() {
+          const clients = getClients();
+          renderClientsTable(clients);
+          renderClientKpis(clients);
+
+          const addBtn = document.getElementById('addClientBtn');
+          if (addBtn) addBtn.addEventListener('click', () => {
+            document.getElementById('clientModalTitle').textContent = 'Agregar Cliente';
+            clearForm();
+            showModal(true);
+            editingId = null;
+          });
+
+          const closeEls = [
+            document.getElementById('clientModalClose'),
+            document.getElementById('clientCancelBtn'),
+            document.getElementById('clientModalOverlay')
+          ];
+          closeEls.forEach(el => el && el.addEventListener('click', () => showModal(false)));
+
+          const saveBtn = document.getElementById('clientSaveBtn');
+          if (saveBtn) saveBtn.addEventListener('click', saveClient);
+
+          // Actions: view, edit, delete
+          const tbody = document.getElementById('clientsTableBody');
+          if (tbody) {
+            tbody.addEventListener('click', (e) => {
+              const btn = e.target.closest('button[data-action]');
+              if (!btn) return;
+              const action = btn.getAttribute('data-action');
+              const id = btn.getAttribute('data-id');
+              const clients = getClients();
+              const client = clients.find(c => c.id === id);
+              if (action === 'view') {
+                if (client) alert(`${client.name}\n${client.email}\n${client.phone}`);
+              } else if (action === 'edit') {
+                if (!client) return;
+                editingId = id;
+                document.getElementById('clientModalTitle').textContent = 'Editar Cliente';
+                fillForm(client);
+                showModal(true);
+              } else if (action === 'delete') {
+                if (confirm('¿Eliminar este cliente?')) {
+                  const filtered = clients.filter(c => c.id !== id);
+                  localStorage.setItem(LS_KEY, JSON.stringify(filtered));
+                  renderClientsTable(filtered);
+                  renderClientKpis(filtered);
+                }
+              }
+            });
+          }
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+      })();
+    </script>
   </body>
 </html>

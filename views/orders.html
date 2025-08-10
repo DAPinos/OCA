@@ -24,6 +24,74 @@
           mostrarMensaje(`Pedido #${id} ${accion} correctamente`);
           return true;
         }
+
+        // ===== Finanzas: Sincronización de movimientos con pedidos =====
+        function getFinanceMovements() {
+          return JSON.parse(localStorage.getItem('finance_movements') || '[]');
+        }
+
+        function setFinanceMovements(arr) {
+          localStorage.setItem('finance_movements', JSON.stringify(arr));
+        }
+
+        function movementIdForOrder(orderId) {
+          return `ORD-${orderId}`;
+        }
+
+        function buildMovementFromOrder(order) {
+          const id = movementIdForOrder(order.id);
+          const date = new Date(order.createdAt || order.date || Date.now()).toISOString();
+          const desc = `Pedido #${order.id}${order.customer ? ' - ' + order.customer : ''}`;
+          const amount = Number(order.total) || 0;
+          return {
+            id,
+            date,
+            description: desc,
+            category: 'Ventas',
+            type: 'Ingreso',
+            amount,
+            source: 'order',
+            orderId: order.id
+          };
+        }
+
+        function upsertFinanceMovementForOrder(order) {
+          const status = (order.status || '').toLowerCase();
+          const isDone = status.includes('complet') || status.includes('confirm');
+          if (!isDone) {
+            removeFinanceMovementForOrder(order.id);
+            return;
+          }
+          const moves = getFinanceMovements();
+          const id = movementIdForOrder(order.id);
+          const idx = moves.findIndex(m => m.id === id);
+          const mv = buildMovementFromOrder(order);
+          if (idx >= 0) moves[idx] = mv; else moves.push(mv);
+          setFinanceMovements(moves);
+        }
+
+        function removeFinanceMovementForOrder(orderId) {
+          const moves = getFinanceMovements();
+          const id = movementIdForOrder(orderId);
+          const next = moves.filter(m => m.id !== id);
+          setFinanceMovements(next);
+        }
+
+        function backfillFinanceFromOrders() {
+          // Merge from both storages if present
+          const ordersA = JSON.parse(localStorage.getItem('orders') || '[]');
+          const ordersB = JSON.parse(localStorage.getItem('savedOrders') || '[]');
+          const all = [...ordersA, ...ordersB];
+          all.forEach(o => {
+            const st = (o.status || '').toLowerCase();
+            if (st.includes('complet') || st.includes('confirm')) {
+              upsertFinanceMovementForOrder(o);
+            } else {
+              // ensure no stale entry
+              removeFinanceMovementForOrder(o.id);
+            }
+          });
+        }
         return false;
       }
       
@@ -159,14 +227,12 @@
                 </div>
                 
                 <div class="mb-4">
-                  <label for="currentOrderCustomer" class="block text-sm font-medium text-gray-700 mb-1">Cliente:</label>
-                  <input 
-                    type="text" 
-                    id="currentOrderCustomer" 
-                    placeholder="Ingrese el nombre del cliente"
+                  <label for="currentOrderCustomerSelect" class="block text-sm font-medium text-gray-700 mb-1">Cliente:</label>
+                  <select 
+                    id="currentOrderCustomerSelect"
                     class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    onchange="updateCustomerName(this.value)"
-                  >
+                    onchange="onSelectCurrentCustomer(this.value)"
+                  ></select>
                 </div>
                 
                 <div class="mb-4">
@@ -197,13 +263,27 @@
                       ></path>
                     </svg>
                   </div>
-                  <input
-                    id="buscarPedido"
-                    placeholder="Buscar pedidos..."
-                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#181710] focus:outline-0 focus:ring-0 border-none bg-[#f5f4f0] focus:border-none h-full placeholder:text-[#8d865e] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
-                    value=""
-                    onkeypress="if(event.key === 'Enter') buscarPedidos()"
-                  />
+                  <select id="searchType" class="rounded-l-lg bg-[#f5f4f0] text-[#181710] border-none px-3 text-sm h-10 focus:outline-0 focus:ring-0">
+                    <option value="todos">Todos</option>
+                    <option value="id">ID Pedido</option>
+                    <option value="cliente">Cliente</option>
+                    <option value="fecha">Fecha</option>
+                  </select>
+                  <div class="flex items-center gap-2 w-full">
+                    <input
+                      id="buscarPedido"
+                      placeholder="Buscar pedidos..."
+                      class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#181710] focus:outline-0 focus:ring-0 border-none bg-[#f5f4f0] focus:border-none h-full placeholder:text-[#8d865e] px-4 border-l-0 pl-2 text-base font-normal leading-normal"
+                      value=""
+                      onkeypress="if(event.key === 'Enter') buscarPedidos()"
+                    />
+                    <input
+                      id="searchDate"
+                      type="date"
+                      class="hidden form-input rounded-lg text-[#181710] border border-[#e7e5da] bg-white px-3 h-10 text-sm"
+                    />
+                    <select id="searchClientSelect" class="hidden rounded-lg text-[#181710] border border-[#e7e5da] bg-white px-3 h-10 text-sm"></select>
+                  </div>
                 </div>
               </label>
             </div>
@@ -295,12 +375,12 @@
               <h4 class="font-semibold text-gray-900 mb-4">Información de la Orden</h4>
               <div class="space-y-4">
                 <div>
-                  <label for="orderClient" class="block text-sm font-medium text-gray-700 mb-1">Cliente *</label>
-                  <input type="text" id="orderClient" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#181710] focus:border-[#181710] sm:text-sm">
+                  <label for="orderClientSelect" class="block text-sm font-medium text-gray-700 mb-1">Cliente *</label>
+                  <select id="orderClientSelect" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#181710] focus:border-[#181710] sm:text-sm"></select>
                 </div>
                 <div>
                   <label for="orderDate" class="block text-sm font-medium text-gray-700 mb-1">Fecha *</label>
-                  <input type="date" id="orderDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#181710] focus:border-[#181710] sm:text-sm">
+                  <input type="datetime-local" id="orderDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#181710] focus:border-[#181710] sm:text-sm" readonly>
                 </div>
                 <div>
                   <label for="orderNotes" class="block text-sm font-medium text-gray-700 mb-1">Notas</label>
@@ -336,12 +416,16 @@
                   </tbody>
                   <tfoot class="bg-gray-50">
                     <tr>
-                      <td colspan="3" class="px-6 py-3 text-right text-sm font-medium text-gray-900">Total:</td>
-                      <td id="orderTotal" class="px-6 py-3 text-left text-sm font-medium text-gray-900">ARS 0.00</td>
-                      <td></td>
+                      <td colspan="5" class="px-6 py-3 text-right text-sm font-semibold text-gray-900">
+                        <span id="orderModalTotal">ARS 0.00</span>
+                      </td>
                     </tr>
                   </tfoot>
                 </table>
+              </div>
+              <!-- Receipt Preview -->
+              <div id="receiptPreview" class="mt-4 border border-gray-200 rounded-lg p-4 bg-white">
+                <!-- Se actualiza dinámicamente -->
               </div>
             </div>
           </div>
@@ -455,9 +539,108 @@
       document.addEventListener('DOMContentLoaded', function() {
         loadOrders();
         setupEventListeners();
+        populateClientSelects();
+        // Search typing support
+        const searchEl = document.getElementById('buscarPedido');
+        if (searchEl) {
+          searchEl.addEventListener('input', () => {
+            currentSearchQuery = searchEl.value.trim();
+            loadOrders();
+          });
+        }
+        const searchTypeEl = document.getElementById('searchType');
+        if (searchTypeEl) {
+          searchTypeEl.addEventListener('change', () => {
+            currentSearchType = searchTypeEl.value || 'todos';
+            updateSearchControlsVisibility();
+            if (currentSearchType === 'cliente') {
+              populateSearchClientSelect();
+            }
+            buscarPedidos();
+          });
+        }
+        const dateEl = document.getElementById('searchDate');
+        if (dateEl) {
+          dateEl.addEventListener('change', () => {
+            buscarPedidos();
+          });
+        }
+        const clientSel = document.getElementById('searchClientSelect');
+        if (clientSel) {
+          clientSel.addEventListener('change', () => {
+            buscarPedidos();
+          });
+        }
+        updateSearchControlsVisibility();
       });
 
       // Load orders from localStorage and display them
+      let currentStatusFilter = 'todos';
+      let currentSearchQuery = '';
+      let currentSearchType = 'todos';
+
+      function updateSearchControlsVisibility() {
+        const type = currentSearchType;
+        const textEl = document.getElementById('buscarPedido');
+        const dateEl = document.getElementById('searchDate');
+        const clientEl = document.getElementById('searchClientSelect');
+        if (!textEl || !dateEl || !clientEl) return;
+        // Reset values when switching types
+        if (type === 'fecha') {
+          textEl.classList.add('hidden');
+          dateEl.classList.remove('hidden');
+          clientEl.classList.add('hidden');
+        } else if (type === 'cliente') {
+          textEl.classList.add('hidden');
+          dateEl.classList.add('hidden');
+          clientEl.classList.remove('hidden');
+        } else if (type === 'id') {
+          textEl.placeholder = 'Buscar por ID de pedido...';
+          textEl.classList.remove('hidden');
+          dateEl.classList.add('hidden');
+          clientEl.classList.add('hidden');
+        } else {
+          textEl.placeholder = 'Buscar pedidos...';
+          textEl.classList.remove('hidden');
+          dateEl.classList.add('hidden');
+          clientEl.classList.add('hidden');
+        }
+      }
+
+      function matchesQuery(order, q) {
+        if (!q) return true;
+        q = q.toLowerCase();
+        const id = String(order.id || '').toLowerCase();
+        const customer = String(order.customer || order.customerName || '').toLowerCase();
+        const dateObj = new Date(order.createdAt || order.date);
+        const dateIso = isNaN(dateObj) ? '' : dateObj.toISOString().toLowerCase();
+        const dateLocal = isNaN(dateObj) ? '' : dateObj.toLocaleString('es-AR').toLowerCase();
+        switch (currentSearchType) {
+          case 'id':
+            return id.includes(q);
+          case 'cliente':
+            // When using client select, q will hold selected name
+            return customer.includes(q);
+          case 'fecha':
+            // Exact same day match (yyyy-mm-dd)
+            const selected = (document.getElementById('searchDate')?.value || '').trim();
+            if (!selected) return true;
+            const d = new Date(order.createdAt || order.date);
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth()+1).padStart(2,'0');
+            const dd = String(d.getDate()).padStart(2,'0');
+            const dayStr = `${yyyy}-${mm}-${dd}`;
+            return dayStr === selected;
+          default:
+            return id.includes(q) || customer.includes(q) || dateIso.includes(q) || dateLocal.includes(q);
+        }
+      }
+
+      function matchesStatus(order, status) {
+        if (!status || status === 'todos') return true;
+        return (order.status || '').toLowerCase() === status.toLowerCase();
+      }
+
       function loadOrders() {
         const orders = JSON.parse(localStorage.getItem('orders')) || [];
         const tbody = document.getElementById('ordersTableBody');
@@ -466,7 +649,9 @@
         // Clear existing rows
         tbody.innerHTML = '';
         
-        if (orders.length === 0) {
+        const filtered = orders.filter(o => matchesStatus(o, currentStatusFilter) && matchesQuery(o, currentSearchQuery));
+
+        if (filtered.length === 0) {
           noOrdersMessage.classList.remove('hidden');
           return;
         }
@@ -474,10 +659,10 @@
         noOrdersMessage.classList.add('hidden');
         
         // Sort orders by date (newest first)
-        orders.sort((a, b) => new Date(b.date) - new Date(a.date));
+        filtered.sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date));
         
         // Add each order to the table
-        orders.forEach(order => {
+        filtered.forEach(order => {
           const row = document.createElement('tr');
           row.className = 'hover:bg-gray-50';
           
@@ -485,7 +670,7 @@
           const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
           
           // Format date
-          const orderDate = new Date(order.date);
+          const orderDate = new Date(order.createdAt || order.date);
           const formattedDate = orderDate.toLocaleDateString('es-ES', {
             year: 'numeric',
             month: 'short',
@@ -497,8 +682,8 @@
           // Format total
           const formattedTotal = new Intl.NumberFormat('es-ES', {
             style: 'currency',
-            currency: 'USD'
-          }).format(order.total);
+            currency: 'ARS'
+          }).format(order.total || 0);
           
           // Status badge
           let statusBadge = '';
@@ -512,18 +697,23 @@
             statusBadge = '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">' + order.status + '</span>';
           }
           
+          // Build product preview (first 2 names)
+          const productNames = (order.items || []).map(it => it.productName || it.name).filter(Boolean);
+          const preview = productNames.slice(0, 2).join(', ');
+          const more = productNames.length > 2 ? ` +${productNames.length - 2} más` : '';
+
           row.innerHTML = `
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
               ${order.id || 'N/A'}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              ${order.customerName || 'Cliente no especificado'}
+              ${order.customer || order.customerName || 'Cliente no especificado'}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               ${formattedDate}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              ${totalItems} ${totalItems === 1 ? 'producto' : 'productos'}
+              ${totalItems} ${totalItems === 1 ? 'producto' : 'productos'}${productNames.length ? ` · <span class="text-gray-700" title="${productNames.join(', ')}">${preview}${more}</span>` : ''}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
               ${formattedTotal}
@@ -533,18 +723,18 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
               <div class="flex justify-end space-x-2">
-                <button onclick="viewOrderDetails('${order.id}')" class="text-blue-600 hover:text-blue-900" title="Ver detalles">
+                <button type="button" onclick="viewOrderDetails('${order.id}')" class="text-blue-600 hover:text-blue-900" title="Ver detalles">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
                     <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
                   </svg>
                 </button>
-                <button onclick="editOrder('${order.id}')" class="text-blue-600 hover:text-blue-900" title="Editar">
+                <button type="button" onclick="editOrder('${order.id}')" class="text-blue-600 hover:text-blue-900" title="Editar">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                   </svg>
                 </button>
-                <button onclick="deleteOrder('${order.id}')" class="text-red-600 hover:text-red-900" title="Eliminar">
+                <button type="button" onclick="deleteOrder('${order.id}')" class="text-red-600 hover:text-red-900" title="Eliminar">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                   </svg>
@@ -554,6 +744,86 @@
           `;
           
           tbody.appendChild(row);
+        });
+      }
+
+      // Search triggered by Enter (existing inline handler) and exposed globally
+      function buscarPedidos() {
+        const type = currentSearchType;
+        if (type === 'fecha') {
+          const d = document.getElementById('searchDate');
+          currentSearchQuery = (d?.value || '').trim();
+        } else if (type === 'cliente') {
+          const sel = document.getElementById('searchClientSelect');
+          const name = sel && sel.selectedIndex >= 0 ? (sel.options[sel.selectedIndex].dataset.clientName || sel.options[sel.selectedIndex].textContent) : '';
+          currentSearchQuery = (name || '').trim().toLowerCase();
+        } else {
+          const searchEl = document.getElementById('buscarPedido');
+          currentSearchQuery = (searchEl?.value || '').trim();
+        }
+        loadOrders();
+      }
+      try { window.buscarPedidos = buscarPedidos; } catch(e) {}
+
+      // Status tabs handler
+      function aplicarFiltro(nombre) {
+        currentStatusFilter = nombre || 'todos';
+        loadOrders();
+      }
+      try { window.aplicarFiltro = aplicarFiltro; } catch(e) {}
+
+      // Load clients from localStorage and populate selects if present
+      function getClientsFromStorage() {
+        try {
+          const raw = localStorage.getItem('clients') || localStorage.getItem('clientes') || '[]';
+          const arr = JSON.parse(raw);
+          return Array.isArray(arr) ? arr : [];
+        } catch(e) {
+          return [];
+        }
+      }
+
+      function populateClientSelect(selectEl) {
+        const clients = getClientsFromStorage();
+        if (!selectEl) return;
+        selectEl.innerHTML = '';
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = 'Seleccione un cliente';
+        selectEl.appendChild(placeholder);
+        clients.forEach(c => {
+          const opt = document.createElement('option');
+          const id = c.id || c.clientId || c.clienteId || '';
+          const name = c.name || c.nombre || c.fullName || c.email || `Cliente ${id || ''}`;
+          opt.value = id || name;
+          opt.textContent = name;
+          opt.dataset.clientName = name;
+          selectEl.appendChild(opt);
+        });
+      }
+
+      function populateClientSelects() {
+        populateClientSelect(document.getElementById('currentOrderCustomerSelect'));
+        populateClientSelect(document.getElementById('orderClientSelect'));
+      }
+
+      function populateSearchClientSelect() {
+        const el = document.getElementById('searchClientSelect');
+        if (!el) return;
+        el.innerHTML = '';
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = 'Todos los clientes';
+        el.appendChild(placeholder);
+        const clients = getClientsFromStorage();
+        clients.forEach(c => {
+          const opt = document.createElement('option');
+          const id = c.id || c.clientId || c.clienteId || '';
+          const name = c.name || c.nombre || c.fullName || c.email || `Cliente ${id || ''}`;
+          opt.value = id || name;
+          opt.textContent = name;
+          opt.dataset.clientName = name;
+          el.appendChild(opt);
         });
       }
       
@@ -568,7 +838,7 @@
         }
         
         // Format date
-        const orderDate = new Date(order.date);
+        const orderDate = new Date(order.createdAt || order.date);
         const formattedDate = orderDate.toLocaleDateString('es-ES', {
           year: 'numeric',
           month: 'long',
@@ -580,31 +850,34 @@
         // Format total
         const formattedTotal = new Intl.NumberFormat('es-ES', {
           style: 'currency',
-          currency: 'USD'
-        }).format(order.total);
+          currency: 'ARS'
+        }).format(order.total || 0);
         
         // Create items list
         let itemsHtml = '';
-        order.items.forEach(item => {
-          const itemTotal = item.price * item.quantity;
+        (order.items || []).forEach(item => {
+          const name = item.productName || item.name || 'Producto';
+          const unitPrice = Number(item.price) || 0;
+          const qty = Number(item.quantity) || 0;
+          const itemTotal = unitPrice * qty;
           itemsHtml += `
             <tr class="border-t border-gray-200">
               <td class="py-4 px-6">
                 <div class="flex items-center">
                   <div class="ml-4">
-                    <div class="text-sm font-medium text-gray-900">${item.name}</div>
-                    <div class="text-sm text-gray-500">${item.id}</div>
+                    <div class="text-sm font-medium text-gray-900">${name}</div>
+                    <div class="text-sm text-gray-500">${item.productId || item.id || ''}</div>
                   </div>
                 </div>
               </td>
               <td class="py-4 px-6 text-sm text-gray-500">
-                ${item.quantity}
+                ${qty}
               </td>
               <td class="py-4 px-6 text-sm text-gray-500">
-                ${new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'USD' }).format(item.price)}
+                ${new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'ARS' }).format(unitPrice)}
               </td>
               <td class="py-4 px-6 text-sm font-medium text-gray-900">
-                ${new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'USD' }).format(itemTotal)}
+                ${new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'ARS' }).format(itemTotal)}
               </td>
             </tr>
           `;
@@ -669,9 +942,9 @@
               ` : ''}
             </div>
             <div class="px-6 py-4 bg-gray-50 text-right">
-              <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                Cerrar
-              </button>
+               <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                 Cerrar
+               </button>
               ${order.status !== 'completed' ? `
                 <button type="button" onclick="markAsCompleted('${order.id}')" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                   Marcar como Completado
@@ -687,26 +960,201 @@
       
       // Edit order
       function editOrder(orderId) {
-        // For now, just show a message
-        alert('Editar pedido ' + orderId);
-        // In a real implementation, you would open an edit form with the order data
+        const orders = JSON.parse(localStorage.getItem('orders')) || [];
+        const order = orders.find(o => o.id === orderId);
+        if (!order) {
+          alert('No se encontró el pedido seleccionado');
+          return;
+        }
+
+        const orderDate = new Date(order.createdAt || order.date);
+        const formattedDate = orderDate.toISOString().slice(0,10);
+
+        const itemsRows = (order.items || []).map((item, idx) => {
+          const name = item.productName || item.name || 'Producto';
+          const unitPrice = Number(item.price) || 0;
+          const qty = Number(item.quantity) || 0;
+          const subtotal = unitPrice * qty;
+          return `
+            <tr class="border-t border-gray-200" data-index="${idx}">
+              <td class="py-3 px-4">
+                <div class="text-sm font-medium text-gray-900">${name}</div>
+                <div class="text-xs text-gray-500">${item.productId || item.id || ''}</div>
+              </td>
+              <td class="py-3 px-4 text-sm text-gray-500">ARS ${unitPrice.toFixed(2)}</td>
+              <td class="py-3 px-4">
+                <div class="flex items-center space-x-2">
+                  <button class="w-6 h-6 rounded-full bg-gray-200" onclick="updateEditQty('${orderId}', ${idx}, -1)">-</button>
+                  <span id="editQty_${idx}" class="w-8 text-center">${qty}</span>
+                  <button class="w-6 h-6 rounded-full bg-gray-200" onclick="updateEditQty('${orderId}', ${idx}, 1)">+</button>
+                </div>
+              </td>
+              <td class="py-3 px-4 text-sm font-medium text-gray-900" id="editSubtotal_${idx}">ARS ${subtotal.toFixed(2)}</td>
+              <td class="py-3 px-4 text-right">
+                <button class="text-red-600 hover:text-red-800 text-sm" onclick="removeEditItem('${orderId}', ${idx})">Eliminar</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        const total = (order.items || []).reduce((s, it) => s + (Number(it.price)||0)*(Number(it.quantity)||0), 0);
+
+        const content = `
+          <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all max-w-4xl w-full">
+            <div class="px-6 py-4 border-b border-gray-200">
+              <h3 class="text-lg font-medium text-gray-900">Editar Pedido #${order.id}</h3>
+            </div>
+            <div class="px-6 py-4 space-y-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Cliente</label>
+                  <input id="editCustomer" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2" value="${order.customer || order.customerName || ''}">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
+                  <input id="editDate" type="date" class="w-full border border-gray-300 rounded-md px-3 py-2" value="${formattedDate}">
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                <select id="editStatus" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                  <option value="pending" ${order.status==='pending'?'selected':''}>Pendiente</option>
+                  <option value="completed" ${order.status==='completed'?'selected':''}>Completado</option>
+                  <option value="cancelled" ${order.status==='cancelled'?'selected':''}>Cancelado</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Notas</label>
+                <textarea id="editNotes" rows="3" class="w-full border border-gray-300 rounded-md px-3 py-2">${order.notes || ''}</textarea>
+              </div>
+              <div class="border border-gray-200 rounded-lg overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Producto</th>
+                      <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Precio</th>
+                      <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Cantidad</th>
+                      <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                      <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="editItemsBody" class="bg-white divide-y divide-gray-200">
+                    ${itemsRows || '<tr><td colspan="5" class="px-4 py-3 text-center text-gray-500">Sin productos</td></tr>'}
+                  </tbody>
+                  <tfoot class="bg-gray-50">
+                    <tr>
+                      <td colspan="3" class="px-4 py-3 text-right text-sm font-medium text-gray-900">Total:</td>
+                      <td id="editTotal" class="px-4 py-3 text-sm font-medium text-gray-900">ARS ${total.toFixed(2)}</td>
+                      <td class="px-4 py-3 text-right">
+                        <button class="text-sm text-blue-600 hover:text-blue-800" onclick="openProductSelector()">Agregar Productos</button>
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 text-right">
+              <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50">Cancelar</button>
+              <button type="button" onclick="saveEditedOrder('${order.id}')" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#181710] hover:bg-[#2a2922]">Guardar Cambios</button>
+            </div>
+          </div>
+        `;
+
+        // Keep a copy in a temp location for editing session
+        window.__editingOrder = JSON.parse(JSON.stringify(order));
+        showModal(content);
+      }
+
+      function updateEditQty(orderId, index, delta) {
+        if (!window.__editingOrder) return;
+        const items = window.__editingOrder.items || [];
+        if (!items[index]) return;
+        const newQty = Math.max(0, (Number(items[index].quantity)||0) + delta);
+        items[index].quantity = newQty;
+        const unit = Number(items[index].price)||0;
+        const subtotal = unit * newQty;
+        const qtyEl = document.getElementById(`editQty_${index}`);
+        const subEl = document.getElementById(`editSubtotal_${index}`);
+        if (qtyEl) qtyEl.textContent = newQty;
+        if (subEl) subEl.textContent = `ARS ${subtotal.toFixed(2)}`;
+        // update total
+        const total = items.reduce((s, it) => s + (Number(it.price)||0)*(Number(it.quantity)||0), 0);
+        const totalEl = document.getElementById('editTotal');
+        if (totalEl) totalEl.textContent = `ARS ${total.toFixed(2)}`;
+      }
+
+      function removeEditItem(orderId, index) {
+        if (!window.__editingOrder) return;
+        const items = window.__editingOrder.items || [];
+        items.splice(index, 1);
+        const row = document.querySelector(`#editItemsBody tr[data-index="${index}"]`);
+        if (row && row.parentNode) row.parentNode.removeChild(row);
+        // reindex data-index ids for consistency (lightweight)
+        [...document.querySelectorAll('#editItemsBody tr')].forEach((tr, i) => tr.setAttribute('data-index', i));
+        const total = (window.__editingOrder.items||[]).reduce((s, it) => s + (Number(it.price)||0)*(Number(it.quantity)||0), 0);
+        const totalEl = document.getElementById('editTotal');
+        if (totalEl) totalEl.textContent = `ARS ${total.toFixed(2)}`;
+      }
+
+      function saveEditedOrder(orderId) {
+        const orders = JSON.parse(localStorage.getItem('orders')) || [];
+        const idx = orders.findIndex(o => o.id === orderId);
+        if (idx === -1) return;
+        const cust = (document.getElementById('editCustomer')?.value || '').trim();
+        const dateVal = document.getElementById('editDate')?.value;
+        const status = document.getElementById('editStatus')?.value || orders[idx].status;
+        const notes = document.getElementById('editNotes')?.value || '';
+        const edited = window.__editingOrder ? JSON.parse(JSON.stringify(window.__editingOrder)) : orders[idx];
+        edited.customer = cust;
+        edited.customerName = cust || edited.customerName;
+        if (dateVal) {
+          // Keep both for compatibility
+          edited.createdAt = new Date(dateVal).toISOString();
+          edited.date = edited.createdAt;
+        }
+        edited.status = status;
+        edited.notes = notes;
+        edited.total = (edited.items || []).reduce((s, it) => s + (Number(it.price)||0)*(Number(it.quantity)||0), 0);
+        orders[idx] = edited;
+        localStorage.setItem('orders', JSON.stringify(orders));
+        // Sync finance movement for this order
+        try {
+          if ((edited.status || '').toLowerCase().includes('complet') || (edited.status || '').toLowerCase().includes('confirm')) {
+            upsertFinanceMovementForOrder(edited);
+          } else {
+            removeFinanceMovementForOrder(edited.id);
+          }
+        } catch (e) { /* noop */ }
+        closeModal();
+        showNotification('Pedido actualizado correctamente', 'success');
+        loadOrders();
       }
       
       // Delete order with confirmation
       function deleteOrder(orderId) {
+        try { console.debug('deleteOrder clicked for', orderId); } catch(e) {}
         if (!confirm('¿Está seguro de que desea eliminar este pedido? Esta acción no se puede deshacer.')) {
           return;
         }
         
         const orders = JSON.parse(localStorage.getItem('orders')) || [];
+        const before = orders.length;
         const updatedOrders = orders.filter(order => order.id !== orderId);
         
         localStorage.setItem('orders', JSON.stringify(updatedOrders));
+        if (updatedOrders.length === before) {
+          showNotification('No se pudo eliminar el pedido (ID no encontrado)', 'error');
+          return;
+        }
+        // Remove finance movement linked to this order
+        try { removeFinanceMovementForOrder(orderId); } catch(e) {}
         loadOrders();
         
         // Show success message
         showNotification('Pedido eliminado correctamente', 'success');
       }
+      // Ensure global access for inline onclick
+      try { window.deleteOrder = deleteOrder; } catch(e) {}
       
       // Mark order as completed
       function markAsCompleted(orderId) {
@@ -716,10 +1164,17 @@
         if (orderIndex !== -1) {
           orders[orderIndex].status = 'completed';
           localStorage.setItem('orders', JSON.stringify(orders));
+          // Ensure finance movement exists for this completed order
+          try { upsertFinanceMovementForOrder(orders[orderIndex]); } catch(e) {}
           loadOrders();
           closeModal();
           showNotification('Pedido marcado como completado', 'success');
         }
+      }
+
+      // Small helper for other modules
+      function refreshOrdersTable() {
+        loadOrders();
       }
       
       // Show modal with custom content
@@ -826,6 +1281,8 @@
         loadCurrentOrder();
         setupOrderEventListeners();
         updateOrderDisplay();
+        // Backfill finance movements from existing orders on load
+        try { backfillFinanceFromOrders(); } catch(e) {}
       });
 
       // Load current order from localStorage
@@ -866,12 +1323,23 @@
           const orderIdEl = document.getElementById('currentOrderId');
           const orderDateEl = document.getElementById('currentOrderDate');
           const orderStatusEl = document.getElementById('currentOrderStatus');
-          const orderCustomerEl = document.getElementById('currentOrderCustomer');
+          const orderCustomerEl = document.getElementById('currentOrderCustomerSelect');
           
           if (orderIdEl) orderIdEl.textContent = currentOrder.id;
           if (orderDateEl) orderDateEl.textContent = new Date(currentOrder.createdAt).toLocaleString('es-ES');
           if (orderStatusEl) orderStatusEl.textContent = currentOrder.status;
-          if (orderCustomerEl) orderCustomerEl.value = currentOrder.customer || '';
+          if (orderCustomerEl) {
+            // Try to set by matching option text to stored name
+            const name = currentOrder.customer || '';
+            let matched = false;
+            [...orderCustomerEl.options].forEach(opt => {
+              if (opt.dataset.clientName === name || opt.textContent === name || opt.value === name) {
+                orderCustomerEl.value = opt.value;
+                matched = true;
+              }
+            });
+            if (!matched) orderCustomerEl.value = '';
+          }
         }
       }
 
@@ -915,10 +1383,49 @@
 
       // Update order total
       function updateOrderTotal() {
-        const totalElement = document.getElementById('orderTotal');
-        if (totalElement) {
-          totalElement.textContent = `ARS ${currentOrder.total.toFixed(2)}`;
-        }
+        const headerTotalEl = document.getElementById('orderTotal');
+        if (headerTotalEl) headerTotalEl.textContent = `ARS ${currentOrder.total.toFixed(2)}`;
+        const modalTotalEl = document.getElementById('orderModalTotal');
+        if (modalTotalEl) modalTotalEl.textContent = `ARS ${currentOrder.total.toFixed(2)}`;
+        renderReceiptPreview();
+      }
+
+      // Render live receipt preview in creation modal
+      function renderReceiptPreview() {
+        const container = document.getElementById('receiptPreview');
+        if (!container) return;
+        const clientSel = document.getElementById('orderClientSelect');
+        const clientName = clientSel && clientSel.selectedIndex > 0 ? (clientSel.options[clientSel.selectedIndex].dataset.clientName || clientSel.options[clientSel.selectedIndex].textContent) : (currentOrder.customer || 'Cliente');
+        const dateEl = document.getElementById('orderDate');
+        const dateText = dateEl && dateEl.value ? new Date(dateEl.value).toLocaleString('es-AR') : new Date().toLocaleString('es-AR');
+        const formatARS = (n) => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(Number(n)||0);
+        const items = (currentOrder.items || []);
+        const itemsHtml = items.length ? items.map(it => {
+          const name = it.productName || it.name || 'Producto';
+          const qty = Number(it.quantity)||0;
+          const price = Number(it.price)||0;
+          const subtotal = qty * price;
+          return `
+            <div class="flex text-sm justify-between py-1">
+              <div class="truncate mr-2">${qty} x ${name}</div>
+              <div class="text-gray-700">${formatARS(subtotal)}</div>
+            </div>`;
+        }).join('') : '<p class="text-sm text-gray-500">Sin productos</p>';
+        const total = items.reduce((s, it) => s + (Number(it.price)||0)*(Number(it.quantity)||0), 0);
+        container.innerHTML = `
+          <div class="text-center mb-2">
+            <h5 class="font-semibold text-gray-900">Previsualización de Recibo</h5>
+            <p class="text-xs text-gray-500">${dateText}</p>
+          </div>
+          <div class="text-sm mb-1"><span class="font-medium">Cliente:</span> ${clientName}</div>
+          <div class="border-t border-gray-200 my-2"></div>
+          <div>${itemsHtml}</div>
+          <div class="border-t border-gray-200 my-2"></div>
+          <div class="flex justify-between font-semibold text-gray-900">
+            <span>Total</span>
+            <span>${formatARS(total)}</span>
+          </div>
+        `;
       }
 
       // Update item quantity
@@ -982,10 +1489,15 @@
           return;
         }
 
-        if (!currentOrder.customer.trim()) {
-          alert('Por favor ingrese el nombre del cliente');
+        // Read selected client from select
+        const sel = document.getElementById('currentOrderCustomerSelect');
+        const selectedName = sel && sel.selectedIndex > 0 ? (sel.options[sel.selectedIndex].dataset.clientName || sel.options[sel.selectedIndex].textContent) : '';
+        if (!selectedName) {
+          alert('Por favor seleccione un cliente');
+          if (sel) sel.focus();
           return;
         }
+        currentOrder.customer = selectedName;
 
         // Get existing orders
         const existingOrders = JSON.parse(localStorage.getItem('savedOrders') || '[]');
@@ -999,6 +1511,8 @@
         
         existingOrders.push(orderToSave);
         localStorage.setItem('savedOrders', JSON.stringify(existingOrders));
+        // Create finance movement for confirmed order
+        try { upsertFinanceMovementForOrder(orderToSave); } catch(e) {}
         
         // Clear current order
         currentOrder = {
@@ -1020,8 +1534,10 @@
       }
 
       // Update customer name
-      function updateCustomerName(customerName) {
-        currentOrder.customer = customerName;
+      function onSelectCurrentCustomer(value) {
+        const sel = document.getElementById('currentOrderCustomerSelect');
+        const name = sel && sel.selectedIndex > 0 ? (sel.options[sel.selectedIndex].dataset.clientName || sel.options[sel.selectedIndex].textContent) : '';
+        currentOrder.customer = name;
         localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
       }
 
@@ -1572,7 +2088,12 @@
         const orders = JSON.parse(localStorage.getItem('orders') || '[]');
         
         // Add new order
-        orders.push({...currentOrder});
+        const nowIso = new Date().toISOString();
+        const toSave = { ...currentOrder };
+        toSave.createdAt = nowIso;
+        toSave.date = nowIso;
+        toSave.customerName = selectedName;
+        orders.push(toSave);
         
         // Save to localStorage
         localStorage.setItem('orders', JSON.stringify(orders));
@@ -1610,7 +2131,8 @@
         localStorage.removeItem('currentOrder');
         
         // Clear customer input
-        document.getElementById('currentOrderCustomer').value = '';
+        const sel = document.getElementById('currentOrderCustomerSelect');
+        if (sel) sel.value = '';
         
         // Update displays
         updateOrderDisplay();
@@ -1779,19 +2301,40 @@ ${itemsList}`);
         // Update order items table
         updateOrderItemsTable();
       }
-      
+       
+      // Open Create Order modal and prefill fields
+      function createNewOrder() {
+        const modal = document.getElementById('orderModal');
+        if (!modal) return;
+        // Show modal
+        modal.classList.remove('hidden');
+        // Populate clients
+        populateClientSelect(document.getElementById('orderClientSelect'));
+        // Set current datetime
+        const now = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        const local = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+        const dateEl = document.getElementById('orderDate');
+        if (dateEl) dateEl.value = local;
+        const sel = document.getElementById('orderClientSelect');
+        if (sel) sel.onchange = renderReceiptPreview;
+        renderReceiptPreview();
+      }
+
+      function closeOrderModal() {
+        const modal = document.getElementById('orderModal');
+        if (modal) modal.classList.add('hidden');
+      }
+
       function saveOrder() {
         // Validate required fields
-        const client = document.getElementById('orderClient').value.trim();
-        const date = document.getElementById('orderDate').value;
+        const clientSel = document.getElementById('orderClientSelect');
+        const client = clientSel && clientSel.selectedIndex > 0 ? (clientSel.options[clientSel.selectedIndex].dataset.clientName || clientSel.options[clientSel.selectedIndex].textContent) : '';
+        const dateInput = document.getElementById('orderDate').value; // already prefilled and readonly
         
         if (!client) {
-          alert('Por favor ingrese el nombre del cliente');
-          return;
-        }
-        
-        if (!date) {
-          alert('Por favor seleccione la fecha de la orden');
+          alert('Por favor seleccione un cliente');
+          if (clientSel) clientSel.focus();
           return;
         }
         
@@ -1801,10 +2344,14 @@ ${itemsList}`);
         }
         
         // Create order object
+        const nowIso = new Date().toISOString();
         const order = {
           id: 'ORD-' + new Date().getFullYear() + '-' + (Math.floor(Math.random() * 1000) + 1000),
-          client: client,
-          date: date,
+          client: client, // backward compatibility
+          customer: client,
+          customerName: client,
+          createdAt: nowIso,
+          date: nowIso,
           notes: document.getElementById('orderNotes').value.trim(),
           items: currentOrder.items,
           total: currentOrder.total,
@@ -1824,10 +2371,14 @@ ${itemsList}`);
         closeOrderModal();
         
         // Show success message
-        alert('Orden guardada exitosamente');
+        showNotification('Orden guardada exitosamente', 'success');
         
-        // Refresh orders list (in a real app, this would reload the page or update the table)
-        location.reload();
+        // Refresh orders list without reload
+        if (typeof refreshOrdersTable === 'function') {
+          refreshOrdersTable();
+        } else if (typeof loadOrders === 'function') {
+          loadOrders();
+        }
       }
       
       // Add event listeners

@@ -99,7 +99,7 @@
             </div>
             <h2 class="text-[#181710] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Cost vs. Sales</h2>
             <div class="flex flex-wrap gap-4 px-4 py-6">
-              <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#e7e5da] p-6">
+              <div id="cardTotalCostsBox" class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#e7e5da] p-6 cursor-pointer">
                 <p class="text-[#181710] text-base font-medium leading-normal">Total Costs</p>
                 <p class="text-[#181710] tracking-light text-[32px] font-bold leading-tight truncate">$12,500</p>
                 <div class="flex gap-1">
@@ -121,7 +121,7 @@
                   <p class="text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">Jun</p>
                 </div>
               </div>
-              <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#e7e5da] p-6">
+              <div id="cardSalesTrendsBox" class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#e7e5da] p-6 cursor-pointer">
                 <p class="text-[#181710] text-base font-medium leading-normal">Sales Trends</p>
                 <p class="text-[#181710] tracking-light text-[32px] font-bold leading-tight truncate">$25,000</p>
                 <div class="flex gap-1">
@@ -147,15 +147,36 @@
                       </linearGradient>
                     </defs>
                   </svg>
-                  <div class="flex justify-around">
-                    <p class="text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">Jan</p>
-                    <p class="text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">Feb</p>
-                    <p class="text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">Mar</p>
-                    <p class="text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">Apr</p>
-                    <p class="text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">May</p>
-                    <p class="text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">Jun</p>
+                  <div id="salesMonthLabels" class="flex justify-around select-none">
+                    <p class="sales-month text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">Jan</p>
+                    <p class="sales-month text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">Feb</p>
+                    <p class="sales-month text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">Mar</p>
+                    <p class="sales-month text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">Apr</p>
+                    <p class="sales-month text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">May</p>
+                    <p class="sales-month text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">Jun</p>
                   </div>
                 </div>
+              </div>
+            </div>
+            <!-- Detalle inline para los gráficos superiores -->
+            <div id="topChartsDetail" class="mx-4 mb-4 hidden rounded-lg border border-[#e7e5da] bg-white p-4">
+              <div class="flex items-center justify-between mb-2">
+                <p id="topChartsDetailTitle" class="text-[#181710] font-semibold">Detalle</p>
+                <button id="btnCloseTopDetail" class="text-sm text-[#8d865e] hover:text-[#181710]">Cerrar</button>
+              </div>
+              <div class="overflow-auto">
+                <table class="min-w-full text-sm">
+                  <thead class="text-[#8d865e]">
+                    <tr>
+                      <th class="text-left py-1 pr-2">Fecha</th>
+                      <th class="text-left py-1 pr-2">Descripción</th>
+                      <th class="text-left py-1 pr-2">Categoría</th>
+                      <th class="text-left py-1 pr-2">Tipo</th>
+                      <th class="text-right py-1 pl-2">Monto</th>
+                    </tr>
+                  </thead>
+                  <tbody id="topChartsDetailBody" class="text-[#181710]"></tbody>
+                </table>
               </div>
             </div>
             <h2 class="text-[#181710] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Margin Analysis</h2>
@@ -197,9 +218,641 @@
                 <span class="truncate">Export to Excel/CSV</span>
               </button>
             </div>
+
+            <!-- Finanzas - Módulo Funcional -->
+            <h2 class="text-[#181710] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-6">Finanzas</h2>
+            <div class="px-4 pb-6 flex flex-col gap-4">
+              <!-- Resumen -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="rounded-lg p-4 border border-[#e7e5da] bg-white shadow-sm">
+                  <p class="text-sm text-[#8d865e]">Total Ingresos</p>
+                  <p id="cardIngresos" class="text-2xl font-bold text-green-700 mt-1">$0,00</p>
+                </div>
+                <div class="rounded-lg p-4 border border-[#e7e5da] bg-white shadow-sm">
+                  <p class="text-sm text-[#8d865e]">Total Egresos</p>
+                  <p id="cardEgresos" class="text-2xl font-bold text-red-700 mt-1">$0,00</p>
+                </div>
+                <div class="rounded-lg p-4 border border-[#e7e5da] bg-white shadow-sm">
+                  <p class="text-sm text-[#8d865e]">Balance Actual</p>
+                  <p id="cardBalance" class="text-2xl font-bold mt-1">$0,00</p>
+                </div>
+              </div>
+
+              <!-- Barra de acciones -->
+              <div class="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+                <div class="flex flex-wrap gap-2 items-center">
+                  <input id="filterDate" type="date" class="h-10 px-3 border border-[#e7e5da] rounded-lg bg-white" />
+                  <select id="filterCategory" class="h-10 px-3 border border-[#e7e5da] rounded-lg bg-white">
+                    <option value="">Todas las categorías</option>
+                    <option>Ventas</option>
+                    <option>Servicios</option>
+                    <option>Gastos operativos</option>
+                    <option>Sueldos</option>
+                  </select>
+                  <select id="filterType" class="h-10 px-3 border border-[#e7e5da] rounded-lg bg-white">
+                    <option value="">Todos</option>
+                    <option value="ingreso">Ingreso</option>
+                    <option value="egreso">Egreso</option>
+                  </select>
+                  <input id="searchDesc" class="h-10 px-3 border border-[#e7e5da] rounded-lg bg-white" placeholder="Buscar descripción..." />
+                  <input id="excelInput" type="file" accept=".xlsx,.xls,.csv" class="hidden" />
+                </div>
+                <div class="flex gap-2">
+                  <button id="btnToggleInsights" class="h-10 px-4 rounded-lg bg-[#f5f4f0] hover:bg-[#ebe9e2] transition text-[#181710] font-semibold">Ver insights</button>
+                  <button id="btnImportExcel" class="h-10 px-4 rounded-lg bg-[#f5f4f0] hover:bg-[#ebe9e2] transition text-[#181710] font-semibold">Importar Excel</button>
+                  <button id="btnDownloadTemplate" class="h-10 px-4 rounded-lg bg-[#f5f4f0] hover:bg-[#ebe9e2] transition text-[#181710] font-semibold">Descargar plantilla</button>
+                  <button id="btnAddMov" class="h-10 px-4 rounded-lg bg-[#ffe342] hover:bg-[#f7d81f] transition text-[#181710] font-semibold">Agregar Movimiento</button>
+                  <button id="btnExportCSV" class="h-10 px-4 rounded-lg bg-[#f5f4f0] hover:bg-[#ebe9e2] transition text-[#181710] font-semibold">Exportar CSV</button>
+                  <button id="btnExportPDF" class="h-10 px-4 rounded-lg bg-[#f5f4f0] hover:bg-[#ebe9e2] transition text-[#181710] font-semibold">Exportar PDF</button>
+                </div>
+              </div>
+
+              <!-- Panel de Insights (expandible) -->
+              <div id="insightsPanel" class="rounded-lg border border-[#e7e5da] bg-white p-4 hidden">
+                <div class="flex items-center justify-between mb-3">
+                  <p class="text-[#181710] font-semibold">Desglose gráfico</p>
+                  <button id="btnCloseInsights" class="text-sm text-[#8d865e] hover:text-[#181710]">Ocultar</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p class="text-sm text-[#8d865e] mb-2">Distribución por categoría</p>
+                    <canvas id="categoryChart" class="cursor-pointer" height="140"></canvas>
+                  </div>
+                  <div>
+                    <p class="text-sm text-[#8d865e] mb-2">Tendencia (últimos 90 días)</p>
+                    <canvas id="trendChart" class="cursor-pointer" height="140"></canvas>
+                  </div>
+                </div>
+                <!-- Panel de detalle por selección -->
+                <div id="insightsDetail" class="mt-4 rounded-lg border border-[#e7e5da] bg-[#faf9f5] p-3 hidden">
+                  <div class="flex items-center justify-between mb-2">
+                    <p id="insightsDetailTitle" class="text-[#181710] font-semibold">Detalle</p>
+                    <button id="btnCloseInsightDetail" class="text-sm text-[#8d865e] hover:text-[#181710]">Cerrar</button>
+                  </div>
+                  <div class="overflow-auto">
+                    <table class="min-w-full text-sm">
+                      <thead class="text-[#8d865e]">
+                        <tr>
+                          <th class="text-left py-1 pr-2">Fecha</th>
+                          <th class="text-left py-1 pr-2">Descripción</th>
+                          <th class="text-left py-1 pr-2">Categoría</th>
+                          <th class="text-left py-1 pr-2">Tipo</th>
+                          <th class="text-right py-1 pl-2">Monto</th>
+                        </tr>
+                      </thead>
+                      <tbody id="insightsDetailBody" class="text-[#181710]"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Gráfico mensual -->
+              <div class="rounded-lg border border-[#e7e5da] bg-white p-4">
+                <p class="text-[#181710] font-semibold mb-2">Ingresos vs Egresos (Mensual)</p>
+                <canvas id="financeChart" height="120"></canvas>
+              </div>
+
+              <!-- Tabla de movimientos -->
+              <div class="rounded-lg border border-[#e7e5da] bg-white overflow-hidden">
+                <table class="min-w-full divide-y divide-[#e7e5da]">
+                  <thead class="bg-[#f5f4f0]">
+                    <tr>
+                      <th class="px-4 py-3 text-left text-xs font-semibold text-[#8d865e]">Fecha</th>
+                      <th class="px-4 py-3 text-left text-xs font-semibold text-[#8d865e]">Descripción</th>
+                      <th class="px-4 py-3 text-left text-xs font-semibold text-[#8d865e]">Categoría</th>
+                      <th class="px-4 py-3 text-left text-xs font-semibold text-[#8d865e]">Tipo</th>
+                      <th class="px-4 py-3 text-right text-xs font-semibold text-[#8d865e]">Monto</th>
+                      <th class="px-4 py-3 text-right text-xs font-semibold text-[#8d865e]">Opciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="movementsTbody" class="divide-y divide-[#f0eee6]"></tbody>
+                </table>
+                <!-- Paginación -->
+                <div class="flex items-center justify-between px-4 py-3">
+                  <p id="paginationInfo" class="text-sm text-[#8d865e]"></p>
+                  <div class="flex gap-2">
+                    <button id="prevPage" class="h-9 px-3 rounded-lg bg-[#f5f4f0] hover:bg-[#ebe9e2] disabled:opacity-50">Anterior</button>
+                    <button id="nextPage" class="h-9 px-3 rounded-lg bg-[#f5f4f0] hover:bg-[#ebe9e2] disabled:opacity-50">Siguiente</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal Agregar/Editar -->
+            <div id="movementModal" class="fixed inset-0 bg-black/30 hidden items-center justify-center z-50">
+              <div class="bg-white w-full max-w-md rounded-lg shadow-lg">
+                <div class="px-6 py-4 border-b border-[#e7e5da] flex items-center justify-between">
+                  <h3 id="modalTitle" class="text-lg font-semibold">Agregar Movimiento</h3>
+                  <button id="modalClose" class="text-[#8d865e] hover:text-[#181710]">✕</button>
+                </div>
+                <div class="p-6 flex flex-col gap-3">
+                  <input id="movDate" type="date" class="h-10 px-3 border border-[#e7e5da] rounded-lg bg-white" />
+                  <input id="movDesc" class="h-10 px-3 border border-[#e7e5da] rounded-lg bg-white" placeholder="Descripción" />
+                  <select id="movCat" class="h-10 px-3 border border-[#e7e5da] rounded-lg bg-white">
+                    <option>Ventas</option>
+                    <option>Servicios</option>
+                    <option>Gastos operativos</option>
+                    <option>Sueldos</option>
+                  </select>
+                  <select id="movType" class="h-10 px-3 border border-[#e7e5da] rounded-lg bg-white">
+                    <option value="ingreso">Ingreso</option>
+                    <option value="egreso">Egreso</option>
+                  </select>
+                  <input id="movAmount" class="h-10 px-3 border border-[#e7e5da] rounded-lg bg-white" placeholder="Monto" inputmode="decimal" />
+                  <p id="modalError" class="text-sm text-red-600 hidden"></p>
+                </div>
+                <div class="px-6 py-4 border-t border-[#e7e5da] flex justify-end gap-2">
+                  <button id="modalCancel" class="h-10 px-4 rounded-lg bg-[#f5f4f0] hover:bg-[#ebe9e2]">Cancelar</button>
+                  <button id="modalSave" class="h-10 px-4 rounded-lg bg-[#078814] hover:bg-green-700 text-white">Guardar</button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script>
+      // Simple money formatter ARS
+      const fmtARS = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' });
+
+      // Data layer
+      const LS_KEY = 'finance_movements';
+      let movements = [];
+      let editingId = null;
+      const PAGE_SIZE = 10;
+      let page = 1;
+
+      // Filters
+      const filters = { date: '', category: '', type: '', q: '' };
+
+      // Chart
+      let chart;
+      let categoryChart;
+      let trendChart;
+
+      document.addEventListener('DOMContentLoaded', () => {
+        // Load stored data
+        try { movements = JSON.parse(localStorage.getItem(LS_KEY)) || []; } catch(e) { movements = []; }
+
+        // Wire filters
+        const $ = (id)=>document.getElementById(id);
+        ['filterDate','filterCategory','filterType','searchDesc'].forEach(id => {
+          const el = $(id);
+          if (!el) return;
+          el.addEventListener('input', () => {
+            filters.date = $('filterDate').value;
+            filters.category = $('filterCategory').value;
+            filters.type = $('filterType').value;
+            filters.q = $('searchDesc').value.toLowerCase().trim();
+            page = 1;
+            renderAll();
+          });
+          el.addEventListener('change', () => {
+            filters.date = $('filterDate').value;
+            filters.category = $('filterCategory').value;
+            filters.type = $('filterType').value;
+            filters.q = $('searchDesc').value.toLowerCase().trim();
+            page = 1;
+            renderAll();
+          });
+        });
+
+        // Buttons
+        $('btnAddMov').addEventListener('click', () => openModal());
+        $('btnExportCSV').addEventListener('click', exportCSV);
+        $('btnExportPDF').addEventListener('click', exportPDF);
+        $('btnImportExcel').addEventListener('click', ()=> $('excelInput').click());
+        $('excelInput').addEventListener('change', handleExcelImport);
+        $('btnToggleInsights').addEventListener('click', toggleInsights);
+        $('btnCloseInsights').addEventListener('click', toggleInsights);
+        const btnCloseDetail = document.getElementById('btnCloseInsightDetail');
+        if (btnCloseDetail) btnCloseDetail.addEventListener('click', ()=>{
+          const d = document.getElementById('insightsDetail');
+          if (d) d.classList.add('hidden');
+        });
+        // Top charts: box clicks
+        const costsBox = document.getElementById('cardTotalCostsBox');
+        const salesBox = document.getElementById('cardSalesTrendsBox');
+        const closeTop = document.getElementById('btnCloseTopDetail');
+        if (closeTop) closeTop.addEventListener('click', ()=> document.getElementById('topChartsDetail').classList.add('hidden'));
+        if (costsBox) costsBox.addEventListener('click', ()=>{
+          const now = new Date(); const ym = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+          const rows = movements.filter(m=> (m.type==='egreso') && (m.date||'').startsWith(ym));
+          showTopChartsDetail('Costos de este mes', rows);
+        });
+        if (salesBox) salesBox.addEventListener('click', ()=>{
+          const now = new Date(); const ym = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+          const rows = movements.filter(m=> (m.type==='ingreso') && (m.date||'').startsWith(ym));
+          showTopChartsDetail('Ventas de este mes', rows);
+        });
+        // Month label clicks under sales trends mock
+        const monthMap = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const lblWrap = document.getElementById('salesMonthLabels');
+        if (lblWrap){
+          lblWrap.querySelectorAll('.sales-month').forEach((el)=>{
+            el.classList.add('cursor-pointer');
+            el.addEventListener('click', ()=>{
+              const idx = monthMap.indexOf(el.textContent.trim());
+              if (idx<0) return;
+              const year = new Date().getFullYear();
+              const ym = `${year}-${String(idx+1).padStart(2,'0')}`;
+              const rows = movements.filter(m=> (m.type==='ingreso') && (m.date||'').startsWith(ym));
+              showTopChartsDetail(`Ventas - ${el.textContent.trim()} ${year}`, rows);
+            });
+          });
+        }
+        $('btnDownloadTemplate').addEventListener('click', downloadExcelTemplate);
+        $('prevPage').addEventListener('click', ()=> { if (page>1){ page--; renderTable(); }});
+        $('nextPage').addEventListener('click', ()=> { page++; renderTable(); });
+
+        // Modal wires
+        $('modalClose').addEventListener('click', closeModal);
+        $('modalCancel').addEventListener('click', closeModal);
+        $('modalSave').addEventListener('click', saveMovement);
+
+        // Init chart
+        initChart();
+
+        // First render
+        renderAll();
+      });
+
+      function persist(){ localStorage.setItem(LS_KEY, JSON.stringify(movements)); }
+
+      function filteredMovements(){
+        return movements
+          .slice()
+          .sort((a,b)=> new Date(b.date) - new Date(a.date))
+          .filter(m => !filters.date || (m.date && m.date.substring(0,10) === filters.date))
+          .filter(m => !filters.category || m.category === filters.category)
+          .filter(m => !filters.type || m.type === filters.type)
+          .filter(m => !filters.q || (m.description||'').toLowerCase().includes(filters.q));
+      }
+
+      function showTopChartsDetail(title, rows){
+        const panel = document.getElementById('topChartsDetail');
+        const titleEl = document.getElementById('topChartsDetailTitle');
+        const body = document.getElementById('topChartsDetailBody');
+        if (!panel || !titleEl || !body) return;
+        titleEl.textContent = title;
+        const fmtDate = (s)=>{ const d=new Date(s); return isNaN(d)? (s||'') : d.toISOString().slice(0,10); };
+        body.innerHTML = rows.slice().sort((a,b)=> new Date(b.date||0)-new Date(a.date||0)).map(m=>`
+          <tr>
+            <td class="py-1 pr-2">${fmtDate(m.date)}</td>
+            <td class="py-1 pr-2">${escapeHtml(m.description||'')}</td>
+            <td class="py-1 pr-2">${escapeHtml(m.category||'')}</td>
+            <td class="py-1 pr-2">${m.type==='egreso'?'Egreso':'Ingreso'}</td>
+            <td class="py-1 pl-2 text-right">${fmtARS.format(Number(m.amount||0))}</td>
+          </tr>
+        `).join('');
+        panel.classList.remove('hidden');
+      }
+
+      // ===== Descargar plantilla Excel =====
+      function downloadExcelTemplate(){
+        try {
+          const wb = XLSX.utils.book_new();
+          const headers = ['Fecha','Descripción','Categoría','Tipo','Monto'];
+          const ejemplo1 = [new Date().toISOString().slice(0,10), 'Venta ejemplo', 'Ventas', 'Ingreso', 15000];
+          const ejemplo2 = [new Date().toISOString().slice(0,10), 'Compra de insumos', 'Gastos', 'Egreso', 5000];
+          const ws = XLSX.utils.aoa_to_sheet([
+            headers,
+            ejemplo1,
+            ejemplo2
+          ]);
+          // Ajuste simple de ancho de columnas
+          ws['!cols'] = [
+            { wch: 12 }, { wch: 30 }, { wch: 18 }, { wch: 10 }, { wch: 12 }
+          ];
+          XLSX.utils.book_append_sheet(wb, ws, 'Plantilla Movimientos');
+          XLSX.writeFile(wb, 'plantilla_movimientos_finanzas.xlsx');
+        } catch (e){
+          console.error(e);
+          alert('No se pudo generar la plantilla.');
+        }
+      }
+
+      function renderAll(){
+        renderCards();
+        renderTable();
+        updateChart();
+        renderInsightsCharts();
+      }
+
+      function renderCards(){
+        const totalIn = movements.filter(m=>m.type==='ingreso').reduce((s,m)=>s+Number(m.amount||0),0);
+        const totalOut = movements.filter(m=>m.type==='egreso').reduce((s,m)=>s+Number(m.amount||0),0);
+        const bal = totalIn - totalOut;
+        document.getElementById('cardIngresos').textContent = fmtARS.format(totalIn);
+        document.getElementById('cardEgresos').textContent = fmtARS.format(totalOut);
+        const elBal = document.getElementById('cardBalance');
+        elBal.textContent = fmtARS.format(bal);
+        elBal.classList.toggle('text-green-700', bal>=0);
+        elBal.classList.toggle('text-red-700', bal<0);
+      }
+
+      function renderTable(){
+        const tbody = document.getElementById('movementsTbody');
+        tbody.innerHTML = '';
+        const rows = filteredMovements();
+        // Pagination bounds
+        const total = rows.length;
+        const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+        if (page > totalPages) page = totalPages;
+        const start = (page-1)*PAGE_SIZE;
+        const pageItems = rows.slice(start, start+PAGE_SIZE);
+
+        pageItems.forEach(m => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-gray-50';
+          const date = new Date(m.date);
+          const dateStr = isNaN(date) ? (m.date||'') : date.toLocaleDateString('es-AR', {year:'numeric',month:'short',day:'numeric'});
+          tr.innerHTML = `
+            <td class="px-4 py-3 text-sm">${dateStr}</td>
+            <td class="px-4 py-3 text-sm">${escapeHtml(m.description||'')}</td>
+            <td class="px-4 py-3 text-sm">${escapeHtml(m.category||'')}</td>
+            <td class="px-4 py-3 text-sm">${m.type==='ingreso'?'<span class="text-green-700 font-semibold">Ingreso</span>':'<span class="text-red-700 font-semibold">Egreso</span>'}</td>
+            <td class="px-4 py-3 text-sm text-right">${fmtARS.format(Number(m.amount||0))}</td>
+            <td class="px-4 py-3 text-sm text-right">
+              <button class="text-blue-600 hover:text-blue-800 mr-2" title="Editar" onclick="editMovement('${m.id}')">Editar</button>
+              <button class="text-red-600 hover:text-red-800" title="Eliminar" onclick="deleteMovement('${m.id}')">Eliminar</button>
+            </td>`;
+          tbody.appendChild(tr);
+        });
+
+        // Pagination controls
+        document.getElementById('paginationInfo').textContent = `${total?start+1:0}-${Math.min(start+PAGE_SIZE,total)} de ${total}`;
+        document.getElementById('prevPage').disabled = page<=1;
+        document.getElementById('nextPage').disabled = page>=totalPages;
+      }
+
+      function openModal(data){
+        editingId = data ? data.id : null;
+        document.getElementById('modalTitle').textContent = editingId ? 'Editar Movimiento' : 'Agregar Movimiento';
+        document.getElementById('movDate').value = data?.date ? data.date.substring(0,10) : new Date().toISOString().substring(0,10);
+        document.getElementById('movDesc').value = data?.description || '';
+        document.getElementById('movCat').value = data?.category || 'Ventas';
+        document.getElementById('movType').value = data?.type || 'ingreso';
+        document.getElementById('movAmount').value = data?.amount || '';
+        document.getElementById('modalError').classList.add('hidden');
+        document.getElementById('movementModal').classList.remove('hidden');
+        document.getElementById('movementModal').classList.add('flex');
+      }
+
+      function closeModal(){
+        document.getElementById('movementModal').classList.add('hidden');
+        document.getElementById('movementModal').classList.remove('flex');
+      }
+
+      function saveMovement(){
+        const date = document.getElementById('movDate').value;
+        const description = document.getElementById('movDesc').value.trim();
+        const category = document.getElementById('movCat').value;
+        const type = document.getElementById('movType').value;
+        const amount = parseFloat(String(document.getElementById('movAmount').value).replace(',','.'));
+        const err = document.getElementById('modalError');
+        if (!description) { err.textContent = 'La descripción es obligatoria'; err.classList.remove('hidden'); return; }
+        if (!isFinite(amount)) { err.textContent = 'El monto debe ser un número válido'; err.classList.remove('hidden'); return; }
+        const payload = { id: editingId || genId(), date, description, category, type, amount };
+        if (editingId){
+          const idx = movements.findIndex(m=>m.id===editingId);
+          if (idx>-1) movements[idx] = payload;
+        } else {
+          movements.push(payload);
+        }
+        persist();
+        closeModal();
+        renderAll();
+      }
+
+      function editMovement(id){ const m = movements.find(x=>x.id===id); if (m) openModal(m); }
+      function deleteMovement(id){ if(!confirm('¿Eliminar movimiento?')) return; movements = movements.filter(m=>m.id!==id); persist(); renderAll(); }
+      window.editMovement = editMovement; window.deleteMovement = deleteMovement;
+
+      function genId(){ return 'MOV-' + Date.now(); }
+
+      function initChart(){
+        const ctx = document.getElementById('financeChart').getContext('2d');
+        chart = new Chart(ctx, {
+          type: 'bar',
+          data: { labels: [], datasets: [
+            { label: 'Ingresos', backgroundColor: '#16a34a', borderColor: '#16a34a', data: [] },
+            { label: 'Egresos', backgroundColor: '#dc2626', borderColor: '#dc2626', data: [] }
+          ]},
+          options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        });
+      }
+
+      function updateChart(){
+        const byMonth = {};
+        movements.forEach(m=>{
+          const d = new Date(m.date);
+          const key = isNaN(d)? 'Desconocido' : `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+          byMonth[key] ||= { in:0, out:0 };
+          if (m.type==='ingreso') byMonth[key].in += Number(m.amount||0); else byMonth[key].out += Number(m.amount||0);
+        });
+        const labels = Object.keys(byMonth).sort();
+        const dataIn = labels.map(k=>byMonth[k].in);
+        const dataOut = labels.map(k=>byMonth[k].out);
+        chart.data.labels = labels;
+        chart.data.datasets[0].data = dataIn;
+        chart.data.datasets[1].data = dataOut;
+        chart.update();
+      }
+
+      // Toggle insights panel visibility
+      function toggleInsights(){
+        const panel = document.getElementById('insightsPanel');
+        if (!panel) return;
+        panel.classList.toggle('hidden');
+        if (!panel.classList.contains('hidden')) {
+          renderInsightsCharts();
+        }
+      }
+
+      // Build/update Insights charts (category + 90-day trend) with clickable breakdown
+      function renderInsightsCharts(){
+        const panel = document.getElementById('insightsPanel');
+        if (!panel || panel.classList.contains('hidden')) return;
+
+        // Category distribution (signed to reflect net per category; plot absolute values)
+        const byCat = movements.reduce((acc,m)=>{
+          const k = m.category || 'Sin categoría';
+          const delta = (m.type==='egreso'?-1:1) * Number(m.amount||0);
+          acc[k] = (acc[k]||0) + delta;
+          return acc;
+        }, {});
+        const catLabels = Object.keys(byCat);
+        const catValues = catLabels.map(k=> Math.abs(byCat[k]));
+        const catCtx = document.getElementById('categoryChart').getContext('2d');
+        if (categoryChart) categoryChart.destroy();
+        categoryChart = new Chart(catCtx, {
+          type:'doughnut',
+          data:{ labels:catLabels, datasets:[{ data:catValues, backgroundColor:['#78d38c','#f2c94c','#eb5757','#56ccf2','#bb6bd9','#6fcf97','#f2994a'] }] },
+          options:{ plugins:{ legend:{ position:'bottom' } }, onClick:(evt, elements, chartRef)=>{
+            if (!elements || !elements.length) return;
+            const idx = elements[0].index;
+            const label = chartRef.data.labels[idx];
+            const rows = movements.filter(m=> (m.category||'Sin categoría') === label);
+            showInsightsDetail(`Categoría: ${label}`, rows);
+          }}
+        });
+
+        // 90-day trend (daily net balance)
+        const today = new Date();
+        const start = new Date(today); start.setDate(start.getDate()-89);
+        const map = new Map();
+        for(let d=new Date(start); d<=today; d.setDate(d.getDate()+1)){
+          map.set(d.toISOString().slice(0,10), 0);
+        }
+        movements.forEach(m=>{
+          const ds = (m.date||'').slice(0,10);
+          if (map.has(ds)){
+            const delta = m.type==='egreso' ? -Number(m.amount||0) : Number(m.amount||0);
+            map.set(ds, map.get(ds)+delta);
+          }
+        });
+        const labels90 = Array.from(map.keys());
+        const values90 = Array.from(map.values());
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        if (trendChart) trendChart.destroy();
+        trendChart = new Chart(trendCtx, {
+          type:'line',
+          data:{ labels: labels90, datasets:[{ label:'Balance diario', data: values90, borderColor:'#181710', backgroundColor:'rgba(24,23,16,0.08)', fill:true, tension:0.2 }] },
+          options:{ plugins:{ legend:{ display:false } }, scales:{ y:{ ticks:{ callback:(v)=> fmtARS.format(v) } } }, onClick:(evt, elements, chartRef)=>{
+            const points = chartRef.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+            if (!points || !points.length) return;
+            const idx = points[0].index;
+            const day = chartRef.data.labels[idx];
+            const rows = movements.filter(m=> (m.date||'').slice(0,10) === day);
+            showInsightsDetail(`Día: ${day}`, rows);
+          }}
+        });
+      }
+
+      // Inline detail panel rendering
+      function showInsightsDetail(title, rows){
+        const panel = document.getElementById('insightsDetail');
+        const titleEl = document.getElementById('insightsDetailTitle');
+        const body = document.getElementById('insightsDetailBody');
+        if (!panel || !titleEl || !body) return;
+        titleEl.textContent = title;
+        const fmtDate = (s)=>{ const d=new Date(s); return isNaN(d)? (s||'') : d.toISOString().slice(0,10); };
+        const items = (rows||[]).slice().sort((a,b)=> new Date(b.date||0)-new Date(a.date||0)).slice(0,200);
+        body.innerHTML = items.map(m=>`
+          <tr>
+            <td class="py-1 pr-2">${fmtDate(m.date)}</td>
+            <td class="py-1 pr-2">${escapeHtml(m.description||'')}</td>
+            <td class="py-1 pr-2">${escapeHtml(m.category||'')}</td>
+            <td class="py-1 pr-2">${m.type==='egreso'?'Egreso':'Ingreso'}</td>
+            <td class="py-1 pl-2 text-right">${fmtARS.format(Number(m.amount||0))}</td>
+          </tr>
+        `).join('');
+        panel.classList.remove('hidden');
+      }
+
+      // ===== Import Excel =====
+      async function handleExcelImport(evt){
+        const file = evt.target.files && evt.target.files[0];
+        if (!file) return;
+        try {
+          const data = await file.arrayBuffer();
+          const wb = XLSX.read(data, { type:'array' });
+          const sheetName = wb.SheetNames[0];
+          const sheet = wb.Sheets[sheetName];
+          const rows = XLSX.utils.sheet_to_json(sheet, { defval:'', raw:false });
+          const norm = (s)=> String(s||'').trim().toLowerCase();
+          const headerMap = {
+            fecha:['fecha','date','día','dia'],
+            descripcion:['descripcion','descripción','description','detalle','concepto'],
+            categoria:['categoria','categoría','category'],
+            tipo:['tipo','type'],
+            monto:['monto','importe','amount','total']
+          };
+          const guess = (obj, keys)=>{
+            const entries = Object.keys(obj);
+            for (const k of entries){ const nk = norm(k); if (keys.includes(nk)) return k; }
+            return null;
+          };
+          let imported = 0;
+          rows.forEach(r=>{
+            const fK = guess(r, headerMap.fecha);
+            const dK = guess(r, headerMap.descripcion);
+            const cK = guess(r, headerMap.categoria);
+            const tK = guess(r, headerMap.tipo);
+            const mK = guess(r, headerMap.monto);
+            if (!mK || !dK) return; // require monto + descripcion
+            const rawDate = fK ? r[fK] : '';
+            const iso = rawDate ? new Date(rawDate).toISOString() : new Date().toISOString();
+            const desc = String(r[dK]||'').trim();
+            const cat = String(r[cK]||'Ventas').trim() || 'Ventas';
+            const typeRaw = String(r[tK]||'ingreso').toLowerCase();
+            const type = typeRaw.includes('egre') || typeRaw.includes('gasto') ? 'egreso' : 'ingreso';
+            const amount = Number(String(r[mK]).replace(/[^0-9.,-]/g,'').replace('.', '').replace(',', '.')) || 0;
+            const id = `IMP-${Date.now()}-${imported}`;
+            movements.push({ id, date: iso, description: desc, category: cat, type, amount });
+            imported++;
+          });
+          if (imported>0){
+            persist();
+            renderAll();
+            const panel = document.getElementById('insightsPanel');
+            if (panel && panel.classList.contains('hidden')) toggleInsights();
+            alert(`Importación completada: ${imported} filas`);
+          } else {
+            alert('No se pudieron reconocer filas válidas en la planilla. Verifique encabezados.');
+          }
+        } catch (e){
+          console.error(e);
+          alert('Error al importar el archivo.');
+        } finally {
+          evt.target.value = '';
+        }
+      }
+
+      function exportCSV(){
+        const rows = filteredMovements();
+        const header = ['ID','Fecha','Descripción','Categoría','Tipo','Monto'];
+        const csv = [header.join(',')].concat(rows.map(m=>[
+          m.id, m.date, safeCsv(m.description), safeCsv(m.category), m.type, String(m.amount)
+        ].join(','))).join('\n');
+        const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href=url; a.download='movimientos.csv'; a.click(); URL.revokeObjectURL(url);
+      }
+
+      async function exportPDF(){
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.setFontSize(14); doc.text('Reporte de Finanzas', 14, 16);
+        const rows = filteredMovements().slice(0, 30); // simple, primeras 30 filas
+        let y = 26;
+        doc.setFontSize(10);
+        doc.text('Fecha', 14, y); doc.text('Descripción', 40, y); doc.text('Cat.', 110, y); doc.text('Tipo', 140, y); doc.text('Monto', 165, y);
+        y += 4;
+        rows.forEach(m=>{
+          const d = new Date(m.date); const ds = isNaN(d)? (m.date||'') : d.toLocaleDateString('es-AR');
+          doc.text(String(ds), 14, y);
+          doc.text(String((m.description||'').substring(0,38)), 40, y);
+          doc.text(String(m.category||''), 110, y);
+          doc.text(m.type==='ingreso'?'Ingreso':'Egreso', 140, y);
+          doc.text(fmtARS.format(Number(m.amount||0)), 165, y, { align: 'right' });
+          y += 6;
+        });
+        doc.save('finanzas.pdf');
+      }
+
+      function escapeHtml(s){
+        return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
+      }
+      function safeCsv(s){
+        const t = String(s||'').replaceAll('"','""');
+        return '"'+t+'"';
+      }
+    </script>
   </body>
 </html>
