@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transporte y Despacho</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{ --bg:#f5f4f0; --bg2:#fff; --text:#181710; --muted:#8d865e; --border:#e7e5da; --ok:#16a34a; --warn:#0ea5e9; --gray:#6b7280; --red:#ef4444; }
+    *{ box-sizing:border-box; }
+    body{ margin:0; font-family: Inter, "Noto Sans", sans-serif; background:var(--bg); color:var(--text); }
+    header{ display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border); background:var(--bg2); position:sticky; top:0; z-index:10; }
+    h1{ margin:0; font-size:20px; font-weight:700; }
+    .layout{ display:grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 56px); }
+    .sidebar{ border-right:1px solid var(--border); background:var(--bg2); padding:12px; position:sticky; top:56px; height: calc(100vh - 56px); overflow:auto; }
+    .nav{ display:flex; flex-direction:column; gap:6px; }
+    .nav a{ display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; color:var(--text); text-decoration:none; border:1px solid transparent; }
+    .nav a:hover{ background:#efeee9; }
+    .nav a.active{ background:var(--text); color:#fff; }
+    .container{ padding:16px; }
+    .grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px; }
+    .card{ background:#fff; border:1px solid var(--border); border-radius:12px; padding:14px; box-shadow:0 1px 2px rgba(0,0,0,.05); }
+    .kpi{ display:flex; align-items:center; justify-content:space-between; }
+    .kpi .n{ font-size:28px; font-weight:800; }
+    .pill{ font-size:12px; padding:2px 8px; border-radius:999px; border:1px solid var(--border); background:#fafafa; white-space:nowrap; }
+    .pill.gray{ background:#f3f4f6; color:#111827; }
+    .pill.blue{ background:#ecfeff; color:#0e7490; }
+    .pill.green{ background:#ecfdf5; color:#166534; }
+    .pill.red{ background:#fee2e2; color:#991b1b; }
+    .actions{ display:flex; gap:8px; flex-wrap:wrap; }
+    .btn{ height:36px; padding:0 12px; border-radius:8px; border:1px solid var(--border); background:#fff; color:var(--text); font-size:14px; font-weight:600; cursor:pointer; }
+    .btn.primary{ background:var(--text); color:#fff; border-color:var(--text); }
+    .btn.icon{ width:36px; display:inline-flex; align-items:center; justify-content:center; padding:0; }
+    table{ width:100%; border-collapse:collapse; }
+    th, td{ padding:10px 8px; border-bottom:1px solid var(--border); text-align:left; font-size:14px; }
+    tr:hover{ background:#fafafa; }
+    .toolbar{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:12px; }
+    input, select, textarea{ height:36px; border:1px solid var(--border); border-radius:8px; padding:0 10px; font-family:inherit; }
+    textarea{ height:72px; padding:8px 10px; }
+    .modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.25); z-index:30; }
+    .modal .box{ width:min(920px, 92vw); max-height:85vh; overflow:auto; background:#fff; border-radius:12px; border:1px solid var(--border); padding:14px; }
+    .row{ display:flex; gap:10px; }
+    .col{ flex:1; }
+    .muted{ color:var(--gray); font-size:12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Transporte y Despacho</h1>
+    <div class="actions">
+      <a class="btn" href="./index.html">Inicio</a>
+      <a class="btn" href="./orders.html">Pedidos</a>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <nav class="nav" id="sideNav">
+        <a href="#dashboard" data-section="dashboard" class="active">Dashboard</a>
+        <a href="#orders" data-section="orders">Órdenes de Despacho</a>
+        <a href="#vehicles" data-section="vehicles">Vehículos</a>
+        <a href="#drivers" data-section="drivers">Conductores</a>
+        <a href="#tracking" data-section="tracking">Seguimiento</a>
+        <a href="#reports" data-section="reports">Reportes</a>
+      </nav>
+    </aside>
+
+    <main class="container">
+      <!-- Dashboard -->
+      <section id="dashboard" class="section">
+        <div class="grid">
+          <div class="card kpi">
+            <div>
+              <div class="muted">Envíos pendientes</div>
+              <div class="n" id="kpiPendientes">0</div>
+            </div>
+            <span class="pill gray">Pendiente</span>
+          </div>
+          <div class="card kpi">
+            <div>
+              <div class="muted">En tránsito</div>
+              <div class="n" id="kpiTransito">0</div>
+            </div>
+            <span class="pill blue">En tránsito</span>
+          </div>
+          <div class="card kpi">
+            <div>
+              <div class="muted">Entregados</div>
+              <div class="n" id="kpiEntregados">0</div>
+            </div>
+            <span class="pill green">Entregado</span>
+          </div>
+          <div class="card kpi">
+            <div>
+              <div class="muted">Retrasados</div>
+              <div class="n" id="kpiRetrasados">0</div>
+            </div>
+            <span class="pill red">Retrasado</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Órdenes de Despacho -->
+      <section id="orders" class="section" style="display:none;">
+        <div class="toolbar">
+          <button class="btn primary" id="btnNewDispatch">+ Nueva Orden de Despacho</button>
+          <select id="fStatus"><option value="">Estado: Todos</option><option>Pendiente</option><option>En tránsito</option><option>Entregado</option><option>Retrasado</option><option>Cancelado</option></select>
+          <select id="fVehicle"><option value="">Vehículo: Todos</option></select>
+          <select id="fDriver"><option value="">Conductor: Todos</option></select>
+          <input id="fSearch" placeholder="Buscar cliente / pedido..." />
+        </div>
+        <div class="card" style="overflow:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Cliente</th>
+                <th>Dirección</th>
+                <th>Vehículo</th>
+                <th>Conductor</th>
+                <th>Estado</th>
+                <th>Fecha salida</th>
+                <th>Fecha entrega</th>
+                <th style="width:220px;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="dispatchTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Vehículos -->
+      <section id="vehicles" class="section" style="display:none;">
+        <div class="toolbar">
+          <button class="btn primary" id="btnNewVehicle">+ Nuevo Vehículo</button>
+          <input id="fVehicleSearch" placeholder="Buscar patente / modelo..." />
+        </div>
+        <div class="card" style="overflow:auto;">
+          <table>
+            <thead><tr><th>Patente</th><th>Marca</th><th>Modelo</th><th>Capacidad (kg)</th><th>Mantenimiento</th><th style="width:160px;">Acciones</th></tr></thead>
+            <tbody id="vehiclesTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Conductores -->
+      <section id="drivers" class="section" style="display:none;">
+        <div class="toolbar">
+          <button class="btn primary" id="btnNewDriver">+ Nuevo Conductor</button>
+          <input id="fDriverSearch" placeholder="Buscar nombre / licencia..." />
+        </div>
+        <div class="card" style="overflow:auto;">
+          <table>
+            <thead><tr><th>Nombre</th><th>Licencia</th><th>Teléfono</th><th>Disponibilidad</th><th>Entregas</th><th style="width:160px;">Acciones</th></tr></thead>
+            <tbody id="driversTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Seguimiento (simulado) -->
+      <section id="tracking" class="section" style="display:none;">
+        <div class="toolbar">
+          <button class="btn" id="btnRefreshTrack">Actualizar Posiciones</button>
+        </div>
+        <div class="grid" id="trackingGrid"></div>
+      </section>
+
+      <!-- Reportes -->
+      <section id="reports" class="section" style="display:none;">
+        <div class="card">
+          <div class="actions" style="margin-bottom:10px;">
+            <button class="btn" id="btnReportToday">Reporte de Hoy</button>
+            <button class="btn" id="btnReportMonth">Reporte Mensual</button>
+            <button class="btn" id="btnExportGuides">Generar PDFs de Guías</button>
+          </div>
+          <div id="reportsBox" class="muted">Selecciona un reporte...</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal: Nueva Orden de Despacho -->
+  <div class="modal" id="modalDispatch">
+    <div class="box">
+      <h3 style="margin:6px 0 10px 0;">Crear / Editar Orden de Despacho</h3>
+      <div class="row">
+        <div class="col">
+          <label>Pedido/Factura</label>
+          <input id="mOrderRef" placeholder="N° pedido o factura" />
+        </div>
+        <div class="col">
+          <label>Cliente</label>
+          <input id="mCustomer" placeholder="Cliente" />
+        </div>
+      </div>
+      <div style="height:8px"></div>
+      <div class="row">
+        <div class="col">
+          <label>Dirección de entrega</label>
+          <input id="mAddress" placeholder="Calle, Ciudad" />
+        </div>
+      </div>
+      <div style="height:8px"></div>
+      <div class="row">
+        <div class="col">
+          <label>Vehículo</label>
+          <select id="mVehicle"></select>
+        </div>
+        <div class="col">
+          <label>Conductor</label>
+          <select id="mDriver"></select>
+        </div>
+      </div>
+      <div style="height:8px"></div>
+      <div class="row">
+        <div class="col">
+          <label>Salida (estimada)</label>
+          <input id="mEtaOut" type="datetime-local" />
+        </div>
+        <div class="col">
+          <label>Entrega (estimada)</label>
+          <input id="mEtaIn" type="datetime-local" />
+        </div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="row">
+        <div class="col">
+          <label>Estado</label>
+          <select id="mStatus"><option>Pendiente</option><option>En tránsito</option><option>Entregado</option><option>Retrasado</option><option>Cancelado</option></select>
+        </div>
+        <div class="col">
+          <label>Notas</label>
+          <input id="mNotes" placeholder="Observaciones" />
+        </div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="card">
+        <div class="row" style="align-items:flex-end;">
+          <div class="col">
+            <label>Producto</label>
+            <input id="mItemName" placeholder="Nombre del producto" />
+          </div>
+          <div>
+            <label>Cantidad</label>
+            <input id="mItemQty" type="number" min="1" value="1" style="width:120px;" />
+          </div>
+          <div>
+            <button class="btn" id="btnAddItem">Añadir</button>
+          </div>
+        </div>
+        <div style="height:8px"></div>
+        <table>
+          <thead><tr><th>Producto</th><th style="width:120px;">Cantidad</th><th style="width:80px;"></th></tr></thead>
+          <tbody id="mItems"></tbody>
+        </table>
+      </div>
+      <div style="height:10px"></div>
+      <div class="actions" style="justify-content:flex-end;">
+        <button class="btn" id="btnCloseDispatch">Cancelar</button>
+        <button class="btn primary" id="btnSaveDispatch">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Vehículo -->
+  <div class="modal" id="modalVehicle">
+    <div class="box">
+      <h3>Registrar / Editar Vehículo</h3>
+      <div class="row">
+        <div class="col"><label>Patente</label><input id="vPlate" placeholder="ABC123" /></div>
+        <div class="col"><label>Marca</label><input id="vBrand" placeholder="Marca" /></div>
+        <div class="col"><label>Modelo</label><input id="vModel" placeholder="Modelo" /></div>
+      </div>
+      <div style="height:8px"></div>
+      <div class="row">
+        <div class="col"><label>Capacidad (kg)</label><input id="vCapacity" type="number" min="0" value="0" /></div>
+        <div class="col"><label>Mantenimiento</label><select id="vMaint"><option>OK</option><option>Programar</option><option>En Taller</option></select></div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="actions" style="justify-content:flex-end;">
+        <button class="btn" id="btnCloseVehicle">Cancelar</button>
+        <button class="btn primary" id="btnSaveVehicle">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Conductor -->
+  <div class="modal" id="modalDriver">
+    <div class="box">
+      <h3>Registrar / Editar Conductor</h3>
+      <div class="row">
+        <div class="col"><label>Nombre</label><input id="dName" placeholder="Nombre" /></div>
+        <div class="col"><label>Licencia</label><input id="dLicense" placeholder="Clase / N°" /></div>
+      </div>
+      <div style="height:8px"></div>
+      <div class="row">
+        <div class="col"><label>Teléfono</label><input id="dPhone" placeholder="Teléfono" /></div>
+        <div class="col"><label>Disponibilidad</label><select id="dAvail"><option>Disponible</option><option>En viaje</option><option>No disponible</option></select></div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="actions" style="justify-content:flex-end;">
+        <button class="btn" id="btnCloseDriver">Cancelar</button>
+        <button class="btn primary" id="btnSaveDriver">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Storage helpers
+    const DB = {
+      get(key, def){ try{ return JSON.parse(localStorage.getItem(key) || JSON.stringify(def)); }catch{return def;} },
+      set(key, val){ localStorage.setItem(key, JSON.stringify(val)); },
+    };
+    const KEYS = { ORDERS:'dispatchOrders', VEH:'vehicles', DRV:'drivers' };
+
+    // IDs
+    function genId(prefix){
+      const now = new Date();
+      const y = now.getFullYear();
+      const num = Math.floor(1000 + Math.random()*9000);
+      return `${prefix}-${y}-${num}`;
+    }
+
+    // Pills
+    function pill(status){
+      const s = (status||'').toLowerCase();
+      if (s.startsWith('pend')) return '<span class="pill gray">Pendiente</span>';
+      if (s.includes('trán') || s.includes('transit') || s.includes('trn')) return '<span class="pill blue">En tránsito</span>';
+      if (s.startsWith('entre') || s.startsWith('compl')) return '<span class="pill green">Entregado</span>';
+      if (s.startsWith('retra') || s.startsWith('cance')) return '<span class="pill red">Retrasado</span>';
+      return `<span class="pill">${status||'—'}</span>`;
+    }
+
+    // Nav
+    function showSection(id){
+      document.querySelectorAll('.section').forEach(s=> s.style.display = 'none');
+      document.getElementById(id).style.display = '';
+      document.querySelectorAll('#sideNav a').forEach(a=> a.classList.toggle('active', a.dataset.section === id));
+    }
+
+    // Dashboard KPIs
+    function refreshKPIs(){
+      const list = DB.get(KEYS.ORDERS, []);
+      const nPend = list.filter(o => (o.status||'').toLowerCase().startsWith('pend')).length;
+      const nTran = list.filter(o => (o.status||'').toLowerCase().includes('trán') || (o.status||'').toLowerCase().includes('transit')).length;
+      const nEntr = list.filter(o => (o.status||'').toLowerCase().startsWith('entre') || (o.status||'').toLowerCase().startsWith('compl')).length;
+      const nRetr = list.filter(o => (o.status||'').toLowerCase().startsWith('retra')).length;
+      document.getElementById('kpiPendientes').textContent = nPend;
+      document.getElementById('kpiTransito').textContent = nTran;
+      document.getElementById('kpiEntregados').textContent = nEntr;
+      document.getElementById('kpiRetrasados').textContent = nRetr;
+    }
+
+    // Orders table
+    function renderDispatchTable(){
+      const list = DB.get(KEYS.ORDERS, []);
+      const q = (document.getElementById('fSearch').value||'').toLowerCase();
+      const st = (document.getElementById('fStatus').value||'').toLowerCase();
+      const veh = document.getElementById('fVehicle').value||'';
+      const drv = document.getElementById('fDriver').value||'';
+      const vehicles = DB.get(KEYS.VEH, []);
+      const drivers = DB.get(KEYS.DRV, []);
+      const rows = list
+        .filter(o => !q || `${o.code} ${o.customer} ${o.orderRef}`.toLowerCase().includes(q))
+        .filter(o => !st || (o.status||'').toLowerCase().startsWith(st.split(' ')[0]))
+        .filter(o => !veh || o.vehicleId === veh)
+        .filter(o => !drv || o.driverId === drv)
+        .map(o => {
+          const v = vehicles.find(x=>x.id===o.vehicleId);
+          const d = drivers.find(x=>x.id===o.driverId);
+          return `<tr>
+            <td><a href="#" onclick="openDispatch('${o.id}');return false;" title="Ver detalle">${o.code}</a></td>
+            <td>${o.customer||'—'}</td>
+            <td>${o.address||'—'}</td>
+            <td>${v ? `${v.plate} · ${v.model}` : '—'}</td>
+            <td>${d ? d.name : '—'}</td>
+            <td>${pill(o.status)}</td>
+            <td>${o.etaOut ? new Date(o.etaOut).toLocaleString('es-AR') : '—'}</td>
+            <td>${o.etaIn ? new Date(o.etaIn).toLocaleString('es-AR') : '—'}</td>
+            <td>
+              <div class="actions">
+                <button class="btn icon" title="Editar" onclick="editDispatch('${o.id}')">✏️</button>
+                <button class="btn icon" title="Mapa / Seguimiento" onclick="focusTrack('${o.id}')">🗺️</button>
+                <button class="btn icon" title="Marcar Entregado" onclick="markDelivered('${o.id}')">✅</button>
+                <button class="btn icon" title="Cancelar" onclick="cancelDispatch('${o.id}')">⛔</button>
+                <button class="btn icon" title="Eliminar" onclick="deleteDispatch('${o.id}')">🗑️</button>
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
+      document.getElementById('dispatchTbody').innerHTML = rows || '<tr><td colspan="9" class="muted">Sin órdenes</td></tr>';
+      refreshKPIs();
+    }
+
+    // Vehicles table
+    function renderVehicles(){
+      const q = (document.getElementById('fVehicleSearch').value||'').toLowerCase();
+      const list = DB.get(KEYS.VEH, []).filter(v => !q || `${v.plate} ${v.model} ${v.brand}`.toLowerCase().includes(q));
+      const rows = list.map(v => `<tr>
+        <td>${v.plate}</td><td>${v.brand}</td><td>${v.model}</td><td>${v.capacityKg||0}</td><td>${v.maintenanceStatus||'OK'}</td>
+        <td class="actions"><button class="btn icon" onclick="editVehicle('${v.id}')">✏️</button><button class="btn icon" onclick="deleteVehicle('${v.id}')">🗑️</button></td>
+      </tr>`).join('');
+      document.getElementById('vehiclesTbody').innerHTML = rows || '<tr><td colspan="6" class="muted">Sin vehículos</td></tr>';
+      // Filtro de barra en Órdenes
+      const sel = document.getElementById('fVehicle');
+      sel.innerHTML = '<option value="">Vehículo: Todos</option>' + DB.get(KEYS.VEH, []).map(v=>`<option value="${v.id}">${v.plate} · ${v.model}</option>`).join('');
+      // Modal select
+      document.getElementById('mVehicle').innerHTML = '<option value="">—</option>' + DB.get(KEYS.VEH, []).map(v=>`<option value="${v.id}">${v.plate} · ${v.model}</option>`).join('');
+    }
+
+    // Drivers table
+    function renderDrivers(){
+      const q = (document.getElementById('fDriverSearch').value||'').toLowerCase();
+      const list = DB.get(KEYS.DRV, []).filter(d => !q || `${d.name} ${d.license}`.toLowerCase().includes(q));
+      const rows = list.map(d => `<tr>
+        <td>${d.name}</td><td>${d.license}</td><td>${d.phone||'—'}</td><td>${d.availability||'Disponible'}</td><td>${d.deliveries||0}</td>
+        <td class="actions"><button class="btn icon" onclick="editDriver('${d.id}')">✏️</button><button class="btn icon" onclick="deleteDriver('${d.id}')">🗑️</button></td>
+      </tr>`).join('');
+      document.getElementById('driversTbody').innerHTML = rows || '<tr><td colspan="6" class="muted">Sin conductores</td></tr>';
+      // Filtro de barra en Órdenes
+      const sel = document.getElementById('fDriver');
+      sel.innerHTML = '<option value="">Conductor: Todos</option>' + DB.get(KEYS.DRV, []).map(d=>`<option value="${d.id}">${d.name}</option>`).join('');
+      // Modal select
+      document.getElementById('mDriver').innerHTML = '<option value="">—</option>' + DB.get(KEYS.DRV, []).map(d=>`<option value="${d.id}">${d.name}</option>`).join('');
+    }
+
+    // Dispatch CRUD helpers
+    let editDispatchId = null;
+    function openDispatch(id){
+      // Simple detalle: saltar a Seguimiento y resaltar
+      focusTrack(id);
+    }
+    function editDispatch(id){
+      const list = DB.get(KEYS.ORDERS, []);
+      const it = list.find(x=>x.id===id);
+      if (!it) return;
+      editDispatchId = id;
+      openModal('modalDispatch');
+      document.getElementById('mOrderRef').value = it.orderRef||'';
+      document.getElementById('mCustomer').value = it.customer||'';
+      document.getElementById('mAddress').value = it.address||'';
+      document.getElementById('mVehicle').value = it.vehicleId||'';
+      document.getElementById('mDriver').value = it.driverId||'';
+      document.getElementById('mEtaOut').value = it.etaOut ? new Date(it.etaOut).toISOString().slice(0,16) : '';
+      document.getElementById('mEtaIn').value = it.etaIn ? new Date(it.etaIn).toISOString().slice(0,16) : '';
+      document.getElementById('mStatus').value = it.status||'Pendiente';
+      document.getElementById('mNotes').value = it.notes||'';
+      renderModalItems(it.items||[]);
+    }
+    function deleteDispatch(id){
+      if (!confirm('¿Eliminar orden de despacho?')) return;
+      const list = DB.get(KEYS.ORDERS, []);
+      DB.set(KEYS.ORDERS, list.filter(x=>x.id!==id));
+      renderDispatchTable();
+    }
+    function cancelDispatch(id){
+      const list = DB.get(KEYS.ORDERS, []);
+      const it = list.find(x=>x.id===id);
+      if (!it) return;
+      it.status = 'Cancelado';
+      DB.set(KEYS.ORDERS, list);
+      renderDispatchTable();
+    }
+    function markDelivered(id){
+      const list = DB.get(KEYS.ORDERS, []);
+      const it = list.find(x=>x.id===id);
+      if (!it) return;
+      it.status = 'Entregado';
+      it.etaIn = it.etaIn || new Date().toISOString();
+      it.history = (it.history||[]).concat({ ts: Date.now(), ev:'Entregado' });
+      DB.set(KEYS.ORDERS, list);
+      renderDispatchTable();
+    }
+
+    // Vehicles CRUD
+    let editVehicleId = null;
+    function editVehicle(id){
+      const it = DB.get(KEYS.VEH, []).find(x=>x.id===id);
+      if (!it) return;
+      editVehicleId = id;
+      openModal('modalVehicle');
+      vPlate.value = it.plate||''; vBrand.value = it.brand||''; vModel.value = it.model||''; vCapacity.value = it.capacityKg||0; vMaint.value = it.maintenanceStatus||'OK';
+    }
+    function deleteVehicle(id){
+      if (!confirm('¿Eliminar vehículo?')) return;
+      DB.set(KEYS.VEH, DB.get(KEYS.VEH, []).filter(x=>x.id!==id));
+      renderVehicles(); renderDispatchTable();
+    }
+
+    // Drivers CRUD
+    let editDriverId = null;
+    function editDriver(id){
+      const it = DB.get(KEYS.DRV, []).find(x=>x.id===id);
+      if (!it) return;
+      editDriverId = id;
+      openModal('modalDriver');
+      dName.value = it.name||''; dLicense.value = it.license||''; dPhone.value = it.phone||''; dAvail.value = it.availability||'Disponible';
+    }
+    function deleteDriver(id){
+      if (!confirm('¿Eliminar conductor?')) return;
+      DB.set(KEYS.DRV, DB.get(KEYS.DRV, []).filter(x=>x.id!==id));
+      renderDrivers(); renderDispatchTable();
+    }
+
+    // Modal helpers
+    function openModal(id){ document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id){ document.getElementById(id).style.display = 'none'; }
+
+    // Modal items
+    let modalItems = [];
+    function renderModalItems(items){
+      modalItems = items.slice();
+      document.getElementById('mItems').innerHTML = modalItems.map((it,idx)=>`<tr><td>${it.name}</td><td>${it.qty}</td><td><button class='btn icon' onclick='removeModalItem(${idx})'>🗑️</button></td></tr>`).join('') || '<tr><td colspan="3" class="muted">Sin productos</td></tr>';
+    }
+    function removeModalItem(idx){ modalItems.splice(idx,1); renderModalItems(modalItems); }
+
+    // Tracking (simulado)
+    function renderTracking(){
+      const list = DB.get(KEYS.ORDERS, []);
+      const vehicles = DB.get(KEYS.VEH, []);
+      const drivers = DB.get(KEYS.DRV, []);
+      const grid = document.getElementById('trackingGrid');
+      grid.innerHTML = list.map(o=>{
+        const v = vehicles.find(x=>x.id===o.vehicleId);
+        const d = drivers.find(x=>x.id===o.driverId);
+        const lat = (o.mockLat || -34.60 + (Math.random()-0.5)*0.1).toFixed(5);
+        const lng = (o.mockLng || -58.38 + (Math.random()-0.5)*0.1).toFixed(5);
+        return `<div class='card'>
+          <div style='display:flex; justify-content:space-between; align-items:center;'>
+            <div style='font-weight:700;'>${o.code}</div>
+            ${pill(o.status)}
+          </div>
+          <div class='muted'>${o.customer||'—'} · ${o.address||''}</div>
+          <div class='muted'>${v? (v.plate+' · '+v.model):'—'} · ${d? d.name:'—'}</div>
+          <div style='margin-top:6px;'>📍 Lat: ${lat} · Lng: ${lng}</div>
+          <div class='actions' style='margin-top:8px;'>
+            <button class='btn' onclick="advanceTrack('${o.id}')">Avanzar Ruta</button>
+            <button class='btn' onclick="markDelivered('${o.id}')">Marcar Entregado</button>
+          </div>
+        </div>`;
+      }).join('') || '<div class="muted">Sin datos de seguimiento</div>';
+    }
+    function focusTrack(id){ showSection('tracking'); setTimeout(()=>{ document.getElementById('trackingGrid').scrollIntoView({behavior:'smooth'}); }, 50); }
+    function advanceTrack(id){
+      const list = DB.get(KEYS.ORDERS, []);
+      const it = list.find(x=>x.id===id);
+      if (!it) return;
+      const step = (it.trackStep||0) + 1;
+      it.trackStep = step;
+      if (step===1) it.status = 'En tránsito';
+      if (step>3) it.status = 'Entregado';
+      DB.set(KEYS.ORDERS, list);
+      renderTracking(); renderDispatchTable();
+    }
+
+    // Event bindings
+    document.addEventListener('DOMContentLoaded', () => {
+      // Nav
+      document.querySelectorAll('#sideNav a').forEach(a=>{
+        a.addEventListener('click', (e)=>{
+          e.preventDefault(); showSection(a.dataset.section);
+        });
+      });
+
+      // Filters
+      ['fStatus','fVehicle','fDriver','fSearch'].forEach(id=> document.getElementById(id).addEventListener('input', renderDispatchTable));
+      document.getElementById('fVehicleSearch').addEventListener('input', renderVehicles);
+      document.getElementById('fDriverSearch').addEventListener('input', renderDrivers);
+
+      // Modals open
+      document.getElementById('btnNewDispatch').addEventListener('click', () => {
+        editDispatchId = null; modalItems = []; renderModalItems([]);
+        mOrderRef.value=''; mCustomer.value=''; mAddress.value=''; mVehicle.value=''; mDriver.value=''; mEtaOut.value=''; mEtaIn.value=''; mStatus.value='Pendiente'; mNotes.value='';
+        openModal('modalDispatch');
+      });
+      document.getElementById('btnNewVehicle').addEventListener('click', () => { editVehicleId=null; vPlate.value=''; vBrand.value=''; vModel.value=''; vCapacity.value='0'; vMaint.value='OK'; openModal('modalVehicle'); });
+      document.getElementById('btnNewDriver').addEventListener('click', () => { editDriverId=null; dName.value=''; dLicense.value=''; dPhone.value=''; dAvail.value='Disponible'; openModal('modalDriver'); });
+
+      // Modals close
+      btnCloseDispatch.onclick = () => closeModal('modalDispatch');
+      btnCloseVehicle.onclick = () => closeModal('modalVehicle');
+      btnCloseDriver.onclick = () => closeModal('modalDriver');
+
+      // Items add
+      btnAddItem.onclick = () => {
+        const name = (mItemName.value||'').trim();
+        const qty = Math.max(1, parseInt(mItemQty.value||'1',10));
+        if (!name) return alert('Ingrese el nombre del producto');
+        modalItems.push({ name, qty }); mItemName.value=''; mItemQty.value='1'; renderModalItems(modalItems);
+      };
+
+      // Save dispatch
+      btnSaveDispatch.onclick = () => {
+        const list = DB.get(KEYS.ORDERS, []);
+        const obj = {
+          id: editDispatchId || genId('DISP'),
+          code: editDispatchId ? (list.find(x=>x.id===editDispatchId)||{}).code : genId('DSP'),
+          orderRef: mOrderRef.value.trim(),
+          customer: mCustomer.value.trim(),
+          address: mAddress.value.trim(),
+          vehicleId: mVehicle.value || '',
+          driverId: mDriver.value || '',
+          etaOut: mEtaOut.value ? new Date(mEtaOut.value).toISOString() : '',
+          etaIn: mEtaIn.value ? new Date(mEtaIn.value).toISOString() : '',
+          status: mStatus.value,
+          notes: mNotes.value.trim(),
+          items: modalItems.slice(),
+          history: (editDispatchId ? (list.find(x=>x.id===editDispatchId).history||[]) : []).concat({ ts: Date.now(), ev: editDispatchId? 'Actualizado':'Creado' })
+        };
+        if (editDispatchId){
+          const idx = list.findIndex(x=>x.id===editDispatchId); list[idx] = obj;
+        } else {
+          list.unshift(obj);
+        }
+        DB.set(KEYS.ORDERS, list);
+        closeModal('modalDispatch'); renderDispatchTable(); renderTracking();
+      };
+
+      // Save vehicle
+      btnSaveVehicle.onclick = () => {
+        const list = DB.get(KEYS.VEH, []);
+        const obj = { id: editVehicleId || genId('VEH'), plate:vPlate.value.trim(), brand:vBrand.value.trim(), model:vModel.value.trim(), capacityKg: Number(vCapacity.value||0), maintenanceStatus: vMaint.value };
+        if (editVehicleId){ const i=list.findIndex(x=>x.id===editVehicleId); list[i]=obj; } else { list.unshift(obj); }
+        DB.set(KEYS.VEH, list); closeModal('modalVehicle'); renderVehicles(); renderDispatchTable();
+      };
+
+      // Save driver
+      btnSaveDriver.onclick = () => {
+        const list = DB.get(KEYS.DRV, []);
+        const obj = { id: editDriverId || genId('DRV'), name:dName.value.trim(), license:dLicense.value.trim(), phone:dPhone.value.trim(), availability:dAvail.value, deliveries: (editDriverId? (list.find(x=>x.id===editDriverId).deliveries||0):0) };
+        if (editDriverId){ const i=list.findIndex(x=>x.id===editDriverId); list[i]=obj; } else { list.unshift(obj); }
+        DB.set(KEYS.DRV, list); closeModal('modalDriver'); renderDrivers(); renderDispatchTable();
+      };
+
+      // Tracking
+      document.getElementById('btnRefreshTrack').onclick = () => renderTracking();
+
+      // Reports (mock)
+      btnReportToday.onclick = () => { reportsBox.textContent = 'Entregas de hoy: ' + DB.get(KEYS.ORDERS, []).filter(o=> (o.etaIn||'').slice(0,10) === new Date().toISOString().slice(0,10)).length; };
+      btnReportMonth.onclick = () => { const m=new Date().toISOString().slice(0,7); reportsBox.textContent = 'Entregas del mes: ' + DB.get(KEYS.ORDERS, []).filter(o=> (o.etaIn||'').slice(0,7) === m).length; };
+      btnExportGuides.onclick = () => { alert('Generación de PDF de guías (pendiente de implementación)'); };
+
+      // Handoff desde Orders: si hay una semilla, abrir modal y precompletar
+      try {
+        const seedRaw = localStorage.getItem('dispatchSeed');
+        if (seedRaw) {
+          const seed = JSON.parse(seedRaw);
+          // Limpiar para evitar reuso accidental
+          localStorage.removeItem('dispatchSeed');
+          // Ir a sección Órdenes y abrir modal nuevo
+          showSection('orders');
+          document.getElementById('btnNewDispatch').click();
+          // Prefill campos
+          if (seed.orderRef) mOrderRef.value = String(seed.orderRef);
+          if (seed.customer) mCustomer.value = String(seed.customer);
+          if (seed.address) mAddress.value = String(seed.address);
+          // Items
+          const items = Array.isArray(seed.items) ? seed.items : [];
+          modalItems = items.map(it => ({ name: it.name || 'Producto', qty: Number(it.qty || it.quantity || 1) }));
+          renderModalItems(modalItems);
+        }
+      } catch (e) { /* noop */ }
+
+      // Initial renders
+      renderVehicles(); renderDrivers(); renderDispatchTable(); renderTracking(); refreshKPIs();
+    });
+  </script>
+</body>
+</html>
