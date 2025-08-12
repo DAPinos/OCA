@@ -52,6 +52,8 @@
     <div class="actions">
       <a class="btn" href="./index.html">Inicio</a>
       <a class="btn" href="./orders.html">Pedidos</a>
+      <a class="btn" href="./manufacturing.html">Manufactura</a>
+      <a class="btn" href="./finance.html">Finanzas</a>
     </div>
   </header>
 
@@ -139,7 +141,7 @@
         </div>
         <div class="card" style="overflow:auto;">
           <table>
-            <thead><tr><th>Patente</th><th>Marca</th><th>Modelo</th><th>Capacidad (kg)</th><th>Mantenimiento</th><th style="width:160px;">Acciones</th></tr></thead>
+            <thead><tr><th>Patente</th><th>Marca</th><th>Modelo</th><th>Capacidad (kg)</th><th>Mantenimiento</th><th>Conductor</th><th style="width:160px;">Acciones</th></tr></thead>
             <tbody id="vehiclesTbody"></tbody>
           </table>
         </div>
@@ -192,7 +194,7 @@
         </div>
         <div class="col">
           <label>Cliente</label>
-          <input id="mCustomer" placeholder="Cliente" />
+          <select id="mCustomer"></select>
         </div>
       </div>
       <div style="height:8px"></div>
@@ -278,6 +280,10 @@
         <div class="col"><label>Capacidad (kg)</label><input id="vCapacity" type="number" min="0" value="0" /></div>
         <div class="col"><label>Mantenimiento</label><select id="vMaint"><option>OK</option><option>Programar</option><option>En Taller</option></select></div>
       </div>
+      <div style="height:8px"></div>
+      <div class="row">
+        <div class="col"><label>Conductor asignado</label><select id="vAssignedDriverId"></select></div>
+      </div>
       <div style="height:10px"></div>
       <div class="actions" style="justify-content:flex-end;">
         <button class="btn" id="btnCloseVehicle">Cancelar</button>
@@ -298,6 +304,13 @@
       <div class="row">
         <div class="col"><label>Teléfono</label><input id="dPhone" placeholder="Teléfono" /></div>
         <div class="col"><label>Disponibilidad</label><select id="dAvail"><option>Disponible</option><option>En viaje</option><option>No disponible</option></select></div>
+      </div>
+      <div style="height:8px"></div>
+      <div class="row">
+        <div class="col">
+          <label>Vehículo asignado</label>
+          <select id="dAssignedVehicle"></select>
+        </div>
       </div>
       <div style="height:10px"></div>
       <div class="actions" style="justify-content:flex-end;">
@@ -383,6 +396,7 @@
               <div class="actions">
                 <button class="btn icon" title="Editar" onclick="editDispatch('${o.id}')">✏️</button>
                 <button class="btn icon" title="Mapa / Seguimiento" onclick="focusTrack('${o.id}')">🗺️</button>
+                <button class="btn icon" title="Imprimir Guía" onclick="printDispatchGuide('${o.id}')">🖨️</button>
                 <button class="btn icon" title="Marcar Entregado" onclick="markDelivered('${o.id}')">✅</button>
                 <button class="btn icon" title="Cancelar" onclick="cancelDispatch('${o.id}')">⛔</button>
                 <button class="btn icon" title="Eliminar" onclick="deleteDispatch('${o.id}')">🗑️</button>
@@ -397,12 +411,21 @@
     // Vehicles table
     function renderVehicles(){
       const q = (document.getElementById('fVehicleSearch').value||'').toLowerCase();
-      const list = DB.get(KEYS.VEH, []).filter(v => !q || `${v.plate} ${v.model} ${v.brand}`.toLowerCase().includes(q));
-      const rows = list.map(v => `<tr>
-        <td>${v.plate}</td><td>${v.brand}</td><td>${v.model}</td><td>${v.capacityKg||0}</td><td>${v.maintenanceStatus||'OK'}</td>
+      const drivers = DB.get(KEYS.DRV, []);
+      const list = DB.get(KEYS.VEH, []).filter(v => {
+        const d = drivers.find(x=>x.id===v.assignedDriverId);
+        const dName = d ? d.name : (v.assignedDriverName||'');
+        return !q || `${v.plate} ${v.model} ${v.brand} ${dName}`.toLowerCase().includes(q);
+      });
+      const rows = list.map(v => {
+        const d = drivers.find(x=>x.id===v.assignedDriverId);
+        const dName = d ? d.name : (v.assignedDriverName||'—');
+        return `<tr>
+        <td>${v.plate}</td><td>${v.brand}</td><td>${v.model}</td><td>${v.capacityKg||0}</td><td>${v.maintenanceStatus||'OK'}</td><td>${dName||'—'}</td>
         <td class="actions"><button class="btn icon" onclick="editVehicle('${v.id}')">✏️</button><button class="btn icon" onclick="deleteVehicle('${v.id}')">🗑️</button></td>
-      </tr>`).join('');
-      document.getElementById('vehiclesTbody').innerHTML = rows || '<tr><td colspan="6" class="muted">Sin vehículos</td></tr>';
+      </tr>`;
+      }).join('');
+      document.getElementById('vehiclesTbody').innerHTML = rows || '<tr><td colspan="7" class="muted">Sin vehículos</td></tr>';
       // Filtro de barra en Órdenes
       const sel = document.getElementById('fVehicle');
       sel.innerHTML = '<option value="">Vehículo: Todos</option>' + DB.get(KEYS.VEH, []).map(v=>`<option value="${v.id}">${v.plate} · ${v.model}</option>`).join('');
@@ -426,6 +449,53 @@
       document.getElementById('mDriver').innerHTML = '<option value="">—</option>' + DB.get(KEYS.DRV, []).map(d=>`<option value="${d.id}">${d.name}</option>`).join('');
     }
 
+    // ===== Clientes: carga desde localStorage y select en modal =====
+    function getClientsFromStorage(){
+      try{
+        const raw = localStorage.getItem('clients') || localStorage.getItem('clientes') || '[]';
+        const arr = JSON.parse(raw);
+        return Array.isArray(arr) ? arr : [];
+      }catch{ return []; }
+    }
+    function getClientDisplayName(c){
+      return c.name || c.nombre || c.fullName || c.email || (`Cliente ${c.id||c.clientId||c.clienteId||''}`);
+    }
+    function getClientId(c){
+      return c.id || c.clientId || c.clienteId || getClientDisplayName(c);
+    }
+    function getClientAddress(c){
+      return c.address || c.direccion || c.deliveryAddress || c.shippingAddress || '';
+    }
+    function populateCustomerSelect(){
+      const sel = document.getElementById('mCustomer');
+      if (!sel) return;
+      const clients = getClientsFromStorage();
+      sel.innerHTML = '<option value="">— Seleccione un cliente —</option>' + clients.map(c => {
+        const id = getClientId(c);
+        const name = getClientDisplayName(c);
+        const addr = getClientAddress(c);
+        return `<option value="${String(id)}" data-client-name="${name.replaceAll('"','&quot;')}" data-client-address="${addr.replaceAll('"','&quot;')}">${name}</option>`;
+      }).join('');
+    }
+    function autofillAddressFromCustomer(){
+      const sel = document.getElementById('mCustomer');
+      const addrEl = document.getElementById('mAddress');
+      if (!sel || !addrEl) return;
+      const opt = sel.options[sel.selectedIndex];
+      if (!opt) return;
+      const addr = opt.dataset.clientAddress || '';
+      if (addr) addrEl.value = addr;
+    }
+    function syncVehicleWithDriver(){
+      const drvSel = document.getElementById('mDriver');
+      const vehSel = document.getElementById('mVehicle');
+      if (!drvSel || !vehSel) return;
+      const driverId = drvSel.value;
+      if (!driverId) return;
+      const d = DB.get(KEYS.DRV, []).find(x=>x.id===driverId);
+      if (d && d.assignedVehicleId){ vehSel.value = d.assignedVehicleId; }
+    }
+
     // Dispatch CRUD helpers
     let editDispatchId = null;
     function openDispatch(id){
@@ -439,7 +509,18 @@
       editDispatchId = id;
       openModal('modalDispatch');
       document.getElementById('mOrderRef').value = it.orderRef||'';
-      document.getElementById('mCustomer').value = it.customer||'';
+      // Populate customer select and try to match by display name or id
+      try {
+        populateCustomerSelect();
+        const sel = document.getElementById('mCustomer');
+        const wanted = String(it.customer||'');
+        let matched = false;
+        for (let i=0;i<sel.options.length;i++){
+          const o = sel.options[i];
+          if (o.dataset.clientName === wanted || o.value === wanted){ sel.selectedIndex = i; matched = true; break; }
+        }
+        if (!matched) { sel.value = ''; }
+      } catch(_) {}
       document.getElementById('mAddress').value = it.address||'';
       document.getElementById('mVehicle').value = it.vehicleId||'';
       document.getElementById('mDriver').value = it.driverId||'';
@@ -482,6 +563,10 @@
       editVehicleId = id;
       openModal('modalVehicle');
       vPlate.value = it.plate||''; vBrand.value = it.brand||''; vModel.value = it.model||''; vCapacity.value = it.capacityKg||0; vMaint.value = it.maintenanceStatus||'OK';
+      // Populate drivers select
+      const drvOpts = ['<option value="">—</option>'].concat(DB.get(KEYS.DRV, []).map(d=>`<option value="${d.id}">${d.name}</option>`));
+      vAssignedDriverId.innerHTML = drvOpts.join('');
+      vAssignedDriverId.value = it.assignedDriverId || '';
     }
     function deleteVehicle(id){
       if (!confirm('¿Eliminar vehículo?')) return;
@@ -497,6 +582,10 @@
       editDriverId = id;
       openModal('modalDriver');
       dName.value = it.name||''; dLicense.value = it.license||''; dPhone.value = it.phone||''; dAvail.value = it.availability||'Disponible';
+      // Populate assigned vehicle options
+      const opts = ['<option value="">—</option>'].concat(DB.get(KEYS.VEH, []).map(v=>`<option value="${v.id}">${v.plate} · ${v.model}</option>`));
+      dAssignedVehicle.innerHTML = opts.join('');
+      dAssignedVehicle.value = it.assignedVehicleId || '';
     }
     function deleteDriver(id){
       if (!confirm('¿Eliminar conductor?')) return;
@@ -569,14 +658,26 @@
       document.getElementById('fVehicleSearch').addEventListener('input', renderVehicles);
       document.getElementById('fDriverSearch').addEventListener('input', renderDrivers);
 
-      // Modals open
+      // New buttons
       document.getElementById('btnNewDispatch').addEventListener('click', () => {
         editDispatchId = null; modalItems = []; renderModalItems([]);
         mOrderRef.value=''; mCustomer.value=''; mAddress.value=''; mVehicle.value=''; mDriver.value=''; mEtaOut.value=''; mEtaIn.value=''; mStatus.value='Pendiente'; mNotes.value='';
+        populateCustomerSelect();
         openModal('modalDispatch');
       });
-      document.getElementById('btnNewVehicle').addEventListener('click', () => { editVehicleId=null; vPlate.value=''; vBrand.value=''; vModel.value=''; vCapacity.value='0'; vMaint.value='OK'; openModal('modalVehicle'); });
+      document.getElementById('btnNewVehicle').addEventListener('click', () => { editVehicleId=null; vPlate.value=''; vBrand.value=''; vModel.value=''; vCapacity.value='0'; vMaint.value='OK';
+        const drvOpts = ['<option value="">—</option>'].concat(DB.get(KEYS.DRV, []).map(d=>`<option value="${d.id}">${d.name}</option>`));
+        vAssignedDriverId.innerHTML = drvOpts.join('');
+        vAssignedDriverId.value='';
+        openModal('modalVehicle');
+      });
       document.getElementById('btnNewDriver').addEventListener('click', () => { editDriverId=null; dName.value=''; dLicense.value=''; dPhone.value=''; dAvail.value='Disponible'; openModal('modalDriver'); });
+      // On open new driver, populate assigned vehicle options
+      document.getElementById('btnNewDriver').addEventListener('click', () => {
+        const opts = ['<option value="">—</option>'].concat(DB.get(KEYS.VEH, []).map(v=>`<option value="${v.id}">${v.plate} · ${v.model}</option>`));
+        dAssignedVehicle.innerHTML = opts.join('');
+        dAssignedVehicle.value = '';
+      });
 
       // Modals close
       btnCloseDispatch.onclick = () => closeModal('modalDispatch');
@@ -594,11 +695,15 @@
       // Save dispatch
       btnSaveDispatch.onclick = () => {
         const list = DB.get(KEYS.ORDERS, []);
+        // Resolve customer display name for storage
+        let customerVal = '';
+        const cSel = document.getElementById('mCustomer');
+        if (cSel){ const opt = cSel.options[cSel.selectedIndex]; customerVal = (opt && (opt.dataset.clientName || opt.textContent)) || (cSel.value||''); }
         const obj = {
           id: editDispatchId || genId('DISP'),
           code: editDispatchId ? (list.find(x=>x.id===editDispatchId)||{}).code : genId('DSP'),
           orderRef: mOrderRef.value.trim(),
-          customer: mCustomer.value.trim(),
+          customer: (customerVal||'').trim(),
           address: mAddress.value.trim(),
           vehicleId: mVehicle.value || '',
           driverId: mDriver.value || '',
@@ -621,15 +726,25 @@
       // Save vehicle
       btnSaveVehicle.onclick = () => {
         const list = DB.get(KEYS.VEH, []);
-        const obj = { id: editVehicleId || genId('VEH'), plate:vPlate.value.trim(), brand:vBrand.value.trim(), model:vModel.value.trim(), capacityKg: Number(vCapacity.value||0), maintenanceStatus: vMaint.value };
+        const obj = { id: editVehicleId || genId('VEH'), plate:vPlate.value.trim(), brand:vBrand.value.trim(), model:vModel.value.trim(), capacityKg: Number(vCapacity.value||0), maintenanceStatus: vMaint.value, assignedDriverId: (vAssignedDriverId.value||'') };
         if (editVehicleId){ const i=list.findIndex(x=>x.id===editVehicleId); list[i]=obj; } else { list.unshift(obj); }
-        DB.set(KEYS.VEH, list); closeModal('modalVehicle'); renderVehicles(); renderDispatchTable();
+        DB.set(KEYS.VEH, list);
+        // Sync driver's assignedVehicleId if a driver is selected
+        try{
+          const drvId = vAssignedDriverId.value||'';
+          if (drvId){
+            const drivers = DB.get(KEYS.DRV, []);
+            const di = drivers.findIndex(d=>d.id===drvId);
+            if (di>=0){ drivers[di].assignedVehicleId = obj.id; DB.set(KEYS.DRV, drivers); }
+          }
+        }catch(_){ }
+        closeModal('modalVehicle'); renderVehicles(); renderDrivers(); renderDispatchTable();
       };
 
       // Save driver
       btnSaveDriver.onclick = () => {
         const list = DB.get(KEYS.DRV, []);
-        const obj = { id: editDriverId || genId('DRV'), name:dName.value.trim(), license:dLicense.value.trim(), phone:dPhone.value.trim(), availability:dAvail.value, deliveries: (editDriverId? (list.find(x=>x.id===editDriverId).deliveries||0):0) };
+        const obj = { id: editDriverId || genId('DRV'), name:dName.value.trim(), license:dLicense.value.trim(), phone:dPhone.value.trim(), availability:dAvail.value, deliveries: (editDriverId? (list.find(x=>x.id===editDriverId).deliveries||0):0), assignedVehicleId: (dAssignedVehicle.value||'') };
         if (editDriverId){ const i=list.findIndex(x=>x.id===editDriverId); list[i]=obj; } else { list.unshift(obj); }
         DB.set(KEYS.DRV, list); closeModal('modalDriver'); renderDrivers(); renderDispatchTable();
       };
@@ -654,7 +769,18 @@
           document.getElementById('btnNewDispatch').click();
           // Prefill campos
           if (seed.orderRef) mOrderRef.value = String(seed.orderRef);
-          if (seed.customer) mCustomer.value = String(seed.customer);
+          // Intentar seleccionar cliente por nombre o id
+          try{
+            populateCustomerSelect();
+            const sel = document.getElementById('mCustomer');
+            const wanted = String(seed.customer||'');
+            let matched = false;
+            for (let i=0;i<sel.options.length;i++){
+              const o = sel.options[i];
+              if (o.dataset.clientName === wanted || o.value === wanted){ sel.selectedIndex = i; matched = true; break; }
+            }
+            if (matched) autofillAddressFromCustomer();
+          }catch{}
           if (seed.address) mAddress.value = String(seed.address);
           // Items
           const items = Array.isArray(seed.items) ? seed.items : [];
@@ -664,7 +790,24 @@
       } catch (e) { /* noop */ }
 
       // Initial renders
-      renderVehicles(); renderDrivers(); renderDispatchTable(); renderTracking(); refreshKPIs();
+      renderVehicles(); renderDrivers(); populateCustomerSelect(); renderDispatchTable(); renderTracking(); refreshKPIs();
+
+      // Quick action via URL param
+      try {
+        const usp = new URLSearchParams(location.search);
+        if (usp.get('newDispatch') === '1'){
+          document.getElementById('btnNewDispatch').click();
+          setTimeout(()=>{ try{ document.getElementById('mCustomer').focus(); }catch(_){} }, 50);
+        }
+      } catch(_) {}
+
+      // (removed) dynamic header link injection – not needed; static link added in header
+
+      // Bind autofill/sync handlers
+      const cSel = document.getElementById('mCustomer');
+      if (cSel) cSel.addEventListener('change', autofillAddressFromCustomer);
+      const dSel = document.getElementById('mDriver');
+      if (dSel) dSel.addEventListener('change', syncVehicleWithDriver);
     });
   </script>
 </body>

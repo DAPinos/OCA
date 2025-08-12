@@ -93,6 +93,16 @@
                     <p class="text-[#181710] text-sm font-medium leading-normal">Transporte y Despacho</p>
                   </a>
 
+                  <!-- Manufacturing Menu Item -->
+                  <a href="manufacturing.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="Factory" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M216,56H184V32a8,8,0,0,0-16,0V56H136V32a8,8,0,0,0-16,0V56H88V32a8,8,0,0,0-16,0V56H40A16,16,0,0,0,24,72V208a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V72A16,16,0,0,0,216,56ZM40,72H216V96H40ZM216,208H40V112H216ZM72,176a8,8,0,0,1,0-16H96a8,8,0,0,1,0,16Zm56,0a8,8,0,0,1,0-16h24a8,8,0,0,1,0,16Z"/>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Manufactura</p>
+                  </a>
+
                   <!-- Settings Menu Item -->
                   <a href="settings.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <div class="text-[#181710]" data-icon="Gear" data-size="24px" data-weight="regular">
@@ -121,12 +131,12 @@
                   </div>
                   <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5" placeholder="Search...">
                 </div>
-                <button class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300">
-                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                  </svg>
-                  New
-                </button>
+                <a href="transport.html?newDispatch=1" class="flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300">
+                  🚚 Nuevo Despacho
+                </a>
+                <a href="manufacturing.html?newMfg=1" class="flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 focus:ring-4 focus:ring-emerald-300">
+                  🏭 Nueva OP
+                </a>
               </div>
             </div>
             

@@ -21,6 +21,7 @@
     .filters{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
     .grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:12px; }
     .card{ background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px; box-shadow:0 1px 2px rgba(0,0,0,.04); display:flex; flex-direction:column; gap:8px; }
+    .card.selected{ outline:2px solid #0ea5e9; border-color:#0ea5e9; background:#f0f9ff; }
     .row{ display:flex; justify-content:space-between; gap:8px; align-items:center; }
     .pill{ font-size:12px; padding:2px 8px; border-radius:999px; border:1px solid var(--border); background:#fafafa; }
     .pill.pendiente{ background:#fff7ed; border-color:#fed7aa; color:#9a3412; }
@@ -49,6 +50,15 @@
       <button class="btn" data-filter="Completado" onclick="setFilter('Completado')">Completados</button>
     </div>
 
+    <div class="actions" id="kdsActions" style="margin-bottom:10px;">
+      <span class="muted">Acciones sobre seleccionados:</span>
+      <button class="btn" onclick="setSelectedStatus('Pendiente')">Marcar Pendiente</button>
+      <button class="btn" onclick="setSelectedStatus('En Proceso')">Marcar En Proceso</button>
+      <button class="btn" onclick="setSelectedStatus('Completado')">Marcar Completado</button>
+      <button class="btn" onclick="setSelectedStatus('Cancelado')">Marcar Cancelado</button>
+      <span id="selCount" class="muted">0 seleccionados</span>
+    </div>
+
     <div id="kdsGrid" class="grid"></div>
     <div id="kdsEmpty" class="empty" style="display:none;">No hay pedidos para mostrar</div>
   </main>
@@ -57,6 +67,7 @@
 
   <script>
     let currentFilter = localStorage.getItem('kdsFilter') || 'todos';
+    const selectedIds = new Set();
 
     function getAllOrders() {
       const a = JSON.parse(localStorage.getItem('orders') || '[]');
@@ -122,7 +133,7 @@
         }).join('');
 
         return `
-          <div class="card" data-id="${o.id}">
+          <div class="card ${selectedIds.has(String(o.id)) ? 'selected' : ''}" data-id="${o.id}">
             <div class="row">
               <strong>Pedido #${o.id || '-'} </strong>
               <span class="${statusPillClass(o.status)}">${o.status}</span>
@@ -135,6 +146,16 @@
       }).join('');
 
       highlightActiveFilter();
+
+      // bind selection toggle
+      grid.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('click', () => {
+          const id = String(card.getAttribute('data-id')||'');
+          if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id);
+          updateSelCount();
+          card.classList.toggle('selected');
+        });
+      });
     }
 
     function setFilter(f) {
@@ -153,6 +174,28 @@
       });
     }
 
+    function updateSelCount(){
+      const el = document.getElementById('selCount');
+      if (el) el.textContent = `${selectedIds.size} seleccionados`;
+    }
+
+    function setSelectedStatus(newStatus){
+      if (!selectedIds.size) return;
+      const ids = Array.from(selectedIds);
+      const upd = (key) => {
+        const list = JSON.parse(localStorage.getItem(key) || '[]');
+        let changed = false;
+        list.forEach(o => {
+          if (ids.includes(String(o.id))) { o.status = newStatus; changed = true; }
+        });
+        if (changed) localStorage.setItem(key, JSON.stringify(list));
+      };
+      upd('orders');
+      upd('savedOrders');
+      // mantener selección pero refrescar vista
+      renderKDS();
+    }
+
     // Actualización en tiempo real por eventos de storage y cada 10s
     window.addEventListener('storage', (e) => {
       if (['orders','savedOrders'].includes(e.key)) renderKDS();
@@ -163,6 +206,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       highlightActiveFilter();
       renderKDS();
+      updateSelCount();
     });
   </script>
 </body>

@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manufactura (BOM & Producción)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{ --bg:#f5f4f0; --bg2:#fff; --text:#181710; --muted:#6b7280; --border:#e7e5da; --ok:#16a34a; --blue:#0ea5e9; --red:#ef4444; --brand:#181710; }
+    *{ box-sizing:border-box; }
+    body{ margin:0; font-family: Inter, "Noto Sans", sans-serif; background:var(--bg); color:var(--text); }
+    header{ display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border); background:var(--bg2); position:sticky; top:0; z-index:10; }
+    h1{ margin:0; font-size:20px; font-weight:800; }
+    .layout{ display:grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 56px); }
+    .sidebar{ border-right:1px solid var(--border); background:var(--bg2); padding:12px; position:sticky; top:56px; height: calc(100vh - 56px); overflow:auto; }
+    .nav{ display:flex; flex-direction:column; gap:6px; }
+    .nav a{ display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; color:var(--text); text-decoration:none; border:1px solid transparent; }
+    .nav a:hover{ background:#efeee9; }
+    .nav a.active{ background:var(--text); color:#fff; }
+    .container{ padding:16px; }
+    .grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px; }
+    .card{ background:#fff; border:1px solid var(--border); border-radius:12px; padding:14px; box-shadow:0 1px 2px rgba(0,0,0,.05); }
+    .kpi{ display:flex; align-items:center; justify-content:space-between; }
+    .kpi .n{ font-size:24px; font-weight:800; }
+    .pill{ font-size:12px; padding:2px 8px; border-radius:999px; border:1px solid var(--border); background:#fafafa; white-space:nowrap; }
+    .pill.gray{ background:#f3f4f6; color:#111827; }
+    .pill.blue{ background:#ecfeff; color:#0e7490; }
+    .pill.green{ background:#ecfdf5; color:#166534; }
+    .pill.red{ background:#fee2e2; color:#991b1b; }
+    .actions{ display:flex; gap:8px; flex-wrap:wrap; }
+    .btn{ height:36px; padding:0 12px; border-radius:8px; border:1px solid var(--border); background:#fff; color:var(--text); font-size:14px; font-weight:600; cursor:pointer; }
+    .btn.primary{ background:var(--brand); color:#fff; border-color:var(--brand); }
+    .btn.icon{ width:36px; display:inline-flex; align-items:center; justify-content:center; padding:0; }
+    table{ width:100%; border-collapse:collapse; }
+    th, td{ padding:10px 8px; border-bottom:1px solid var(--border); text-align:left; font-size:14px; }
+    tr:hover{ background:#fafafa; }
+    .toolbar{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:12px; }
+    input, select, textarea{ height:36px; border:1px solid var(--border); border-radius:8px; padding:0 10px; font-family:inherit; }
+    textarea{ height:72px; padding:8px 10px; }
+    .modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.25); z-index:30; }
+    .modal .box{ width:min(980px, 94vw); max-height:85vh; overflow:auto; background:#fff; border-radius:12px; border:1px solid var(--border); padding:20px; }
+  .bom-table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+  .bom-table th { background: #f8f9fa; font-weight: 600; text-align: left; padding: 10px; border-bottom: 2px solid var(--border); }
+  .bom-table td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: middle; }
+  .bom-table input[type="text"], 
+  .bom-table input[type="number"] { 
+    width: 100%; 
+    padding: 8px 10px; 
+    border: 1px solid #ddd; 
+    border-radius: 4px; 
+    font-size: 14px;
+  }
+  .bom-table select {
+    width: 100%;
+    padding: 8px 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 14px;
+  }
+  .bom-actions { display: flex; justify-content: space-between; margin: 15px 0; }
+  .bom-total { font-weight: 700; text-align: right; padding: 10px; background: #f8f9fa; }
+    .row{ display:flex; gap:10px; }
+    .col{ flex:1; }
+    .muted{ color:var(--muted); font-size:12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Manufactura</h1>
+    <div class="actions">
+      <a class="btn" href="./index.html">Inicio</a>
+      <a class="btn" href="./orders.html">Pedidos</a>
+      <a class="btn" href="./transport.html">Transporte</a>
+      <a class="btn" href="./finance.html">Finanzas</a>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <nav class="nav" id="sideNav">
+        <a href="#dashboard" data-section="dashboard" class="active">Dashboard</a>
+        <a href="#products" data-section="products">Productos</a>
+        <a href="#orders" data-section="mfgOrders">Órdenes de Producción</a>
+        <a href="#reports" data-section="reports">Reportes</a>
+      </nav>
+    </aside>
+
+    <main class="container">
+      <!-- Dashboard -->
+      <section id="dashboard" class="section">
+        <div class="grid">
+          <div class="card kpi"><div><div class="muted">Órdenes en curso</div><div class="n" id="kpiEnCurso">0</div></div><span class="pill blue">En Proceso</span></div>
+          <div class="card kpi"><div><div class="muted">Total insumos consumidos</div><div class="n" id="kpiInsumos">0</div></div><span class="pill gray">Acumulado</span></div>
+          <div class="card kpi"><div><div class="muted">Costo acumulado</div><div class="n" id="kpiCosto">ARS 0.00</div></div><span class="pill gray">Acumulado</span></div>
+          <div class="card kpi"><div><div class="muted">Unidades producidas</div><div class="n" id="kpiUnidades">0</div></div><span class="pill green">Finalizadas</span></div>
+        </div>
+      </section>
+
+      <!-- Productos (BOM) -->
+      <section id="products" class="section" style="display:none;">
+        <div class="toolbar">
+          <button class="btn primary" id="btnNewProduct">+ Nuevo Producto Manufacturado</button>
+          <input id="fProdSearch" placeholder="Buscar nombre / SKU..." />
+        </div>
+        <div class="card" style="overflow:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th><th>SKU</th><th>Rendimiento</th><th>Tiempo (min)</th><th>Costo BOM</th><th style="width:220px;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="prodTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Órdenes de Producción -->
+      <section id="mfgOrders" class="section" style="display:none;">
+        <div class="toolbar">
+          <button class="btn primary" id="btnNewMfgOrder">+ Nueva Orden de Producción</button>
+          <select id="fMfgStatus"><option value="">Estado: Todos</option><option>Pendiente</option><option>En Proceso</option><option>Finalizada</option><option>Retrasada</option></select>
+          <input id="fMfgSearch" placeholder="Buscar producto / código..." />
+        </div>
+        <div class="card" style="overflow:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Código</th><th>Producto</th><th>Cantidad</th><th>Estado</th><th>Inicio</th><th>Fin Est.</th><th>Responsable</th><th style="width:260px;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="mfgTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Reportes -->
+      <section id="reports" class="section" style="display:none;">
+        <div class="card">
+          <div class="actions" style="margin-bottom:10px;">
+            <button class="btn" id="btnExportPDF">Exportar PDF</button>
+            <button class="btn" id="btnExportXLS">Exportar Excel</button>
+          </div>
+          <div id="reportsBox" class="muted">Selecciona una acción...</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal: Producto Manufacturado -->
+  <div class="modal" id="modalProduct">
+    <div class="box">
+      <h3>Producto Manufacturado</h3>
+      <div class="row">
+        <div class="col"><label>Nombre</label><input id="pName" placeholder="Nombre" /></div>
+        <div class="col"><label>SKU</label><input id="pSKU" placeholder="SKU" /></div>
+      </div>
+      <div style="height:8px"></div>
+      <div class="row">
+        <div class="col"><label>Rendimiento (unid. finales)</label><input id="pYield" type="number" min="1" value="1" /></div>
+        <div class="col"><label>Tiempo estimado (min)</label><input id="pTime" type="number" min="0" value="0" /></div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="card" style="padding: 16px;">
+        <div class="bom-actions">
+          <h3 style="margin: 0;">BOM (Lista de Materiales)</h3>
+          <div class="actions">
+            <button class="btn" id="btnAddBomRow">+ Agregar Insumo</button>
+            <button class="btn" id="btnCloneBOM">Clonar BOM</button>
+          </div>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="bom-table">
+            <thead>
+              <tr>
+                <th>Insumo</th>
+                <th style="width: 120px;">Cantidad</th>
+                <th style="width: 100px;">Unidad</th>
+                <th style="width: 140px;">Costo Unit.</th>
+                <th style="width: 140px;">Costo Total</th>
+                <th style="width: 50px;"></th>
+              </tr>
+            </thead>
+            <tbody id="pBomTbody"></tbody>
+          </table>
+        </div>
+        <div class="bom-total">
+          <span>Total BOM: </span>
+          <span id="pBomTotal" style="font-weight: 800; margin-left: 10px;">ARS 0.00</span>
+        </div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="actions" style="justify-content:flex-end;">
+        <button class="btn" id="btnCloseProduct">Cancelar</button>
+        <button class="btn primary" id="btnSaveProduct">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Orden de Producción -->
+  <div class="modal" id="modalMfgOrder">
+    <div class="box">
+      <h3>Orden de Producción</h3>
+      <div class="row">
+        <div class="col"><label>Producto</label><select id="moProduct"></select></div>
+        <div class="col"><label>Cantidad a producir</label><input id="moQty" type="number" min="1" value="1" /></div>
+      </div>
+      <div style="height:8px"></div>
+      <div class="row">
+        <div class="col"><label>Responsable</label><input id="moOwner" placeholder="Responsable" /></div>
+        <div class="col"><label>Fecha fin estimada</label><input id="moEtaIn" type="datetime-local" /></div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="card">
+        <strong>Consumo estimado según BOM</strong>
+        <table>
+          <thead><tr><th>Insumo</th><th>Cant. requerida</th><th>Disponible</th><th>Unidad</th><th>Costo unit.</th><th>Costo total</th></tr></thead>
+          <tbody id="moConsumoTbody"></tbody>
+        </table>
+      </div>
+      <div style="height:10px"></div>
+      <div class="actions" style="justify-content:flex-end;">
+        <button class="btn" id="btnCloseMfgOrder">Cancelar</button>
+        <button class="btn primary" id="btnSaveMfgOrder">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Storage helpers =====
+    const DB = {
+      get(key, def){ try{ return JSON.parse(localStorage.getItem(key) || JSON.stringify(def)); }catch{return def;} },
+      set(key, val){ localStorage.setItem(key, JSON.stringify(val)); },
+    };
+    const KEYS = {
+      PROD: 'mfg_products', // [{id,name,sku,yield,timeMin,bom:[{name,qty,unit,unitCost}], bomTotal}]
+      MFG: 'mfg_orders',    // [{id,code,productId,productName,qty,status,owner,etaIn,startedAt,finishedAt,costTotal,orderRef,orderId}]
+      INV: 'inventory',     // { materials:[{name,qty,unit,avgCost}], finished:[{sku,name,qty}] }
+      FIN: 'finance_movements'
+    };
+
+    function genId(prefix){ const n=Math.floor(1000+Math.random()*9000); return `${prefix}-${new Date().getFullYear()}-${n}`; }
+
+    // ===== Pills =====
+    function pill(status){
+      const s = (status||'').toLowerCase();
+      if (s.startsWith('pend')) return '<span class="pill gray">Pendiente</span>';
+      if (s.startsWith('en p')) return '<span class="pill blue">En Proceso</span>';
+      if (s.startsWith('fina')) return '<span class="pill green">Finalizada</span>';
+      if (s.startsWith('retr')) return '<span class="pill red">Retrasada</span>';
+      return `<span class="pill">${status||'—'}</span>`;
+    }
+
+    // ===== Nav =====
+    function showSection(id){ document.querySelectorAll('.section').forEach(s=> s.style.display='none'); document.getElementById(id).style.display=''; document.querySelectorAll('#sideNav a').forEach(a=> a.classList.toggle('active', a.dataset.section===id)); }
+
+    // ===== Dashboard =====
+    function refreshKPIs(){
+      const orders = DB.get(KEYS.MFG, []);
+      const enCurso = orders.filter(o=> (o.status||'').toLowerCase().startsWith('en p')).length;
+      const fin = orders.filter(o=> (o.status||'').toLowerCase().startsWith('fina'));
+      const unidades = fin.reduce((acc,o)=> acc + Number(o.qty||0), 0);
+      const costo = fin.reduce((acc,o)=> acc + Number(o.costTotal||0), 0);
+      const insumos = orders.reduce((acc,o)=> acc + Number(o.materialsCost||0), 0);
+      document.getElementById('kpiEnCurso').textContent = enCurso;
+      document.getElementById('kpiUnidades').textContent = unidades;
+      document.getElementById('kpiCosto').textContent = `ARS ${costo.toFixed(2)}`;
+      document.getElementById('kpiInsumos').textContent = insumos.toFixed(2);
+    }
+
+    // ===== Productos (BOM) =====
+    let editProdId = null;
+    let bomRows = [];
+
+    function bomTotal(rows){ return rows.reduce((a,r)=> a + (Number(r.qty||0)*Number(r.unitCost||0)), 0); }
+
+    function renderProducts(){
+      const q = (document.getElementById('fProdSearch').value||'').toLowerCase();
+      const list = DB.get(KEYS.PROD, []);
+      const rows = list.filter(p=> !q || `${p.name} ${p.sku}`.toLowerCase().includes(q)).map(p=>`<tr>
+        <td>${p.name}</td><td>${p.sku}</td><td>${p.yield||1}</td><td>${p.timeMin||0}</td><td>ARS ${(p.bomTotal||0).toFixed(2)}</td>
+        <td class='actions'>
+          <button class='btn icon' title='Editar' onclick="editProduct('${p.id}')">✏️</button>
+          <button class='btn icon' title='Clonar' onclick="cloneProduct('${p.id}')">📋</button>
+          <button class='btn icon' title='Eliminar' onclick="deleteProduct('${p.id}')">🗑️</button>
+        </td>
+      </tr>`).join('');
+      document.getElementById('prodTbody').innerHTML = rows || '<tr><td colspan="6" class="muted">Sin productos</td></tr>';
+    }
+
+    function openProductModal(p){
+      editProdId = p? p.id : null;
+      pName.value = p? (p.name||'') : '';
+      pSKU.value = p? (p.sku||'') : '';
+      pYield.value = p? (p.yield||1) : 1;
+      pTime.value = p? (p.timeMin||0) : 0;
+      bomRows = p? (p.bom||[]) : [];
+      renderBomRows();
+      openModal('modalProduct');
+    }
+    function renderBomRows(){
+      const tbody = document.getElementById('pBomTbody');
+      const unitOptions = ['', 'kg', 'g', 'L', 'ml', 'un', 'm', 'cm', 'mm'];
+      
+      tbody.innerHTML = (bomRows||[]).map((r,i)=>{
+        const total = (Number(r.qty||0)*Number(r.unitCost||0)).toFixed(2);
+        return `
+        <tr>
+          <td>
+            <input type="text" 
+                   value="${(r.name||'').replace(/"/g, '&quot;')}" 
+                   oninput="updateBom(${i},'name',this.value)" 
+                   placeholder="Nombre del insumo" 
+                   style="min-width: 200px;" />
+          </td>
+          <td>
+            <input type="number" 
+                   min="0" 
+                   step="0.001"
+                   value="${r.qty || ''}" 
+                   oninput="updateBom(${i},'qty',this.value)" 
+                   style="text-align: right;" />
+          </td>
+          <td>
+            <select onchange="updateBom(${i},'unit',this.value)">
+              ${unitOptions.map(u => 
+                `<option value="${u}" ${u === (r.unit || '') ? 'selected' : ''}>${u || 'Seleccionar'}</option>`
+              ).join('')}
+            </select>
+          </td>
+          <td>
+            <input type="number" 
+                   min="0" 
+                   step="0.01"
+                   value="${r.unitCost || ''}" 
+                   oninput="updateBom(${i},'unitCost',this.value)"
+                   style="text-align: right;" />
+          </td>
+          <td style="text-align: right;">ARS ${total}</td>
+          <td>
+            <button class='btn icon' 
+                    onclick='event.stopPropagation(); removeBom(${i})' 
+                    style="color: #ef4444; font-size: 16px;">
+              ×
+            </button>
+          </td>
+        </tr>`;
+      }).join('') || `
+      <tr>
+        <td colspan="6" class="muted" style="text-align: center; padding: 20px;">
+          No hay materiales en la lista. Agrega insumos para comenzar.
+        </td>
+      </tr>`;
+      
+      pBomTotal.textContent = bomTotal(bomRows).toFixed(2);
+    }
+    function updateBom(i,k,v){ bomRows[i] = Object.assign({}, bomRows[i], { [k]: (k==='qty'||k==='unitCost')? Number(v||0) : v }); renderBomRows(); }
+    function removeBom(i){ bomRows.splice(i,1); renderBomRows(); }
+
+    function editProduct(id){ const p = DB.get(KEYS.PROD, []).find(x=>x.id===id); if (!p) return; openProductModal(p); }
+    function deleteProduct(id){ if (!confirm('¿Eliminar producto?')) return; DB.set(KEYS.PROD, DB.get(KEYS.PROD, []).filter(x=>x.id!==id)); renderProducts(); }
+    function cloneProduct(id){ const list = DB.get(KEYS.PROD, []); const p=list.find(x=>x.id===id); if(!p) return; const c=JSON.parse(JSON.stringify(p)); c.id=genId('MFGP'); c.name = p.name + ' (copia)'; list.unshift(c); DB.set(KEYS.PROD,list); renderProducts(); }
+
+    // ===== Órdenes de Producción =====
+    let editMfgId = null;
+
+    function renderMfgOrders(){
+      const q = (document.getElementById('fMfgSearch').value||'').toLowerCase();
+      const st = (document.getElementById('fMfgStatus').value||'').toLowerCase();
+      const list = DB.get(KEYS.MFG, []);
+      const rows = list.filter(o=> !q || `${o.code} ${o.productName}`.toLowerCase().includes(q))
+        .filter(o=> !st || (o.status||'').toLowerCase().startsWith(st.split(' ')[0]))
+        .map(o=>`<tr>
+          <td><a href="#" onclick="openMfgDetail('${o.id}');return false;">${o.code}</a></td>
+          <td>${o.productName}</td>
+          <td>${o.qty}</td>
+          <td>${pill(o.status)}</td>
+          <td>${o.startedAt? new Date(o.startedAt).toLocaleString('es-AR') : '—'}</td>
+          <td>${o.etaIn? new Date(o.etaIn).toLocaleString('es-AR') : '—'}</td>
+          <td>${o.owner||'—'}</td>
+          <td class='actions'>
+            <button class='btn' onclick="startProduction('${o.id}')">Iniciar</button>
+            <button class='btn' onclick="completeProduction('${o.id}')">Finalizar</button>
+            <button class='btn icon' onclick="editMfg('${o.id}')">✏️</button>
+            <button class='btn icon' onclick="deleteMfg('${o.id}')">🗑️</button>
+          </td>
+        </tr>`).join('');
+      document.getElementById('mfgTbody').innerHTML = rows || '<tr><td colspan="8" class="muted">Sin órdenes</td></tr>';
+      refreshKPIs();
+    }
+
+    function openMfgModal(seed){
+      editMfgId = seed? seed.id : null;
+      // populate products
+      const list = DB.get(KEYS.PROD, []);
+      moProduct.innerHTML = list.map(p=>`<option value="${p.id}">${p.name} · ${p.sku}</option>`).join('');
+      moQty.value = seed? (seed.qty||1) : 1;
+      moOwner.value = seed? (seed.owner||'') : '';
+      moEtaIn.value = seed && seed.etaIn ? new Date(seed.etaIn).toISOString().slice(0,16) : '';
+      updateConsumoPreview();
+      openModal('modalMfgOrder');
+    }
+
+    function updateConsumoPreview(){
+      const prodId = moProduct.value;
+      const qty = Math.max(1, Number(moQty.value||1));
+      const p = DB.get(KEYS.PROD, []).find(x=>x.id===prodId);
+      const inv = DB.get(KEYS.INV, { materials:[], finished:[] });
+      const rows = (p? (p.bom||[]) : []).map(r=>{
+        const factor = qty / Math.max(1, Number(p.yield||1));
+        const req = Number(r.qty||0) * factor;
+        const stock = (inv.materials||[]).find(m=> (m.name||'').toLowerCase() === (r.name||'').toLowerCase());
+        const have = stock? Number(stock.qty||0) : 0;
+        const unit = r.unit||'';
+        const unitCost = Number(r.unitCost||0);
+        const total = unitCost * req;
+        return `<tr><td>${r.name}</td><td>${req.toFixed(3)}</td><td>${have.toFixed(3)}</td><td>${unit}</td><td>${unitCost.toFixed(2)}</td><td>${total.toFixed(2)}</td></tr>`;
+      }).join('') || '<tr><td colspan="6" class="muted">Sin BOM</td></tr>';
+      document.getElementById('moConsumoTbody').innerHTML = rows;
+    }
+
+    function editMfg(id){ const o=DB.get(KEYS.MFG, []).find(x=>x.id===id); if(!o) return; openMfgModal({ id:o.id, qty:o.qty, owner:o.owner, etaIn:o.etaIn }); moProduct.value = o.productId; updateConsumoPreview(); }
+    function deleteMfg(id){ if(!confirm('¿Eliminar orden?')) return; DB.set(KEYS.MFG, DB.get(KEYS.MFG, []).filter(x=>x.id!==id)); renderMfgOrders(); }
+
+    // ===== Producción (inventario y finanzas) =====
+    function computeMaterialsCost(product, qty){
+      const factor = qty / Math.max(1, Number(product.yield||1));
+      return (product.bom||[]).reduce((acc,r)=> acc + Number(r.unitCost||0)*Number(r.qty||0)*factor, 0);
+    }
+
+    function consumeMaterials(product, qty){
+      const inv = DB.get(KEYS.INV, { materials:[], finished:[] });
+      const factor = qty / Math.max(1, Number(product.yield||1));
+      (product.bom||[]).forEach(r=>{
+        const req = Number(r.qty||0)*factor;
+        const stock = (inv.materials||[]).find(m=> (m.name||'').toLowerCase() === (r.name||'').toLowerCase());
+        if (stock){ stock.qty = Math.max(0, Number(stock.qty||0) - req); }
+      });
+      DB.set(KEYS.INV, inv);
+    }
+
+    function addFinishedGoods(product, qty){
+      const inv = DB.get(KEYS.INV, { materials:[], finished:[] });
+      const item = (inv.finished||[]).find(f=> (f.sku||'')===product.sku) || { sku:product.sku, name:product.name, qty:0 };
+      item.qty = Number(item.qty||0) + Number(qty||0);
+      if (!inv.finished.find(f=>f.sku===item.sku)) inv.finished.push(item);
+      DB.set(KEYS.INV, inv);
+    }
+
+    function movementIdForMfg(id){ return `MFG-${id}`; }
+    function upsertFinanceMovementForMfg(order){
+      const moves = DB.get(KEYS.FIN, []);
+      const id = movementIdForMfg(order.id);
+      const idx = moves.findIndex(m => m.id === id);
+      const mv = { id, date: new Date(order.finishedAt||Date.now()).toISOString(), description:`Producción ${order.code} - ${order.productName}`, category:'Costos', type:'Egreso', amount: Number(order.costTotal||0), source:'manufacturing', mfgId: order.id };
+      if (idx>=0) moves[idx]=mv; else moves.push(mv);
+      DB.set(KEYS.FIN, moves);
+    }
+
+    function startProduction(id){
+      const list = DB.get(KEYS.MFG, []);
+      const it = list.find(x=>x.id===id); if (!it) return;
+      if ((it.status||'').toLowerCase().startsWith('en p')) return;
+      const product = DB.get(KEYS.PROD, []).find(p=>p.id===it.productId); if(!product) return;
+      it.status = 'En Proceso'; it.startedAt = new Date().toISOString();
+      // registrar costo estimado de materiales y consumir inventario
+      it.materialsCost = computeMaterialsCost(product, it.qty);
+      consumeMaterials(product, it.qty);
+      DB.set(KEYS.MFG, list); renderMfgOrders();
+    }
+
+    function completeProduction(id){
+      const list = DB.get(KEYS.MFG, []);
+      const it = list.find(x=>x.id===id); if (!it) return;
+      const product = DB.get(KEYS.PROD, []).find(p=>p.id===it.productId); if(!product) return;
+      it.status = 'Finalizada'; it.finishedAt = new Date().toISOString();
+      // costo total = materiales + overhead (simple configurable por ahora)
+      const overhead = Number(localStorage.getItem('mfg_overhead')||0); // mano de obra/otros
+      it.costTotal = Number(it.materialsCost||0) + overhead;
+      addFinishedGoods(product, it.qty);
+      DB.set(KEYS.MFG, list);
+      // Finanzas
+      upsertFinanceMovementForMfg(it);
+      // Pedidos: si viene de un pedido, marcar como listo para despacho
+      try {
+        if (it.orderId){
+          const orders = JSON.parse(localStorage.getItem('orders')||'[]');
+          const idx = orders.findIndex(o=> String(o.id)===String(it.orderId));
+          if (idx>=0){ orders[idx].status = 'ready_for_dispatch'; localStorage.setItem('orders', JSON.stringify(orders)); }
+        }
+      } catch(_) {}
+      renderMfgOrders(); refreshKPIs();
+    }
+
+    function openMfgDetail(id){
+      const o = DB.get(KEYS.MFG, []).find(x=>x.id===id); if(!o) return;
+      const html = `<div class='card'>
+        <div style='display:flex;justify-content:space-between;align-items:center;'>
+          <div style='font-weight:800;'>${o.code} · ${o.productName}</div>
+          ${pill(o.status)}
+        </div>
+        <div class='muted'>Cant.: ${o.qty} · Responsable: ${o.owner||'—'} · Inicio: ${o.startedAt? new Date(o.startedAt).toLocaleString('es-AR'):'—'} · Fin: ${o.finishedAt? new Date(o.finishedAt).toLocaleString('es-AR'):'—'}</div>
+        <div style='height:8px'></div>
+        <strong>Desglose de costos</strong>
+        <div class='muted'>Materiales: ARS ${(o.materialsCost||0).toFixed(2)} · Overhead: ARS ${Number(localStorage.getItem('mfg_overhead')||0).toFixed(2)} · Total: ARS ${(Number(o.costTotal||0)).toFixed(2)}</div>
+      </div>`;
+      alert('Detalle Producción:\n\n' + html.replace(/<[^>]+>/g,' '));
+    }
+
+    // ===== CRUD save actions =====
+    function saveProduct(){
+      const list = DB.get(KEYS.PROD, []);
+      const obj = {
+        id: editProdId || genId('MFGP'),
+        name: pName.value.trim(), sku: pSKU.value.trim(),
+        yield: Math.max(1, Number(pYield.value||1)),
+        timeMin: Math.max(0, Number(pTime.value||0)),
+        bom: JSON.parse(JSON.stringify(bomRows||[])),
+        bomTotal: bomTotal(bomRows||[])
+      };
+      if (editProdId){ const i=list.findIndex(x=>x.id===editProdId); list[i]=obj; } else { list.unshift(obj); }
+      DB.set(KEYS.PROD, list); closeModal('modalProduct'); renderProducts();
+    }
+
+    function saveMfgOrder(){
+      const prods = DB.get(KEYS.PROD, []);
+      const p = prods.find(x=>x.id===moProduct.value); if(!p) return alert('Seleccione un producto');
+      const list = DB.get(KEYS.MFG, []);
+      const obj = {
+        id: editMfgId || genId('MFG'),
+        code: editMfgId ? (list.find(x=>x.id===editMfgId)||{}).code : genId('MFGO'),
+        productId: p.id, productName: p.name, qty: Math.max(1, Number(moQty.value||1)),
+        status: 'Pendiente', owner: moOwner.value.trim(), etaIn: moEtaIn.value ? new Date(moEtaIn.value).toISOString() : ''
+      };
+      if (editMfgId){ const i=list.findIndex(x=>x.id===editMfgId); list[i]=obj; } else { list.unshift(obj); }
+      DB.set(KEYS.MFG, list); closeModal('modalMfgOrder'); renderMfgOrders();
+    }
+
+    // ===== Bridging desde Pedidos =====
+    function createProductionFromOrder(seed){
+      try {
+        // seed: { orderId, productId | productSKU | productName, qty }
+        showSection('mfgOrders');
+        document.getElementById('btnNewMfgOrder').click();
+        // map product
+        const prods = DB.get(KEYS.PROD, []);
+        let chosen = null;
+        if (seed.productId) chosen = prods.find(p=> String(p.id)===String(seed.productId));
+        if (!chosen && seed.productSKU) chosen = prods.find(p=> (p.sku||'')===seed.productSKU);
+        if (!chosen && seed.productName) chosen = prods.find(p=> (p.name||'').toLowerCase()===String(seed.productName).toLowerCase());
+        if (chosen){ moProduct.value = chosen.id; }
+        moQty.value = Math.max(1, Number(seed.qty||1));
+        updateConsumoPreview();
+        // store linkage on save
+        const _origSave = saveMfgOrder;
+        window.saveMfgOrder = function(){
+          const prods = DB.get(KEYS.PROD, []);
+          const p = prods.find(x=>x.id===moProduct.value); if(!p) return alert('Seleccione un producto');
+          const list = DB.get(KEYS.MFG, []);
+          const obj = {
+            id: editMfgId || genId('MFG'),
+            code: editMfgId ? (list.find(x=>x.id===editMfgId)||{}).code : genId('MFGO'),
+            productId: p.id, productName: p.name, qty: Math.max(1, Number(moQty.value||1)),
+            status: 'Pendiente', owner: moOwner.value.trim(), etaIn: moEtaIn.value ? new Date(moEtaIn.value).toISOString() : '',
+            orderId: seed.orderId || null
+          };
+          if (editMfgId){ const i=list.findIndex(x=>x.id===editMfgId); list[i]=obj; } else { list.unshift(obj); }
+          DB.set(KEYS.MFG, list); closeModal('modalMfgOrder'); renderMfgOrders();
+          // restore
+          window.saveMfgOrder = _origSave;
+        };
+      } catch(_) {}
+    }
+    try { window.createProductionFromOrder = createProductionFromOrder; } catch(e) {}
+
+    // ===== Modals helpers =====
+    function openModal(id){ document.getElementById(id).style.display='flex'; }
+    function closeModal(id){ document.getElementById(id).style.display='none'; }
+
+    // ===== Bindings =====
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('#sideNav a').forEach(a=> a.addEventListener('click', e=>{ e.preventDefault(); showSection(a.dataset.section); }));
+
+      document.getElementById('btnNewProduct').addEventListener('click', ()=>{ editProdId=null; bomRows=[]; openProductModal(null); });
+      document.getElementById('btnAddBomRow').addEventListener('click', ()=>{ bomRows.push({name:'',qty:0,unit:'',unitCost:0}); renderBomRows(); });
+      document.getElementById('btnCloneBOM').addEventListener('click', ()=>{
+        const list = DB.get(KEYS.PROD, []); if(!list.length) return alert('No hay productos para clonar');
+        const base = list[0]; bomRows = JSON.parse(JSON.stringify(base.bom||[])); renderBomRows();
+      });
+      document.getElementById('btnCloseProduct').addEventListener('click', ()=> closeModal('modalProduct'));
+      document.getElementById('btnSaveProduct').addEventListener('click', saveProduct);
+
+      document.getElementById('btnNewMfgOrder').addEventListener('click', ()=> openMfgModal(null));
+      document.getElementById('btnCloseMfgOrder').addEventListener('click', ()=> closeModal('modalMfgOrder'));
+      document.getElementById('btnSaveMfgOrder').addEventListener('click', saveMfgOrder);
+      document.getElementById('moProduct').addEventListener('change', updateConsumoPreview);
+      document.getElementById('moQty').addEventListener('input', updateConsumoPreview);
+
+      document.getElementById('fProdSearch').addEventListener('input', renderProducts);
+      document.getElementById('fMfgSearch').addEventListener('input', renderMfgOrders);
+      document.getElementById('fMfgStatus').addEventListener('input', renderMfgOrders);
+
+      document.getElementById('btnExportPDF').addEventListener('click', ()=> alert('Exportar a PDF (pendiente)'));
+      document.getElementById('btnExportXLS').addEventListener('click', ()=> alert('Exportar a Excel (pendiente)'));
+
+      // Initial renders
+      renderProducts(); renderMfgOrders(); refreshKPIs();
+
+      // Quick action via URL param
+      try {
+        const usp = new URLSearchParams(location.search);
+        if (usp.get('newMfg') === '1'){
+          showSection('mfgOrders');
+          openMfgModal(null);
+          setTimeout(()=>{ try{ document.getElementById('moProduct').focus(); }catch(_){} }, 50);
+        }
+      } catch(_) {}
+    });
+  </script>
+</body>
+</html>

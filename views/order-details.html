@@ -129,6 +129,100 @@
       document.getElementById('extraInfo').textContent = extras.join(' · ') || '—';
     }
 
+    // ===== Utilidad local: imprimir recibo en popup y autocerrar =====
+    function openReceiptPrintPopup(order) {
+      const date = fmtDate(order.createdAt || order.date || Date.now());
+      const rows = (Array.isArray(order.items) ? order.items : []).map(it => {
+        const name = it.productName || it.name || 'Producto';
+        const qty = Number(it.quantity) || 0;
+        const price = Number(it.price) || 0;
+        const sub = qty * price;
+        return `<tr><td>${name}</td><td class="ta-r">${qty}</td><td class="ta-r">${nf(price)}</td><td class="ta-r">${nf(sub)}</td></tr>`;
+      }).join('');
+      const total = (Array.isArray(order.items) ? order.items : []).reduce((s, it) => s + (Number(it.price)||0)*(Number(it.quantity)||0), 0);
+      const html = `<!DOCTYPE html>
+      <html lang="es"><head><meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>Recibo Pedido #${order.id}</title>
+      <style>
+        :root{--ink:#111;--muted:#666;--line:#e5e7eb;--brand:#2563eb}
+        *{box-sizing:border-box}
+        body{font-family:Inter,Arial,sans-serif;color:var(--ink);margin:0;background:#fff}
+        .wrap{max-width:800px;margin:0 auto;padding:24px}
+        .toolbar{position:sticky;top:0;background:#fff;padding:12px 0;border-bottom:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end}
+        .btn{appearance:none;border:1px solid var(--line);background:#fff;color:var(--ink);padding:8px 12px;border-radius:8px;cursor:pointer;font-size:14px}
+        .btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+        h1{font-size:20px;margin:16px 0 4px}
+        .meta{color:var(--muted);font-size:13px;margin:0 0 16px}
+        table{width:100%;border-collapse:collapse;margin-top:12px}
+        th,td{border:1px solid var(--line);padding:8px;font-size:13px}
+        th{background:#f9fafb;text-transform:uppercase;color:#374151;letter-spacing:.02em;text-align:left}
+        .ta-r{text-align:right}
+        tfoot td{font-weight:700}
+        @media print {.toolbar{display:none}}
+      </style></head>
+      <body>
+        <div class="wrap">
+          <div class="toolbar">
+            <button class="btn" onclick="window.close()">Cerrar</button>
+            <button class="btn primary" onclick="window.print()">Imprimir / Exportar PDF</button>
+          </div>
+          <h1>Recibo - Pedido #${order.id}</h1>
+          <p class="meta">Fecha: ${date} · Cliente: ${order.customer || order.customerName || '—'} · Estado: ${order.status || '—'}</p>
+          <table>
+            <thead><tr><th>Producto</th><th class="ta-r">Cant.</th><th class="ta-r">Precio</th><th class="ta-r">Subtotal</th></tr></thead>
+            <tbody>${rows || '<tr><td colspan="4">Sin productos</td></tr>'}</tbody>
+            <tfoot><tr><td colspan="3">Total</td><td class="ta-r">${nf(total)}</td></tr></tfoot>
+          </table>
+        </div>
+      </body></html>`;
+      let w = null;
+      try { w = window.open('about:blank', '_blank', 'noopener,noreferrer'); } catch(e) { w = null; }
+      if (w && w.document) {
+        w.document.open();
+        w.document.write(html);
+        w.document.close();
+        try {
+          w.onafterprint = function(){ try { w.close(); } catch(_) {} };
+          w.onload = function(){
+            try { w.focus(); } catch(_) {}
+            setTimeout(function(){ try { w.print(); } catch(_) {} }, 100);
+          };
+        } catch(_) {
+          try { w.focus(); w.print(); } catch(_) {}
+        }
+        return;
+      }
+      // Fallback: iframe oculto cuando los popups están bloqueados
+      try {
+        const iframe = document.createElement('iframe');
+        iframe.style.position = 'fixed';
+        iframe.style.right = '0';
+        iframe.style.bottom = '0';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = '0';
+        document.body.appendChild(iframe);
+        const doc = iframe.contentWindow || iframe.contentDocument;
+        const idoc = doc.document || doc;
+        idoc.open();
+        idoc.write(html);
+        idoc.close();
+        const cleanup = () => { try { document.body.removeChild(iframe); } catch(_) {} };
+        const iw = iframe.contentWindow;
+        if (iw) {
+          iw.onafterprint = cleanup;
+          iw.focus();
+          setTimeout(() => { try { iw.print(); } catch(_) { cleanup(); } }, 100);
+        } else {
+          cleanup();
+          alert('No se pudo iniciar la impresión.');
+        }
+      } catch(err) {
+        alert('No se pudo imprimir: ' + (err && err.message ? err.message : err));
+      }
+    }
+
     function init() {
       const id = qs('id');
       const order = loadOrder(id);
@@ -144,14 +238,14 @@
       render(order);
 
       document.getElementById('btnPrint').onclick = () => {
-        // Reutilizamos print desde orders si existe, sino generamos recibo simple
+        // Reutilizamos print desde orders si existe; si no, usamos popup local con autocierre
         try {
           if (window.opener && window.opener.printOrder) {
             window.opener.printOrder(order.id);
-          } else {
-            window.print();
+            return;
           }
-        } catch { window.print(); }
+        } catch {}
+        openReceiptPrintPopup(order);
       };
       document.getElementById('btnKDS').onclick = () => {
         try {

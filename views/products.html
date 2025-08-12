@@ -89,6 +89,16 @@
           
           <!-- Main Content Area -->
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+            <!-- Global Top Actions -->
+            <div class="w-full px-4 pt-4">
+              <div class="flex flex-wrap items-center gap-2 border border-[#e7e5da] rounded-lg p-2">
+                <a href="index.html" class="px-3 py-1.5 text-sm rounded-md border border-[#e7e5da] hover:bg-gray-50 text-[#181710]">Inicio</a>
+                <a href="transport.html" class="px-3 py-1.5 text-sm rounded-md border border-[#e7e5da] hover:bg-gray-50 text-[#181710]">Transporte</a>
+                <a href="manufacturing.html" class="px-3 py-1.5 text-sm rounded-md border border-[#e7e5da] hover:bg-gray-50 text-[#181710]">Manufactura</a>
+                <a href="finance.html" class="px-3 py-1.5 text-sm rounded-md border border-[#e7e5da] hover:bg-gray-50 text-[#181710]">Finanzas</a>
+              </div>
+            </div>
+
             <!-- Page Header -->
             <div class="flex flex-wrap justify-between gap-3 p-4">
               <h1 class="text-[#181710] tracking-light text-[32px] font-bold leading-tight min-w-72">Productos</h1>
@@ -811,6 +821,68 @@
         return 'prd_' + Math.random().toString(36).slice(2, 8) + Date.now().toString(36);
       }
 
+      // --- Manufacturing sync helpers ---
+      function loadMfgProducts() {
+        try {
+          const raw = localStorage.getItem('mfg_products');
+          const arr = raw ? JSON.parse(raw) : [];
+          return Array.isArray(arr) ? arr : [];
+        } catch (_) { return []; }
+      }
+
+      function saveMfgProducts(arr) {
+        localStorage.setItem('mfg_products', JSON.stringify(arr || []));
+      }
+
+      function generateMfgProdId() {
+        return 'MFGP-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,6);
+      }
+
+      function upsertMfgFromProduct(prod) {
+        if (!prod) return;
+        const sku = (prod.barcode || '').trim();
+        const name = (prod.name || '').trim();
+        const list = loadMfgProducts();
+        let idx = -1;
+        if (sku) idx = list.findIndex(p => String(p.sku||'') === sku);
+        if (idx === -1) idx = list.findIndex(p => String(p.name||'').toLowerCase() === name.toLowerCase());
+        if (idx >= 0) {
+          // update basic identity fields, preserve BOM and other data
+          const current = list[idx];
+          list[idx] = {
+            ...current,
+            name: name || current.name,
+            sku: sku || current.sku,
+          };
+        } else {
+          // create minimal manufacturable product entry
+          list.unshift({
+            id: generateMfgProdId(),
+            name: name,
+            sku: sku,
+            yield: 1,
+            timeMin: 0,
+            bom: [],
+            bomTotal: 0
+          });
+        }
+        saveMfgProducts(list);
+      }
+
+      function deleteMfgForProduct(prod) {
+        if (!prod) return;
+        const sku = (prod.barcode || '').trim();
+        const name = (prod.name || '').trim().toLowerCase();
+        const list = loadMfgProducts();
+        const filtered = list.filter(p => {
+          const matchSku = sku && String(p.sku||'') === sku;
+          const matchName = !sku && name && String(p.name||'').toLowerCase() === name;
+          // delete entry only if clearly matched by sku, otherwise fallback to exact name match
+          return !(matchSku || matchName);
+        });
+        saveMfgProducts(filtered);
+      }
+
       // --- Product Actions Setup ---
       function setupProductActions() {
         const productsTable = document.getElementById('productsTable');
@@ -956,8 +1028,12 @@
       // --- CRUD actions ---
       function deleteProduct(id) {
         if (!id) return;
-        const products = loadProducts().filter(p => String(p.id) !== String(id));
+        const all = loadProducts();
+        const prod = all.find(p => String(p.id) === String(id));
+        const products = all.filter(p => String(p.id) !== String(id));
         saveProducts(products);
+        // Sync with Manufacturing
+        if (prod) deleteMfgForProduct(prod);
         refreshProductsList();
         showNotification('success', 'Producto eliminado correctamente');
       }
@@ -968,7 +1044,8 @@
         const category = document.getElementById('productCategory')?.value || '';
         const price = parseFloat(document.getElementById('productPrice')?.value || '');
         const priceType = document.getElementById('priceType')?.value || '';
-        const stock = parseFloat(document.getElementById('productStock')?.value || '');
+        let stock = parseFloat(document.getElementById('productStock')?.value || '');
+        if (isNaN(stock) || stock < 0) stock = 0;
         const stockUnit = document.getElementById('stockUnit')?.value || '';
         const barcode = document.getElementById('productBarcode')?.value?.trim() || '';
         const image = previewImage?.src && previewImage.src !== '#' ? previewImage.src : '';
@@ -978,7 +1055,7 @@
           category,
           price: isNaN(price) ? 0 : price,
           priceType,
-          stock: isNaN(stock) ? 0 : stock,
+          stock,
           stockUnit,
           barcode,
           tags: [...selectedTags],
@@ -1004,12 +1081,18 @@
             products.push({ ...productData, id: editingProductId });
           }
           saveProducts(products);
+          // Sync with Manufacturing
+          const saved = products.find(p => String(p.id) === String(editingProductId));
+          if (saved) upsertMfgFromProduct(saved);
           showNotification('success', 'Producto actualizado');
         } else {
           // Create
           const id = generateId();
           products.push({ ...productData, id });
           saveProducts(products);
+          // Sync with Manufacturing
+          const saved = products.find(p => String(p.id) === String(id));
+          if (saved) upsertMfgFromProduct(saved);
           showNotification('success', 'Producto creado');
         }
 
@@ -1106,7 +1189,7 @@
             e.preventDefault();
             e.stopPropagation();
             const row = e.target.closest('tr');
-            const name = row?.querySelector('td:nth-child(1) .text-sm.font-medium')?.textContent?.trim() || 'este producto';
+            const displayName = row?.querySelector('td:nth-child(1) .text-sm.font-medium')?.textContent?.trim() || 'este producto';
             // Build a minimal product object from the row for prefill
             const barcode = row?.querySelector('td:nth-child(1) .text-sm.text-gray-500')?.textContent?.trim() || '';
             const category = row?.querySelector('td:nth-child(2) .text-sm.text-gray-900')?.textContent?.trim() || '';
@@ -1186,6 +1269,7 @@
         document.getElementById('decimalStock').checked = false;
         document.getElementById('productStock').disabled = false;
         document.getElementById('productStock').step = '1';
+        document.getElementById('productStock').value = '0';
         
         // Reset any custom validation
         const formInputs = productForm.querySelectorAll('input, select, textarea');
@@ -1318,7 +1402,32 @@
 
       // Function to refresh the product list with filters/sort/pagination
       function refreshProductsList() {
-        const all = JSON.parse(localStorage.getItem('products') || '[]');
+        // Load manufacturable catalog and compose display records from Manufacturing
+        const mfgProducts = JSON.parse(localStorage.getItem('mfg_products') || '[]');
+        const inv = JSON.parse(localStorage.getItem('inventory') || '{"materials":[],"finished":[]}');
+        const finished = Array.isArray(inv.finished) ? inv.finished : [];
+        // Use existing 'products' only as a metadata source (price, image) if there is a match
+        const metaProducts = JSON.parse(localStorage.getItem('products') || '[]');
+        
+        const all = mfgProducts.map(mp => {
+          const meta = metaProducts.find(p => (p.barcode||'') === (mp.sku||'') || String(p.name||'').toLowerCase() === String(mp.name||'').toLowerCase()) || {};
+          const fin = finished.find(f => (f.sku||'') === (mp.sku||'')) || {};
+          const unlimited = meta.noStockControl === true || meta.noStock === true || meta.stock == null;
+          const computedStock = unlimited ? null : Number(fin.qty != null ? fin.qty : (meta.stock != null ? meta.stock : 0));
+          return {
+            id: mp.id,
+            name: mp.name,
+            barcode: mp.sku || meta.barcode || '',
+            category: meta.category || 'Manufactura',
+            price: Number(meta.price || 0),
+            priceType: meta.priceType || 'unidad',
+            stock: computedStock,
+            noStockControl: unlimited,
+            stockUnit: meta.stockUnit || 'unidades',
+            tags: Array.isArray(meta.tags) ? meta.tags : [],
+            image: meta.image || '',
+          };
+        });
         updateKpis(all);
 
         // Filter
@@ -1382,6 +1491,129 @@
         if (nextBtn) nextBtn.disabled = productState.page >= totalPages;
       }
       
+      // Function to update stock display and status
+      function updateStockDisplay(row, stock, stockUnit) {
+        const stockDisplay = row.querySelector('[data-stock-display]');
+        const statusElement = stockDisplay.nextElementSibling;
+        
+        // Update stock display
+        if (stock === null || stock === undefined) {
+          stockDisplay.textContent = 'Ilimitado';
+        } else {
+          stockDisplay.textContent = `${stock} ${stockUnit || ''}`.trim();
+        }
+        
+        // Update status
+        let status = 'En Stock';
+        let statusClass = 'bg-blue-100 text-blue-800';
+        
+        if (stock !== null && stock !== undefined && stock === 0) {
+          status = 'Sin Stock';
+          statusClass = 'bg-white text-yellow-700 border border-yellow-300';
+        } else if (stock !== null && stock !== undefined && stock < 10) {
+          status = 'Stock Bajo';
+          statusClass = 'bg-yellow-100 text-yellow-800';
+        }
+        
+        statusElement.textContent = status;
+        const statusBadge = row.querySelector('td:last-child span');
+        if (statusBadge) {
+          statusBadge.className = `px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}`;
+          statusBadge.textContent = status;
+        }
+      }
+
+      // Function to handle stock edit
+      function handleStockEdit(row, product) {
+        const displayElement = row.querySelector('[data-stock-display]');
+        const editElement = row.querySelector('[data-stock-edit]');
+        
+        // Toggle visibility
+        displayElement.classList.add('hidden');
+        editElement.classList.remove('hidden');
+        
+        // Focus the input
+        const input = editElement.querySelector('input');
+        input.focus();
+        input.select();
+        
+        // Handle save
+        const saveButton = editElement.querySelector('[data-stock-save]');
+        const cancelButton = editElement.querySelector('[data-stock-cancel]');
+        
+        const saveHandler = () => {
+          const newStock = parseFloat(input.value);
+          if (!isNaN(newStock) && newStock >= 0) {
+            // Update product in memory
+            const products = JSON.parse(localStorage.getItem('products') || '[]');
+            const productIndex = products.findIndex(p => p.id === product.id);
+            if (productIndex !== -1) {
+              products[productIndex].stock = newStock;
+              // Disable unlimited mode if stock is explicitly set
+              products[productIndex].noStockControl = false;
+              localStorage.setItem('products', JSON.stringify(products));
+              
+              // Update display
+              updateStockDisplay(row, newStock, product.stockUnit);
+              product.noStockControl = false;
+              
+              // Update manufacturing products if exists
+              const mfgProducts = JSON.parse(localStorage.getItem('mfg_products') || '[]');
+              const mfgProductIndex = mfgProducts.findIndex(p => p.productId === product.id);
+              if (mfgProductIndex !== -1) {
+                mfgProducts[mfgProductIndex].stock = newStock;
+                localStorage.setItem('mfg_products', JSON.stringify(mfgProducts));
+              }
+              
+              showNotification('success', 'Stock actualizado correctamente');
+            }
+          } else {
+            showNotification('error', 'Ingrese un valor de stock válido');
+          }
+          
+          // Reset UI
+          displayElement.classList.remove('hidden');
+          editElement.classList.add('hidden');
+          
+          // Clean up event listeners
+          saveButton.removeEventListener('click', saveHandler);
+          cancelButton.removeEventListener('click', cancelHandler);
+          document.removeEventListener('keydown', keyDownHandler);
+        };
+        
+        const cancelHandler = () => {
+          // Reset input value
+          input.value = product.stock;
+          
+          // Reset UI
+          displayElement.classList.remove('hidden');
+          editElement.classList.add('hidden');
+          
+          // Clean up event listeners
+          saveButton.removeEventListener('click', saveHandler);
+          cancelButton.removeEventListener('click', cancelHandler);
+          document.removeEventListener('keydown', keyDownHandler);
+        };
+        
+        const keyDownHandler = (e) => {
+          if (e.key === 'Enter') {
+            saveHandler();
+          } else if (e.key === 'Escape') {
+            cancelHandler();
+          }
+        };
+        
+        // Add event listeners
+        saveButton.addEventListener('click', saveHandler);
+        cancelButton.addEventListener('click', cancelHandler);
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            saveHandler();
+          }
+        });
+        document.addEventListener('keydown', keyDownHandler);
+      }
+
       // Function to add a product to the table
       function addProductToTable(product) {
         // Get the table body
@@ -1390,32 +1622,26 @@
         // Create a new row
         const newRow = document.createElement('tr');
         newRow.className = 'hover:bg-gray-50 cursor-pointer';
-        if (product.id) {
-          newRow.setAttribute('data-id', product.id);
-        }
+        if (product.id) newRow.setAttribute('data-id', product.id);
+        if (product.barcode) newRow.setAttribute('data-barcode', product.barcode);
+        if (product.name) newRow.setAttribute('data-name', String(product.name));
         
-        // Add click event to show product details
-        newRow.addEventListener('click', (e) => {
-          // Prevent triggering when clicking on action buttons
-          if (!e.target.closest('button[data-action]')) {
-            showProductDetails(product);
-          }
-        });
-        
-        // Determine stock status
+        // Determine stock status (consider unlimited)
         let stockStatus = 'En Stock';
         let stockStatusClass = 'bg-blue-100 text-blue-800';
-        
-        if (product.stock === 0) {
-          stockStatus = 'Sin Stock';
-          stockStatusClass = 'bg-white text-yellow-700 border border-yellow-300';
-        } else if (product.stock < 10) {
-          stockStatus = 'Stock Bajo';
-          stockStatusClass = 'bg-yellow-100 text-yellow-800';
+        const unlimited = !!product.noStockControl || product.stock == null;
+        if (!unlimited) {
+          if (product.stock === 0) {
+            stockStatus = 'Sin Stock';
+            stockStatusClass = 'bg-white text-yellow-700 border border-yellow-300';
+          } else if (product.stock < 10) {
+            stockStatus = 'Stock Bajo';
+            stockStatusClass = 'bg-yellow-100 text-yellow-800';
+          }
         }
         
         // Format the stock display
-        const stockDisplay = `${product.stock} ${product.stockUnit}`;
+        const stockDisplay = unlimited ? 'Ilimitado' : `${product.stock} ${product.stockUnit}`;
         
         // Format the price display in pesos
         const priceDisplay = `ARS ${product.price.toFixed(2)}/${product.priceType}`;
@@ -1436,8 +1662,28 @@
             <div class="text-sm text-gray-500">${product.tags && product.tags.length > 0 ? product.tags.join(', ') : 'Sin etiquetas'}</div>
           </td>
           <td class="px-6 py-4 whitespace-nowrap">
-            <div class="text-sm text-gray-900">${stockDisplay}</div>
+            <div class="text-sm text-gray-900" data-stock-display>${stockDisplay}</div>
             <div class="text-xs text-gray-500">${stockStatus}</div>
+            <div class="hidden mt-1" data-stock-edit>
+              <div class="flex items-center gap-2">
+                <input type="number" step="0.01" min="0" value="${product.stock ?? 0}" 
+                  class="w-20 px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  data-stock-input>
+                <span class="text-sm text-gray-500">${product.stockUnit || ''}</span>
+                <div class="flex flex-col gap-1">
+                  <button type="button" data-stock-save class="text-green-600 hover:text-green-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  <button type="button" data-stock-cancel class="text-gray-500 hover:text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
           </td>
           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
             ${priceDisplay}
@@ -1447,6 +1693,13 @@
           </td>
           <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
             <div class="flex items-center justify-end gap-2">
+              <button type="button" data-action="edit-stock" aria-label="Editar stock de ${product.name}" title="Editar stock"
+                class="inline-flex items-center gap-1 px-2 py-1 rounded text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-green-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H3a2 2 0 01-2-2v-6a2 2 0 012-2h4z" />
+                </svg>
+                <span class="hidden sm:inline">Stock</span>
+              </button>
               <button type="button" data-action="edit" aria-label="Editar ${product.name}" title="Editar"
                 class="inline-flex items-center gap-1 px-2 py-1 rounded text-white bg-[#0f3d91] hover:bg-[#0c3278] focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#0f3d91]">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/></svg>
@@ -1586,22 +1839,53 @@
         }
       });
 
-      // Global delegated handler for Edit/Delete buttons (static and dynamic rows)
+      // Global delegated handler for table actions (Edit Stock, Edit, Delete)
       document.addEventListener('click', (e) => {
-        // Limit to clicks inside table rows, avoid modals
-        const row = e.target.closest('tr');
+        // Check if click is on a stock edit button or its children
+        const stockButton = e.target.closest('button[data-action="edit-stock"]');
+        if (stockButton) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const row = stockButton.closest('tr');
+          if (!row) return;
+          
+          const productId = row.getAttribute('data-id');
+          if (!productId) return;
+          
+          const products = JSON.parse(localStorage.getItem('products') || '[]');
+          const product = products.find(p => p.id === productId);
+          if (!product) return;
+          
+          handleStockEdit(row, product);
+          return;
+        }
+        
+        // For other actions (edit/delete)
+        const button = e.target.closest('button[data-action]');
+        if (!button) return;
+        
+        const action = button.getAttribute('data-action');
+        const row = button.closest('tr');
         if (!row) return;
-        if (row.closest('#productDetailModal') || row.closest('#confirmationModal')) return;
-
-        // Determine action by class or label text
-        let action = null;
-        if (e.target.closest('.edit-btn')) action = 'edit';
-        else if (e.target.closest('.delete-btn')) action = 'delete';
-        else {
-          const btn = e.target.closest('a, button');
-          const label = btn?.textContent?.trim().toLowerCase();
-          if (label === 'editar') action = 'edit';
-          if (label === 'eliminar') action = 'delete';
+        
+        // Prevent row click handler from triggering
+        e.stopPropagation();
+        
+        // Get product ID
+        const productId = row.getAttribute('data-id');
+        const barcode = row.getAttribute('data-barcode');
+        const nameKey = (row.getAttribute('data-name') || '').toLowerCase();
+        
+        // Find the product in products catalog using multiple keys
+        const products = JSON.parse(localStorage.getItem('products') || '[]');
+        let product = null;
+        if (productId) product = products.find(p => p.id === productId) || null;
+        if (!product && barcode) product = products.find(p => (p.barcode || '') === barcode) || null;
+        if (!product && nameKey) product = products.find(p => String(p.name || '').toLowerCase() === nameKey) || null;
+        if (!product) {
+          showNotification('error', 'No se encontró el producto para editar stock');
+          return;
         }
         if (!action) return;
 
@@ -1768,6 +2052,10 @@
             products.push(productData);
           }
           localStorage.setItem('products', JSON.stringify(products));
+          // Sync with Manufacturing so list (which reads from mfg_products) shows the new/updated product
+          try { if (typeof upsertMfgFromProduct === 'function') upsertMfgFromProduct(productData); } catch (_) {}
+          // Immediate refresh
+          try { if (typeof window.refreshProductsList === 'function') window.refreshProductsList(); } catch(_) {}
           
           // Also save to session for immediate use
           sessionStorage.setItem('lastAddedProduct', JSON.stringify(productData));
@@ -1779,19 +2067,13 @@
             showNotification('success', '¡Producto creado exitosamente!');
           }
           
-          // Reset form and close modal after delay
-          setTimeout(() => {
-            resetForm();
-            closeModalHandler();
-            
-            // Refresh the product list
-            if (window.refreshProductsList) {
-              window.refreshProductsList();
-            }
-            
-            // Show a final success message
-            showNotification('success', 'Producto guardado y lista actualizada');
-          }, 1500);
+          // Cerrar modal inmediatamente y refrescar lista
+          resetForm();
+          closeModalHandler();
+          if (window.refreshProductsList) {
+            window.refreshProductsList();
+          }
+          showNotification('success', 'Producto guardado y lista actualizada');
           
         } catch (error) {
           console.error('Error saving product:', error);
@@ -1836,7 +2118,7 @@
       function increaseQuantity() {
         const input = document.getElementById('quantityInput');
         const currentValue = parseInt(input.value) || 1;
-        const maxStock = selectedProductForOrder ? selectedProductForOrder.stock : 999;
+        const maxStock = selectedProductForOrder ? ((selectedProductForOrder.noStockControl || selectedProductForOrder.stock == null) ? Infinity : selectedProductForOrder.stock) : 999;
         
         if (currentValue < maxStock) {
           input.value = currentValue + 1;
@@ -1871,7 +2153,7 @@
           return false;
         }
         
-        if (quantity > selectedProductForOrder.stock) {
+        if (!(selectedProductForOrder.noStockControl || selectedProductForOrder.stock == null) && quantity > selectedProductForOrder.stock) {
           errorElement.textContent = `Stock insuficiente. Máximo disponible: ${selectedProductForOrder.stock}`;
           errorElement.classList.remove('hidden');
           addButton.disabled = true;
@@ -1898,6 +2180,8 @@
         const orderItem = {
           productId: selectedProductForOrder.id,
           name: selectedProductForOrder.name,
+          productName: selectedProductForOrder.name,
+          sku: selectedProductForOrder.barcode || '',
           price: selectedProductForOrder.price,
           priceType: selectedProductForOrder.priceType,
           quantity: quantity,
