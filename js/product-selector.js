@@ -8,6 +8,22 @@ function initializeProductSelector() {
   setupProductSelectorEventListeners();
 }
 
+// Helper: determine if a product has unlimited stock
+function isUnlimitedStock(product){
+  const s = product?.stock;
+  const flag = product?.unlimited === true || product?.stockUnlimited === true || product?.infiniteStock === true;
+  if (flag) return true;
+  if (s === undefined || s === null || s === '') return true;
+  if (typeof s === 'string') {
+    const txt = s.trim().toLowerCase();
+    if (txt === 'ilimitado' || txt === 'infinito' || txt === 'unlimited') return true;
+    const n = Number(txt);
+    if (!Number.isFinite(n)) return true;
+  }
+  if (typeof s === 'number' && s < 0) return true;
+  return false;
+}
+
 // Load products from localStorage
 function loadAvailableProducts() {
   availableProducts = JSON.parse(localStorage.getItem('products') || '[]');
@@ -56,19 +72,19 @@ function renderProductSelectorTable() {
     row.className = 'hover:bg-gray-50';
     
     // Determine stock status
-    let stockStatus = 'En Stock';
-    let stockStatusClass = 'bg-green-100 text-green-800';
+    const unlimited = isUnlimitedStock(product);
+    let stockStatus = unlimited ? 'Ilimitado' : 'En Stock';
+    let stockStatusClass = unlimited ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800';
     
-    if (product.stock === 0) {
+    if (!unlimited && product.stock === 0) {
       stockStatus = 'Sin Stock';
       stockStatusClass = 'bg-red-100 text-red-800';
-    } else if (product.stock < 10) {
+    } else if (!unlimited && product.stock < 10) {
       stockStatus = 'Stock Bajo';
       stockStatusClass = 'bg-yellow-100 text-yellow-800';
     }
-    
-    const stockDisplay = `${product.stock} ${product.stockUnit}`;
-    const priceDisplay = `ARS ${product.price.toFixed(2)}/${product.priceType}`;
+    const stockDisplay = unlimited ? 'Ilimitado' : `${product.stock} ${product.stockUnit||''}`.trim();
+    const priceDisplay = `CLP ${product.price.toFixed(2)}/${product.priceType}`;
     const currentQuantity = selectedProductsForOrder[product.id]?.quantity || 0;
     
     row.innerHTML = `
@@ -95,7 +111,7 @@ function renderProductSelectorTable() {
       </td>
       <td class="px-6 py-4 whitespace-nowrap">
         <div class="flex items-center space-x-2">
-          <button onclick="decreaseProductQuantity('${product.id}')" class="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm ${product.stock === 0 ? 'opacity-50 cursor-not-allowed' : ''}" ${product.stock === 0 ? 'disabled' : ''}>
+          <button onclick="decreaseProductQuantity('${product.id}')" class="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm ${(!unlimited && product.stock === 0) ? 'opacity-50 cursor-not-allowed' : ''}" ${(!unlimited && product.stock === 0) ? 'disabled' : ''}>
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
             </svg>
@@ -104,13 +120,13 @@ function renderProductSelectorTable() {
             type="number" 
             id="quantity_${product.id}" 
             min="0" 
-            max="${product.stock}" 
+            ${unlimited ? '' : `max="${product.stock}"`} 
             value="${currentQuantity}" 
             class="w-16 text-center border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             onchange="updateProductSelection('${product.id}', this.value)"
-            ${product.stock === 0 ? 'disabled' : ''}
+            ${(!unlimited && product.stock === 0) ? 'disabled' : ''}
           >
-          <button onclick="increaseProductQuantity('${product.id}')" class="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm ${product.stock === 0 ? 'opacity-50 cursor-not-allowed' : ''}" ${product.stock === 0 ? 'disabled' : ''}>
+          <button onclick="increaseProductQuantity('${product.id}')" class="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm ${(!unlimited && product.stock === 0) ? 'opacity-50 cursor-not-allowed' : ''}" ${(!unlimited && product.stock === 0) ? 'disabled' : ''}>
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
             </svg>
@@ -134,11 +150,12 @@ function renderProductSelectorTable() {
 function increaseProductQuantity(productId) {
   const product = availableProducts.find(p => p.id === productId);
   if (!product) return;
+  const unlimited = isUnlimitedStock(product);
   
   const input = document.getElementById(`quantity_${productId}`);
   const currentValue = parseInt(input.value) || 0;
   
-  if (currentValue < product.stock) {
+  if (unlimited || currentValue < product.stock) {
     const newValue = currentValue + 1;
     input.value = newValue;
     updateProductSelection(productId, newValue);
@@ -161,11 +178,12 @@ function decreaseProductQuantity(productId) {
 function updateProductSelection(productId, quantity) {
   const product = availableProducts.find(p => p.id === productId);
   if (!product) return;
+  const unlimited = isUnlimitedStock(product);
   
   const qty = parseInt(quantity) || 0;
   const addBtn = document.getElementById(`addBtn_${productId}`);
   
-  if (qty > 0 && qty <= product.stock) {
+  if (qty > 0 && (unlimited || qty <= product.stock)) {
     selectedProductsForOrder[productId] = {
       ...product,
       quantity: qty,
@@ -198,7 +216,7 @@ function updateSelectedProductsDisplay() {
   
   if (selectedItems.length === 0) {
     container.innerHTML = '<p class="text-gray-500 text-sm">No hay productos seleccionados</p>';
-    totalElement.textContent = 'ARS 0.00';
+    totalElement.textContent = 'CLP 0.00';
     return;
   }
   
@@ -211,12 +229,12 @@ function updateSelectedProductsDisplay() {
           <span class="text-xs text-gray-500 ml-2">x${item.quantity}</span>
         </div>
       </div>
-      <div class="text-sm font-semibold text-gray-900">ARS ${item.subtotal.toFixed(2)}</div>
+      <div class="text-sm font-semibold text-gray-900">CLP ${item.subtotal.toFixed(2)}</div>
     </div>
   `).join('');
   
   const total = selectedItems.reduce((sum, item) => sum + item.subtotal, 0);
-  totalElement.textContent = `ARS ${total.toFixed(2)}`;
+  totalElement.textContent = `CLP ${total.toFixed(2)}`;
 }
 
 // Update "Add All Selected" button state
@@ -409,7 +427,7 @@ function renderFilteredProducts(products) {
     }
     
     const stockDisplay = `${product.stock} ${product.stockUnit}`;
-    const priceDisplay = `ARS ${product.price.toFixed(2)}/${product.priceType}`;
+    const priceDisplay = `CLP ${product.price.toFixed(2)}/${product.priceType}`;
     const currentQuantity = selectedProductsForOrder[product.id]?.quantity || 0;
     
     row.innerHTML = `

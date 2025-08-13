@@ -12,6 +12,7 @@
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="../js/config.js"></script>
   </head>
   <body>
     <div class="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
@@ -296,10 +297,9 @@
               <label for="productPrice" class="block text-sm font-medium text-gray-700 mb-1">Precio *</label>
               <div class="mt-1 relative rounded-md shadow-sm">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span class="text-gray-500 sm:text-sm">ARS</span>
+                  <span class="text-gray-500 sm:text-sm">CLP</span>
                 </div>
-                <input type="number" step="0.01" min="0" id="productPrice" name="productPrice" required
-                  class="focus:ring-[#181710] focus:border-[#181710] block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md">
+                <input type="number" id="productPrice" name="productPrice" min="0" step="0.01" required class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#181710] focus:border-[#181710] block w-full pl-12 p-2.5" placeholder="0.00">
                 <div class="absolute inset-y-0 right-0 flex items-center">
                   <select id="priceType" name="priceType"
                     class="focus:ring-[#181710] focus:border-[#181710] h-full py-0 pl-2 pr-7 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-r-md">
@@ -400,8 +400,8 @@
 
     <!-- Error Notification -->
     <div id="errorNotification" class="fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded hidden" role="alert">
-      <strong class="font-bold">Error:</strong>
-      <span id="errorMessage" class="block sm:inline"> Ha ocurrido un error al guardar el producto.</span>
+      <strong class="font-bold">¡Error!</strong>
+      <span id="errorMessage" class="block sm:inline"></span>
     </div>
 
     <!-- Product Detail Modal -->
@@ -1198,10 +1198,10 @@
             const stockText = row?.querySelector('td:nth-child(3) .text-sm.text-gray-900')?.textContent?.trim() || '';
             const id = row?.getAttribute('data-id') || null;
 
-            // Parse price (expects e.g., "ARS 4.99/kg")
+            // Parse price (expects e.g., "CLP 4.99/kg")
             let price = '';
             let priceType = '';
-            const priceMatch = priceText.match(/ARS\s*([0-9]+(?:\.[0-9]+)?)\s*\/?\s*(\w+)?/i);
+            const priceMatch = priceText.match(/CLP\s*([0-9]+(?:\.[0-9]+)?)\s*\/?\s*(\w+)?/i);
             if (priceMatch) {
               price = parseFloat(priceMatch[1]);
               priceType = priceMatch[2] || '';
@@ -1644,7 +1644,7 @@
         const stockDisplay = unlimited ? 'Ilimitado' : `${product.stock} ${product.stockUnit}`;
         
         // Format the price display in pesos
-        const priceDisplay = `ARS ${product.price.toFixed(2)}/${product.priceType}`;
+        const priceDisplay = `CLP ${product.price.toFixed(2)}/${product.priceType}`;
         
         // Create the row content
         newRow.innerHTML = `
@@ -1903,10 +1903,10 @@
           const stockText = row?.querySelector('td:nth-child(3) .text-sm.text-gray-900')?.textContent?.trim() || '';
           const id = row?.getAttribute('data-id') || null;
 
-          // Parse price (expects e.g., "ARS 4.99/kg")
+          // Parse price (expects e.g., "CLP 4.99/kg")
           let price = '';
           let priceType = '';
-          const priceMatch = priceText.match(/ARS\s*([0-9]+(?:\.[0-9]+)?)\s*\/?\s*([^\s/]+)?/i);
+          const priceMatch = priceText.match(/CLP\s*([0-9]+(?:\.[0-9]+)?)\s*\/?\s*([^\s/]+)?/i);
           if (priceMatch) {
             price = parseFloat(priceMatch[1]);
             priceType = priceMatch[2] || '';
@@ -2006,8 +2006,9 @@
           return;
         }
         
-        if (isNaN(productData.price) || productData.price <= 0) {
-          showError('El precio debe ser un número mayor a cero');
+        // Allow price 0, only reject NaN or negative
+        if (isNaN(productData.price) || productData.price < 0) {
+          showError('El precio debe ser un número válido (no negativo)');
           return;
         }
         
@@ -2095,7 +2096,7 @@
         // Populate modal with product info
         document.getElementById('modalProductImage').src = product.image || 'https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80';
         document.getElementById('modalProductName').textContent = product.name;
-        document.getElementById('modalProductPrice').textContent = `ARS ${product.price.toFixed(2)}/${product.priceType}`;
+        document.getElementById('modalProductPrice').textContent = `CLP ${product.price.toFixed(2)}/${product.priceType}`;
         document.getElementById('modalProductStock').textContent = `Stock disponible: ${product.stock} ${product.stockUnit}`;
         
         // Reset quantity and calculate subtotal
@@ -2170,7 +2171,7 @@
         
         const quantity = parseInt(document.getElementById('quantityInput').value) || 1;
         const subtotal = selectedProductForOrder.price * quantity;
-        document.getElementById('modalSubtotal').textContent = `ARS ${subtotal.toFixed(2)}`;
+        document.getElementById('modalSubtotal').textContent = `CLP ${subtotal.toFixed(2)}`;
       }
 
       function confirmAddToOrder() {
@@ -2337,7 +2338,7 @@
           <div class="mb-4 p-3 bg-gray-50 rounded-lg">
             <div class="flex justify-between items-center">
               <span class="text-sm text-gray-600">Subtotal:</span>
-              <span id="modalSubtotal" class="text-lg font-semibold text-gray-900">ARS 0.00</span>
+              <span id="modalSubtotal" class="text-lg font-semibold text-gray-900">CLP 0.00</span>
             </div>
           </div>
         </div>

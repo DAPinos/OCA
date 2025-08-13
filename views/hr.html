@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recursos Humanos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="../js/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <style>
+    :root{ --bg:#f5f4f0; --bg2:#fff; --text:#181710; --muted:#6b7280; --border:#e7e5da; --brand:#181710; }
+    body{ margin:0; font-family: Inter, "Noto Sans", sans-serif; background:var(--bg); color:var(--text); }
+    .layout{ display:grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    .sidebar{ border-right:1px solid var(--border); background:var(--bg2); padding:12px; position:sticky; top:0; height: 100vh; overflow:auto; }
+    .nav a{ display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; color:var(--text); text-decoration:none; border:1px solid transparent; }
+    .nav a:hover{ background:#efeee9; }
+    .nav a.active{ background:var(--text); color:#fff; }
+    .card{ background:#fff; border:1px solid var(--border); border-radius:12px; padding:14px; box-shadow:0 1px 2px rgba(0,0,0,.05); }
+    .pill{ font-size:12px; padding:2px 8px; border-radius:999px; border:1px solid var(--border); background:#fafafa; white-space:nowrap; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <h1 class="text-xl font-extrabold mb-3">RRHH</h1>
+      <nav class="nav flex flex-col gap-2" id="sideNav">
+        <a href="#dashboard" data-section="dashboard" class="active">Dashboard</a>
+        <a href="#employees" data-section="employees">Empleados</a>
+        <a href="#attendance" data-section="attendance">Asistencia</a>
+        <a href="#vacations" data-section="vacations">Vacaciones</a>
+        <a href="#payroll" data-section="payroll">Nómina</a>
+        <a href="#performance" data-section="performance">Desempeño</a>
+        <a href="#documents" data-section="documents">Documentos</a>
+        <a href="#reports" data-section="reports">Reportes/Exportar</a>
+        <a href="#settings" data-section="settings">Configuración</a>
+      </nav>
+      <div class="mt-4 text-sm">
+        <label class="block text-gray-600 mb-1">Rol</label>
+        <select id="hrRole" class="w-full border rounded-lg p-2">
+          <option value="RRHH">RRHH</option>
+          <option value="Supervisor">Supervisor</option>
+          <option value="Viewer">Viewer</option>
+        </select>
+      </div>
+      <div class="mt-2 text-xs text-gray-500">Permisos aplican a acciones de edición/borrado.</div>
+      <div class="mt-4">
+        <a class="text-sm text-blue-700 hover:underline" href="./index.html">Volver al inicio</a>
+      </div>
+    </aside>
+
+    <main class="p-4 space-y-4">
+      <!-- Dashboard -->
+      <section id="section-dashboard" class="space-y-3">
+        <h2 class="text-2xl font-bold">Dashboard</h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <div class="card"><div class="text-sm text-gray-500">Empleados activos</div><div id="kpiActive" class="text-3xl font-extrabold">0</div></div>
+          <div class="card"><div class="text-sm text-gray-500">Rotación (12m)</div><div id="kpiTurnover" class="text-3xl font-extrabold">0%</div></div>
+          <div class="card"><div class="text-sm text-gray-500">Ausencias (mes)</div><div id="kpiAbsences" class="text-3xl font-extrabold">0</div></div>
+          <div class="card"><div class="text-sm text-gray-500">Costo nómina (mes)</div><div id="kpiPayrollCost" class="text-3xl font-extrabold">$0</div></div>
+        </div>
+      </section>
+
+      <!-- Empleados -->
+      <section id="section-employees" class="space-y-3 hidden">
+        <div class="flex items-center justify-between">
+          <h2 class="text-2xl font-bold">Empleados</h2>
+          <button id="btnNewEmployee" class="btn bg-[var(--brand)] text-white rounded-lg px-4 py-2">Nuevo empleado</button>
+        </div>
+        <div class="flex gap-2 flex-wrap">
+          <input id="empSearch" placeholder="Buscar..." class="border rounded-lg p-2 flex-1 min-w-[220px]" />
+          <select id="empDeptFilter" class="border rounded-lg p-2">
+            <option value="">Todos los departamentos</option>
+          </select>
+          <select id="empStatusFilter" class="border rounded-lg p-2">
+            <option value="">Todos</option>
+            <option value="activo">Activo</option>
+            <option value="inactivo">Inactivo</option>
+          </select>
+        </div>
+        <div class="card overflow-x-auto">
+          <table class="min-w-full text-sm" id="empTable">
+            <thead class="bg-gray-50 text-gray-600">
+              <tr>
+                <th class="p-2 text-left">Foto</th>
+                <th class="p-2 text-left">Nombre</th>
+                <th class="p-2 text-left">RUT/DNI</th>
+                <th class="p-2 text-left">Puesto</th>
+                <th class="p-2 text-left">Área</th>
+                <th class="p-2 text-left">Ingreso</th>
+                <th class="p-2 text-left">Salario</th>
+                <th class="p-2 text-left">Estado</th>
+                <th class="p-2 text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Asistencia -->
+      <section id="section-attendance" class="space-y-3 hidden">
+        <div class="flex items-center justify-between">
+          <h2 class="text-2xl font-bold">Asistencia</h2>
+          <div class="flex gap-2">
+            <input id="attDate" type="date" class="border rounded-lg p-2" />
+            <button id="btnAttendanceReport" class="btn border rounded-lg px-3">Exportar (CSV / PDF)</button>
+          </div>
+        </div>
+        <div class="card space-y-3">
+          <div class="flex gap-2 flex-wrap">
+            <select id="attEmployee" class="border rounded-lg p-2 min-w-[220px]"></select>
+            <button id="btnCheckIn" class="btn bg-green-600 text-white rounded-lg px-3">Entrada</button>
+            <button id="btnCheckOut" class="btn bg-red-600 text-white rounded-lg px-3">Salida</button>
+          </div>
+          <div id="attTableContainer" class="overflow-x-auto">
+            <table class="min-w-full text-sm" id="attTable">
+              <thead class="bg-gray-50 text-gray-600">
+                <tr>
+                  <th class="p-2 text-left">Fecha</th>
+                  <th class="p-2 text-left">Empleado</th>
+                  <th class="p-2 text-left">Entrada</th>
+                  <th class="p-2 text-left">Salida</th>
+                  <th class="p-2 text-left">Horas</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Vacaciones -->
+      <section id="section-vacations" class="space-y-3 hidden">
+        <div class="flex items-center justify-between">
+          <h2 class="text-2xl font-bold">Vacaciones y Licencias</h2>
+          <button id="btnNewVacation" class="btn bg-[var(--brand)] text-white rounded-lg px-4 py-2">Nueva solicitud</button>
+        </div>
+        <div class="card overflow-x-auto">
+          <table class="min-w-full text-sm" id="vacTable">
+            <thead class="bg-gray-50 text-gray-600">
+              <tr>
+                <th class="p-2 text-left">Empleado</th>
+                <th class="p-2 text-left">Tipo</th>
+                <th class="p-2 text-left">Desde</th>
+                <th class="p-2 text-left">Hasta</th>
+                <th class="p-2 text-left">Días</th>
+                <th class="p-2 text-left">Estado</th>
+                <th class="p-2 text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Nómina -->
+      <section id="section-payroll" class="space-y-3 hidden">
+        <div class="flex items-center justify-between">
+          <h2 class="text-2xl font-bold">Nómina</h2>
+          <div class="flex gap-2">
+            <input id="payrollMonth" type="month" class="border rounded-lg p-2" />
+            <button id="btnRunPayroll" class="btn bg-[var(--brand)] text-white rounded-lg px-4">Calcular Nómina</button>
+            <button id="btnExportPayroll" class="btn border rounded-lg px-3">Exportar (CSV/PDF)</button>
+          </div>
+        </div>
+        <div class="card overflow-x-auto">
+          <table class="min-w-full text-sm" id="payrollTable">
+            <thead class="bg-gray-50 text-gray-600">
+              <tr>
+                <th class="p-2 text-left">Empleado</th>
+                <th class="p-2 text-left">Salario Base</th>
+                <th class="p-2 text-left">Horas</th>
+                <th class="p-2 text-left">Bonos</th>
+                <th class="p-2 text-left">Descuentos</th>
+                <th class="p-2 text-left">Total</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Desempeño -->
+      <section id="section-performance" class="space-y-3 hidden">
+        <div class="flex items-center justify-between">
+          <h2 class="text-2xl font-bold">Evaluaciones de Desempeño</h2>
+          <button id="btnNewEval" class="btn bg-[var(--brand)] text-white rounded-lg px-4 py-2">Nueva evaluación</button>
+        </div>
+        <div class="card overflow-x-auto">
+          <table class="min-w-full text-sm" id="evalTable">
+            <thead class="bg-gray-50 text-gray-600">
+              <tr>
+                <th class="p-2 text-left">Empleado</th>
+                <th class="p-2 text-left">Fecha</th>
+                <th class="p-2 text-left">Puntaje</th>
+                <th class="p-2 text-left">Comentarios</th>
+                <th class="p-2 text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Documentos -->
+      <section id="section-documents" class="space-y-3 hidden">
+        <div class="flex items-center justify-between">
+          <h2 class="text-2xl font-bold">Documentos Laborales</h2>
+          <button id="btnNewDoc" class="btn bg-[var(--brand)] text-white rounded-lg px-4 py-2">Nuevo documento</button>
+        </div>
+        <div class="card overflow-x-auto">
+          <table class="min-w-full text-sm" id="docTable">
+            <thead class="bg-gray-50 text-gray-600">
+              <tr>
+                <th class="p-2 text-left">Empleado</th>
+                <th class="p-2 text-left">Tipo</th>
+                <th class="p-2 text-left">Fecha</th>
+                <th class="p-2 text-left">Archivo</th>
+                <th class="p-2 text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Reportes / Exportar -->
+      <section id="section-reports" class="space-y-3 hidden">
+        <h2 class="text-2xl font-bold">Reportes y Exportaciones</h2>
+        <div class="card space-y-2">
+          <div>Descargue listados en CSV o PDF.</div>
+          <div class="flex gap-2 flex-wrap">
+            <button id="btnExportEmployees" class="btn border rounded-lg px-3">Empleados (CSV/PDF)</button>
+            <button id="btnExportAttendance" class="btn border rounded-lg px-3">Asistencia (CSV/PDF)</button>
+            <button id="btnExportVacations" class="btn border rounded-lg px-3">Vacaciones (CSV/PDF)</button>
+            <button id="btnExportDocs" class="btn border rounded-lg px-3">Documentos (CSV/PDF)</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Configuración -->
+      <section id="section-settings" class="space-y-3 hidden">
+        <h2 class="text-2xl font-bold">Configuración</h2>
+        <div class="card space-y-2">
+          <div class="text-sm text-gray-600">Parámetros de RRHH</div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+              <label class="text-sm block">Días de vacaciones anuales</label>
+              <input id="cfgVacationDays" type="number" class="border rounded-lg p-2 w-full" value="15" />
+            </div>
+            <div>
+              <label class="text-sm block">Hora estándar laboral (h/día)</label>
+              <input id="cfgHoursPerDay" type="number" class="border rounded-lg p-2 w-full" value="8" />
+            </div>
+            <div>
+              <label class="text-sm block">Formato moneda (solo vista)</label>
+              <input disabled class="border rounded-lg p-2 w-full" value="es-CL / $" />
+            </div>
+          </div>
+          <div>
+            <button id="btnSaveSettings" class="btn bg-[var(--brand)] text-white rounded-lg px-4 py-2">Guardar</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modales -->
+  <div id="modalOverlay" class="fixed inset-0 bg-black/40 hidden items-center justify-center p-4 z-50">
+    <div id="modalBox" class="bg-white rounded-xl shadow-xl w-full max-w-2xl"></div>
+  </div>
+
+  <!-- Toasts -->
+  <div id="toastContainer" class="fixed top-4 right-4 flex flex-col gap-2 z-50"></div>
+
+  <script src="../js/hr.js"></script>
+</body>
+</html>

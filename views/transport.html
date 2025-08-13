@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="../js/config.js"></script>
   <style>
     :root{ --bg:#f5f4f0; --bg2:#fff; --text:#181710; --muted:#8d865e; --border:#e7e5da; --ok:#16a34a; --warn:#0ea5e9; --gray:#6b7280; --red:#ef4444; }
     *{ box-sizing:border-box; }
@@ -53,6 +54,7 @@
       <a class="btn" href="./index.html">Inicio</a>
       <a class="btn" href="./orders.html">Pedidos</a>
       <a class="btn" href="./manufacturing.html">Manufactura</a>
+      <a class="btn" href="./hr.html">RRHH</a>
       <a class="btn" href="./finance.html">Finanzas</a>
     </div>
   </header>
@@ -336,6 +338,33 @@
       return `${prefix}-${y}-${num}`;
     }
 
+    // ===== Clientes (select y autofill) =====
+    function populateCustomerSelect(){
+      const sel = document.getElementById('mCustomer'); if(!sel) return;
+      let clients = [];
+      try { clients = JSON.parse(localStorage.getItem('clients') || localStorage.getItem('clientes') || '[]'); } catch(_) { clients = []; }
+      const opts = ['<option value="">Seleccionar cliente…</option>'].concat(
+        (clients||[]).map(c=>{
+          const id = c.id || c.clientId || c.clienteId || '';
+          const name = c.name || c.nombre || c.fullName || c.email || (`Cliente ${id}`);
+          // Guardamos name para matching rápido, y el objeto completo para dirección
+          const data = JSON.stringify(c).replace(/\"/g,'\\\"');
+          return `<option value="${id}" data-client-name="${name}" data-client-data="${data}">${name}</option>`;
+        })
+      ).join('');
+      sel.innerHTML = opts;
+    }
+
+    function autofillAddressFromCustomer(){
+      try{
+        const sel = document.getElementById('mCustomer');
+        const opt = sel.options[sel.selectedIndex];
+        const d = JSON.parse(opt?.dataset?.clientData || '{}');
+        const addr = d.address || (Array.isArray(d.addresses)? d.addresses[0]: '') || '';
+        const a = document.getElementById('mAddress'); if (a && addr) a.value = addr;
+      }catch(_){ }
+    }
+
     // Pills
     function pill(status){
       const s = (status||'').toLowerCase();
@@ -520,8 +549,13 @@
           if (o.dataset.clientName === wanted || o.value === wanted){ sel.selectedIndex = i; matched = true; break; }
         }
         if (!matched) { sel.value = ''; }
+        // Ensure change listener is attached to auto-fill address
+        sel && sel.addEventListener('change', autofillAddressFromCustomer);
       } catch(_) {}
-      document.getElementById('mAddress').value = it.address||'';
+      const addrEl = document.getElementById('mAddress');
+      addrEl.value = it.address||'';
+      // If no saved address, try to auto-fill from selected client
+      if (!addrEl.value) { try { autofillAddressFromCustomer(); } catch(_) {} }
       document.getElementById('mVehicle').value = it.vehicleId||'';
       document.getElementById('mDriver').value = it.driverId||'';
       document.getElementById('mEtaOut').value = it.etaOut ? new Date(it.etaOut).toISOString().slice(0,16) : '';
@@ -663,6 +697,8 @@
         editDispatchId = null; modalItems = []; renderModalItems([]);
         mOrderRef.value=''; mCustomer.value=''; mAddress.value=''; mVehicle.value=''; mDriver.value=''; mEtaOut.value=''; mEtaIn.value=''; mStatus.value='Pendiente'; mNotes.value='';
         populateCustomerSelect();
+        // Bind change to auto-fill address when selecting a customer
+        try { mCustomer.addEventListener('change', autofillAddressFromCustomer); } catch(_) {}
         openModal('modalDispatch');
       });
       document.getElementById('btnNewVehicle').addEventListener('click', () => { editVehicleId=null; vPlate.value=''; vBrand.value=''; vModel.value=''; vCapacity.value='0'; vMaint.value='OK';
@@ -758,36 +794,93 @@
       btnExportGuides.onclick = () => { alert('Generación de PDF de guías (pendiente de implementación)'); };
 
       // Handoff desde Orders: si hay una semilla, abrir modal y precompletar
-      try {
-        const seedRaw = localStorage.getItem('dispatchSeed');
-        if (seedRaw) {
+      function processDispatchSeed() {
+        try {
+          const seedRaw = localStorage.getItem('dispatchSeed');
+          if (!seedRaw) return;
+          
           const seed = JSON.parse(seedRaw);
           // Limpiar para evitar reuso accidental
           localStorage.removeItem('dispatchSeed');
+          
           // Ir a sección Órdenes y abrir modal nuevo
           showSection('orders');
           document.getElementById('btnNewDispatch').click();
-          // Prefill campos
-          if (seed.orderRef) mOrderRef.value = String(seed.orderRef);
-          // Intentar seleccionar cliente por nombre o id
-          try{
-            populateCustomerSelect();
-            const sel = document.getElementById('mCustomer');
-            const wanted = String(seed.customer||'');
-            let matched = false;
-            for (let i=0;i<sel.options.length;i++){
-              const o = sel.options[i];
-              if (o.dataset.clientName === wanted || o.value === wanted){ sel.selectedIndex = i; matched = true; break; }
+          
+          // Esperar a que el modal esté completamente renderizado
+          setTimeout(() => {
+            try {
+              // Prefill campos básicos
+              if (seed.orderRef) mOrderRef.value = String(seed.orderRef);
+              
+              // Poblar select de clientes
+              populateCustomerSelect();
+              
+              // Intentar seleccionar cliente después de un pequeño retraso
+              setTimeout(() => {
+                try {
+                  const sel = document.getElementById('mCustomer');
+                  if (!sel) return;
+                  
+                  const wantedName = String(seed.customer || '').trim();
+                  const wantedId = String(seed.customerId || '').trim();
+                  let matched = false;
+                  
+                  // Intentar hacer match por ID primero, luego por nombre
+                  for (let i = 0; i < sel.options.length; i++) {
+                    const o = sel.options[i];
+                    if ((wantedId && o.value === wantedId) || 
+                        (wantedName && o.dataset.clientName && o.dataset.clientName === wantedName)) {
+                      sel.selectedIndex = i;
+                      matched = true;
+                      break;
+                    }
+                  }
+                  
+                  // Si encontramos el cliente, llenar la dirección
+                  if (matched) {
+                    // Forzar el evento change para asegurar que se llame autofillAddressFromCustomer
+                    const event = new Event('change');
+                    sel.dispatchEvent(event);
+                    
+                    // Si hay una dirección en el seed, usarla (sobreescribe la del cliente)
+                    if (seed.address) {
+                      setTimeout(() => {
+                        mAddress.value = String(seed.address);
+                      }, 50);
+                    }
+                  } else if (seed.address) {
+                    // Si no encontramos el cliente pero tenemos dirección, poner la dirección
+                    mAddress.value = String(seed.address);
+                  }
+                } catch (e) {
+                  console.error('Error al seleccionar cliente:', e);
+                }
+              }, 100); // Pequeño retraso para asegurar que el select está listo
+              
+              // Items
+              const items = Array.isArray(seed.items) ? seed.items : [];
+              modalItems = items.map(it => ({
+                name: it.name || 'Producto',
+                qty: Number(it.qty || it.quantity || 1)
+              }));
+              renderModalItems(modalItems);
+              
+            } catch (e) {
+              console.error('Error al procesar dispatchSeed:', e);
             }
-            if (matched) autofillAddressFromCustomer();
-          }catch{}
-          if (seed.address) mAddress.value = String(seed.address);
-          // Items
-          const items = Array.isArray(seed.items) ? seed.items : [];
-          modalItems = items.map(it => ({ name: it.name || 'Producto', qty: Number(it.qty || it.quantity || 1) }));
-          renderModalItems(modalItems);
+          }, 50);
+          
+        } catch (e) {
+          console.error('Error procesando dispatchSeed:', e);
         }
-      } catch (e) { /* noop */ }
+      }
+      
+      // Procesar el dispatchSeed después de que todo esté listo
+      if (localStorage.getItem('dispatchSeed')) {
+        // Pequeño retraso para asegurar que todo esté cargado
+        setTimeout(processDispatchSeed, 100);
+      }
 
       // Initial renders
       renderVehicles(); renderDrivers(); populateCustomerSelect(); renderDispatchTable(); renderTracking(); refreshKPIs();

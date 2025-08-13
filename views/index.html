@@ -399,8 +399,8 @@
           console.log('Ruta actual:', window.location.pathname);
           
           setTimeout(() => {
-            // Usar ruta absoluta desde la raíz del dominio para evitar problemas
-            const loginUrl = window.location.origin + window.location.pathname.replace('index.html', '') + 'views/login.html';
+            // Usar ruta absoluta desde la raíz del dominio. En Netlify publish=views, login está en '/login.html'
+            const loginUrl = window.location.origin + '/login.html';
             console.log('Redirigiendo a:', loginUrl);
             window.location.replace(loginUrl);
           }, 100);
@@ -424,8 +424,8 @@
           console.error('Error al procesar datos de usuario:', error);
           localStorage.clear();
           setTimeout(() => {
-            // Usar ruta absoluta desde la raíz del dominio para evitar problemas
-            const loginUrl = window.location.origin + window.location.pathname.replace('index.html', '') + 'views/login.html';
+            // Usar ruta absoluta desde la raíz del dominio. En Netlify publish=views, login está en '/login.html'
+            const loginUrl = window.location.origin + '/login.html';
             console.log('Redirigiendo a login tras error:', loginUrl);
             window.location.replace(loginUrl);
           }, 100);

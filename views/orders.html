@@ -41,6 +41,7 @@
             id: order.id,
             orderRef: String(order.id),
             customer: order.customer || order.customerName || '',
+            customerId: String(order.customerId || order.clientId || order.clienteId || '').trim(),
             address: order.address || order.deliveryAddress || '',
             items: (order.items || []).map(it => ({
               name: it.productName || it.name || 'Producto',
@@ -92,8 +93,8 @@
           return `<tr>
             <td class="px-4 py-2 text-sm text-gray-700">${it.productName || it.name || '-'}</td>
             <td class="px-4 py-2 text-sm text-gray-700 text-right">${it.quantity}</td>
-            <td class="px-4 py-2 text-sm text-gray-700 text-right">ARS ${(Number(it.price)||0).toFixed(2)}</td>
-            <td class="px-4 py-2 text-sm text-gray-900 font-medium text-right">ARS ${subtotal.toFixed(2)}</td>
+            <td class="px-4 py-2 text-sm text-gray-700 text-right">CLP ${(Number(it.price)||0).toFixed(2)}</td>
+            <td class="px-4 py-2 text-sm text-gray-900 font-medium text-right">CLP ${subtotal.toFixed(2)}</td>
           </tr>`;
         }).join('');
         body.innerHTML = `
@@ -119,7 +120,7 @@
               <tfoot class="bg-gray-50">
                 <tr>
                   <td class="px-4 py-2" colspan="3"><span class="text-sm font-medium text-gray-700">Total</span></td>
-                  <td class="px-4 py-2 text-right text-gray-900 font-bold">ARS ${(Number(order.total)||0).toFixed(2)}</td>
+                  <td class="px-4 py-2 text-right text-gray-900 font-bold">CLP ${(Number(order.total)||0).toFixed(2)}</td>
                 </tr>
               </tfoot>
             </table>
@@ -165,8 +166,8 @@
           return `<tr>
             <td>${it.productName || it.name || '-'}</td>
             <td class="ta-r">${it.quantity}</td>
-            <td class="ta-r">ARS ${(Number(it.price)||0).toFixed(2)}</td>
-            <td class="ta-r">ARS ${subtotal.toFixed(2)}</td>
+            <td class="ta-r">CLP ${(Number(it.price)||0).toFixed(2)}</td>
+            <td class="ta-r">CLP ${subtotal.toFixed(2)}</td>
           </tr>`;
         }).join('');
         const html = `<!DOCTYPE html>
@@ -201,7 +202,7 @@
               <table>
                 <thead><tr><th>Producto</th><th class="ta-r">Cant.</th><th class="ta-r">Precio</th><th class="ta-r">Subtotal</th></tr></thead>
                 <tbody>${itemsRows || '<tr><td colspan="4">Sin productos</td></tr>'}</tbody>
-                <tfoot><tr><td colspan="3">Total</td><td class="ta-r">ARS ${(Number(order.total)||0).toFixed(2)}</td></tr></tfoot>
+                <tfoot><tr><td colspan="3">Total</td><td class="ta-r">CLP ${(Number(order.total)||0).toFixed(2)}</td></tr></tfoot>
               </table>
             </div>
           </body></html>`;
@@ -426,6 +427,7 @@
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="../js/config.js"></script>
   </head>
   <body>
     <div class="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
@@ -445,6 +447,14 @@
                       </svg>
                     </div>
                     <p class="text-[#181710] text-sm font-medium leading-normal">Inicio</p>
+                  </a>
+                  <a href="hr.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="UsersThree" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M168,120a40,40,0,1,0-40-40A40,40,0,0,0,168,120Zm-80,0A40,40,0,1,0,48,80,40,40,0,0,0,88,120Zm80,16c-22.09,0-64,11.05-64,32v16a8,8,0,0,0,8,8h112a8,8,0,0,0,8-8V168C232,147.05,190.09,136,168,136Zm-80,0c-22.09,0-64,11.05-64,32v16a8,8,0,0,0,8,8h72a8,8,0,0,0,8-8V168C168,147.05,126.09,136,88,136Z"/>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">RRHH</p>
                   </a>
                   <a href="orders.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#f5f4f0] hover:bg-[#e8e6e0] transition-colors">
                     <div class="text-[#181710]" data-icon="Receipt" data-size="24px" data-weight="fill">
@@ -659,9 +669,15 @@
             <div>
               <h4 class="font-semibold text-gray-900 mb-4">Información de la Orden</h4>
               <div class="space-y-4">
-                <div>
-                  <label for="orderClientSelect" class="block text-sm font-medium text-gray-700 mb-1">Cliente *</label>
-                  <select id="orderClientSelect" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#181710] focus:border-[#181710] sm:text-sm"></select>
+                <div class="space-y-4">
+                  <div>
+                    <label for="orderClientSelect" class="block text-sm font-medium text-gray-700 mb-1">Cliente *</label>
+                    <select id="orderClientSelect" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#181710] focus:border-[#181710] sm:text-sm"></select>
+                  </div>
+                  <div>
+                    <label for="clientAddress" class="block text-sm font-medium text-gray-700 mb-1">Dirección de Entrega</label>
+                    <input type="text" id="clientAddress" class="client-address mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#181710] focus:border-[#181710] sm:text-sm" placeholder="Seleccione un cliente o ingrese una dirección">
+                  </div>
                 </div>
                 <div>
                   <label for="orderDate" class="block text-sm font-medium text-gray-700 mb-1">Fecha *</label>
@@ -702,7 +718,7 @@
                   <tfoot class="bg-gray-50">
                     <tr>
                       <td colspan="5" class="px-6 py-3 text-right text-sm font-semibold text-gray-900">
-                        <span id="orderModalTotal">ARS 0.00</span>
+                        <span id="orderModalTotal">CLP 0.00</span>
                       </td>
                     </tr>
                   </tfoot>
@@ -798,7 +814,7 @@
             </div>
             <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-200">
               <span class="font-semibold text-gray-900">Total:</span>
-              <span id="selectedProductsTotal" class="text-lg font-bold text-blue-600">ARS 0.00</span>
+              <span id="selectedProductsTotal" class="text-lg font-bold text-blue-600">CLP 0.00</span>
             </div>
           </div>
         </div>
@@ -979,9 +995,9 @@
           });
           
           // Format total
-          const formattedTotal = new Intl.NumberFormat('es-ES', {
+          const formattedTotal = new Intl.NumberFormat('es-CL', {
             style: 'currency',
-            currency: 'ARS'
+            currency: 'CLP'
           }).format(order.total || 0);
           
           // Status pill (Kyte-style)
@@ -1000,6 +1016,28 @@
           }
           const statusBadge = `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${pillClass}">${pillLabel}</span>`;
           
+          // Resolve customer name (robust fallback for legacy orders)
+          let customerName = order.customer || order.customerName || order.client || '';
+          if (!customerName) {
+            try {
+              const clients = JSON.parse(localStorage.getItem('clients') || localStorage.getItem('clientes') || '[]');
+              const cid = String(order.customerId || order.clientId || order.clienteId || '').trim();
+              let match = null;
+              if (cid) match = clients.find(c => String(c.id || c.clientId || c.clienteId || '') === cid);
+              if (!match && order.address) {
+                match = clients.find(c => (c.address || (Array.isArray(c.addresses)? c.addresses[0]: '')) === order.address);
+              }
+              if (!match && typeof order.customer === 'object' && order.customer) {
+                const n = order.customer.name || order.customer.nombre || order.customer.fullName;
+                if (n) customerName = n;
+              }
+              if (!customerName && match) {
+                customerName = match.name || match.nombre || match.fullName || match.email || '';
+              }
+            } catch(_) {}
+          }
+          if (!customerName) customerName = 'Cliente no especificado';
+
           // Build product preview (first 2 names)
           const productNames = (order.items || []).map(it => it.productName || it.name).filter(Boolean);
           const preview = productNames.slice(0, 2).join(', ');
@@ -1010,7 +1048,7 @@
               <a href="order-details.html?id=${order.id}" target="_blank" class="text-[#181710] hover:underline" onclick="openOrderDetails('${order.id}'); return false;" title="Abrir detalles del pedido">${order.id || 'N/A'}</a>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              ${order.customer || order.customerName || 'Cliente no especificado'}
+              ${customerName}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               ${formattedDate}
@@ -1118,8 +1156,15 @@
         try {
           const raw = localStorage.getItem('clients') || localStorage.getItem('clientes') || '[]';
           const arr = JSON.parse(raw);
-          return Array.isArray(arr) ? arr : [];
+          // Ensure each client has an addresses array
+          return (Array.isArray(arr) ? arr : []).map(client => ({
+            ...client,
+            addresses: client.addresses || [],
+            // Default address if none exists
+            address: client.address || (client.addresses && client.addresses[0]) || ''
+          }));
         } catch(e) {
+          console.error('Error loading clients:', e);
           return [];
         }
       }
@@ -1127,25 +1172,77 @@
       function populateClientSelect(selectEl) {
         const clients = getClientsFromStorage();
         if (!selectEl) return;
+        
+        // Store current selection
+        const currentValue = selectEl.value;
+        const currentAddress = selectEl.dataset.selectedAddress || '';
+        
         selectEl.innerHTML = '';
         const placeholder = document.createElement('option');
         placeholder.value = '';
         placeholder.textContent = 'Seleccione un cliente';
         selectEl.appendChild(placeholder);
+        
         clients.forEach(c => {
           const opt = document.createElement('option');
           const id = c.id || c.clientId || c.clienteId || '';
           const name = c.name || c.nombre || c.fullName || c.email || `Cliente ${id || ''}`;
           opt.value = id || name;
           opt.textContent = name;
-          opt.dataset.clientName = name;
+          // Store all client data as JSON in dataset
+          opt.dataset.clientData = JSON.stringify(c);
           selectEl.appendChild(opt);
         });
+        
+        // Restore selection if it exists
+        if (currentValue) {
+          selectEl.value = currentValue;
+          // Trigger change to update address field
+          const event = new Event('change');
+          selectEl.dispatchEvent(event);
+        }
       }
 
+      // Populate client selects and set up change handlers
       function populateClientSelects() {
-        populateClientSelect(document.getElementById('currentOrderCustomerSelect'));
-        populateClientSelect(document.getElementById('orderClientSelect'));
+        const orderClientSelect = document.getElementById('orderClientSelect');
+        const currentOrderCustomerSelect = document.getElementById('currentOrderCustomerSelect');
+        
+        // Initialize both selects
+        populateClientSelect(orderClientSelect);
+        populateClientSelect(currentOrderCustomerSelect);
+        
+        // Set up change handlers to update address field
+        [orderClientSelect, currentOrderCustomerSelect].forEach(select => {
+          if (!select) return;
+          
+          select.addEventListener('change', function() {
+            const clientId = this.value;
+            const clientData = this.selectedOptions[0]?.dataset.clientData;
+            
+            if (clientId && clientData) {
+              try {
+                const client = JSON.parse(clientData);
+                // Update address field if it exists
+                const addressInput = document.getElementById('clientAddress') || document.querySelector('.client-address');
+                if (addressInput) {
+                  addressInput.value = client.address || '';
+                  // Store the address data for later use
+                  this.dataset.selectedAddress = client.address || '';
+                }
+              } catch (e) {
+                console.error('Error parsing client data:', e);
+              }
+            } else {
+              // Clear address if no client selected
+              const addressInput = document.getElementById('clientAddress') || document.querySelector('.client-address');
+              if (addressInput) {
+                addressInput.value = '';
+                delete this.dataset.selectedAddress;
+              }
+            }
+          });
+        });
       }
 
       function populateSearchClientSelect() {
@@ -1189,9 +1286,9 @@
         });
         
         // Format total
-        const formattedTotal = new Intl.NumberFormat('es-ES', {
+        const formattedTotal = new Intl.NumberFormat('es-CL', {
           style: 'currency',
-          currency: 'ARS'
+          currency: 'CLP'
         }).format(order.total || 0);
         
         // Create items list
@@ -1215,10 +1312,10 @@
                 ${qty}
               </td>
               <td class="py-4 px-6 text-sm text-gray-500">
-                ${new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'ARS' }).format(unitPrice)}
+                ${new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(unitPrice)}
               </td>
               <td class="py-4 px-6 text-sm font-medium text-gray-900">
-                ${new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'ARS' }).format(itemTotal)}
+                ${new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(itemTotal)}
               </td>
             </tr>
           `;
@@ -1308,6 +1405,27 @@
           return;
         }
 
+        // Resolve customer name with robust fallbacks (consistent with table/details)
+        let customerName = order.customer || order.customerName || order.client || '';
+        if (!customerName) {
+          try {
+            const clients = JSON.parse(localStorage.getItem('clients') || localStorage.getItem('clientes') || '[]');
+            const cid = String(order.customerId || order.clientId || order.clienteId || '').trim();
+            let match = null;
+            if (cid) match = clients.find(c => String(c.id || c.clientId || c.clienteId || '') === cid);
+            if (!match && order.address) {
+              match = clients.find(c => (c.address || (Array.isArray(c.addresses)? c.addresses[0]: '')) === order.address);
+            }
+            if (!match && typeof order.customer === 'object' && order.customer) {
+              const n = order.customer.name || order.customer.nombre || order.customer.fullName;
+              if (n) customerName = n;
+            }
+            if (!customerName && match) {
+              customerName = match.name || match.nombre || match.fullName || match.email || '';
+            }
+          } catch(_) {}
+        }
+
         const orderDate = new Date(order.createdAt || order.date);
         const formattedDate = orderDate.toISOString().slice(0,10);
 
@@ -1322,7 +1440,7 @@
                 <div class="text-sm font-medium text-gray-900">${name}</div>
                 <div class="text-xs text-gray-500">${item.productId || item.id || ''}</div>
               </td>
-              <td class="py-3 px-4 text-sm text-gray-500">ARS ${unitPrice.toFixed(2)}</td>
+              <td class="py-3 px-4 text-sm text-gray-500">CLP ${unitPrice.toFixed(2)}</td>
               <td class="py-3 px-4">
                 <div class="flex items-center space-x-2">
                   <button class="w-6 h-6 rounded-full bg-gray-200" onclick="updateEditQty('${orderId}', ${idx}, -1)">-</button>
@@ -1330,7 +1448,7 @@
                   <button class="w-6 h-6 rounded-full bg-gray-200" onclick="updateEditQty('${orderId}', ${idx}, 1)">+</button>
                 </div>
               </td>
-              <td class="py-3 px-4 text-sm font-medium text-gray-900" id="editSubtotal_${idx}">ARS ${subtotal.toFixed(2)}</td>
+              <td class="py-3 px-4 text-sm font-medium text-gray-900" id="editSubtotal_${idx}">CLP ${subtotal.toFixed(2)}</td>
               <td class="py-3 px-4 text-right">
                 <button class="text-red-600 hover:text-red-800 text-sm" onclick="removeEditItem('${orderId}', ${idx})">Eliminar</button>
               </td>
@@ -1349,12 +1467,16 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Cliente</label>
-                  <input id="editCustomer" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2" value="${order.customer || order.customerName || ''}">
+                  <select id="editCustomerSelect" class="w-full border border-gray-300 rounded-md px-3 py-2"></select>
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
                   <input id="editDate" type="date" class="w-full border border-gray-300 rounded-md px-3 py-2" value="${formattedDate}">
                 </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Dirección de entrega</label>
+                <input id="editAddress" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2" placeholder="Dirección" value="${order.address || order.deliveryAddress || ''}">
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
@@ -1385,7 +1507,7 @@
                   <tfoot class="bg-gray-50">
                     <tr>
                       <td colspan="3" class="px-4 py-3 text-right text-sm font-medium text-gray-900">Total:</td>
-                      <td id="editTotal" class="px-4 py-3 text-sm font-medium text-gray-900">ARS ${total.toFixed(2)}</td>
+                      <td id="editTotal" class="px-4 py-3 text-sm font-medium text-gray-900">CLP ${total.toFixed(2)}</td>
                       <td class="px-4 py-3 text-right">
                         <button class="text-sm text-blue-600 hover:text-blue-800" onclick="openProductSelector()">Agregar Productos</button>
                       </td>
@@ -1404,6 +1526,48 @@
         // Keep a copy in a temp location for editing session
         window.__editingOrder = JSON.parse(JSON.stringify(order));
         showModal(content);
+        // Populate client select and sync address
+        try {
+          const sel = document.getElementById('editCustomerSelect');
+          populateClientSelect(sel);
+          // Try to select by id first, then by name
+          const wantedId = String(order.customerId || order.clientId || order.clienteId || '').trim();
+          const wantedName = customerName;
+          if (sel) {
+            let matched = false;
+            for (let i = 0; i < sel.options.length; i++) {
+              const opt = sel.options[i];
+              const data = (()=>{ try{return JSON.parse(opt.dataset.clientData||'{}')}catch(_){return {}} })();
+              const cid = String(data.id || data.clientId || data.clienteId || '');
+              const cname = data.name || data.nombre || data.fullName || opt.textContent;
+              if ((wantedId && cid === wantedId) || (wantedName && cname === wantedName)) { sel.selectedIndex = i; matched = true; break; }
+            }
+            if (!matched && wantedName) {
+              // Fall back to setting the placeholder to customerName
+              // No-op: selection remains placeholder
+            }
+            const addrEl = document.getElementById('editAddress');
+            const applyAddr = () => {
+              try{
+                const opt = sel.options[sel.selectedIndex];
+                const d = JSON.parse(opt?.dataset?.clientData || '{}');
+                const addr = d.address || (Array.isArray(d.addresses)? d.addresses[0] : '') || '';
+                if (addrEl && addr && !addrEl.value) addrEl.value = addr;
+              }catch(_){}
+            };
+            sel.addEventListener('change', () => {
+              try{
+                const opt = sel.options[sel.selectedIndex];
+                const d = JSON.parse(opt?.dataset?.clientData || '{}');
+                const addr = d.address || (Array.isArray(d.addresses)? d.addresses[0] : '') || '';
+                const addrEl2 = document.getElementById('editAddress');
+                if (addrEl2) addrEl2.value = addr;
+              }catch(_){ }
+            });
+            // Initial address fill if order doesn't have one
+            if (!(order.address || order.deliveryAddress)) applyAddr();
+          }
+        } catch(_) {}
       }
 
       function updateEditQty(orderId, index, delta) {
@@ -1417,11 +1581,11 @@
         const qtyEl = document.getElementById(`editQty_${index}`);
         const subEl = document.getElementById(`editSubtotal_${index}`);
         if (qtyEl) qtyEl.textContent = newQty;
-        if (subEl) subEl.textContent = `ARS ${subtotal.toFixed(2)}`;
+        if (subEl) subEl.textContent = `CLP ${subtotal.toFixed(2)}`;
         // update total
         const total = items.reduce((s, it) => s + (Number(it.price)||0)*(Number(it.quantity)||0), 0);
         const totalEl = document.getElementById('editTotal');
-        if (totalEl) totalEl.textContent = `ARS ${total.toFixed(2)}`;
+        if (totalEl) totalEl.textContent = `CLP ${total.toFixed(2)}`;
       }
 
       function removeEditItem(orderId, index) {
@@ -1434,20 +1598,30 @@
         [...document.querySelectorAll('#editItemsBody tr')].forEach((tr, i) => tr.setAttribute('data-index', i));
         const total = (window.__editingOrder.items||[]).reduce((s, it) => s + (Number(it.price)||0)*(Number(it.quantity)||0), 0);
         const totalEl = document.getElementById('editTotal');
-        if (totalEl) totalEl.textContent = `ARS ${total.toFixed(2)}`;
+        if (totalEl) totalEl.textContent = `CLP ${total.toFixed(2)}`;
       }
 
       function saveEditedOrder(orderId) {
         const orders = JSON.parse(localStorage.getItem('orders')) || [];
         const idx = orders.findIndex(o => o.id === orderId);
         if (idx === -1) return;
-        const cust = (document.getElementById('editCustomer')?.value || '').trim();
+        // Read from select; fallback to previous text pattern just in case
+        let cust = '';
+        const sel = document.getElementById('editCustomerSelect');
+        if (sel) {
+          const opt = sel.options[sel.selectedIndex];
+          try{ const d = JSON.parse(opt?.dataset?.clientData||'{}'); cust = (d.name || d.nombre || d.fullName || opt.textContent || sel.value || '').trim(); }catch{ cust = (opt?.textContent|| sel.value || '').trim(); }
+        } else {
+          cust = (document.getElementById('editCustomer')?.value || '').trim();
+        }
+        const addrVal = (document.getElementById('editAddress')?.value || '').trim();
         const dateVal = document.getElementById('editDate')?.value;
         const status = document.getElementById('editStatus')?.value || orders[idx].status;
         const notes = document.getElementById('editNotes')?.value || '';
         const edited = window.__editingOrder ? JSON.parse(JSON.stringify(window.__editingOrder)) : orders[idx];
         edited.customer = cust;
         edited.customerName = cust || edited.customerName;
+        if (addrVal) { edited.address = addrVal; edited.deliveryAddress = addrVal; }
         if (dateVal) {
           // Keep both for compatibility
           edited.createdAt = new Date(dateVal).toISOString();
@@ -1725,7 +1899,7 @@
               <img src="${item.image || 'https://via.placeholder.com/40'}" alt="${item.name}" class="w-10 h-10 rounded-md object-cover">
               <div>
                 <h5 class="font-medium text-gray-900">${item.name}</h5>
-                <p class="text-sm text-gray-600">ARS ${item.price.toFixed(2)}/${item.priceType}</p>
+                <p class="text-sm text-gray-600">${typeof formatCurrency === 'function' ? formatCurrency(item.price) : ('CLP ' + (Number(item.price)||0).toFixed(0))}/${item.priceType}</p>
               </div>
             </div>
             <div class="flex items-center space-x-3">
@@ -1735,7 +1909,7 @@
                 <button onclick="updateItemQuantity('${item.productId}', ${item.quantity + 1})" class="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm">+</button>
               </div>
               <div class="text-right">
-                <p class="font-semibold">ARS ${item.subtotal.toFixed(2)}</p>
+                <p class="font-semibold">${typeof formatCurrency === 'function' ? formatCurrency(item.subtotal) : ('CLP ' + (Number(item.subtotal)||0).toFixed(0))}</p>
               </div>
               <button onclick="removeItemFromOrder('${item.productId}')" class="text-red-600 hover:text-red-800 p-1">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1750,9 +1924,9 @@
       // Update order total
       function updateOrderTotal() {
         const headerTotalEl = document.getElementById('orderTotal');
-        if (headerTotalEl) headerTotalEl.textContent = `ARS ${currentOrder.total.toFixed(2)}`;
+        if (headerTotalEl) headerTotalEl.textContent = (typeof formatCurrency === 'function' ? formatCurrency(currentOrder.total) : `CLP ${(Number(currentOrder.total)||0).toFixed(0)}`);
         const modalTotalEl = document.getElementById('orderModalTotal');
-        if (modalTotalEl) modalTotalEl.textContent = `ARS ${currentOrder.total.toFixed(2)}`;
+        if (modalTotalEl) modalTotalEl.textContent = (typeof formatCurrency === 'function' ? formatCurrency(currentOrder.total) : `CLP ${(Number(currentOrder.total)||0).toFixed(0)}`);
         renderReceiptPreview();
       }
 
@@ -1763,8 +1937,8 @@
         const clientSel = document.getElementById('orderClientSelect');
         const clientName = clientSel && clientSel.selectedIndex > 0 ? (clientSel.options[clientSel.selectedIndex].dataset.clientName || clientSel.options[clientSel.selectedIndex].textContent) : (currentOrder.customer || 'Cliente');
         const dateEl = document.getElementById('orderDate');
-        const dateText = dateEl && dateEl.value ? new Date(dateEl.value).toLocaleString('es-AR') : new Date().toLocaleString('es-AR');
-        const formatARS = (n) => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(Number(n)||0);
+        const dateText = dateEl && dateEl.value ? new Date(dateEl.value).toLocaleString('es-CL') : new Date().toLocaleString('es-CL');
+        const formatMoney = (n) => (typeof formatCurrency === 'function' ? formatCurrency(n) : new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(Number(n)||0));
         const items = (currentOrder.items || []);
         const itemsHtml = items.length ? items.map(it => {
           const name = it.productName || it.name || 'Producto';
@@ -1774,7 +1948,7 @@
           return `
             <div class="flex text-sm justify-between py-1">
               <div class="truncate mr-2">${qty} x ${name}</div>
-              <div class="text-gray-700">${formatARS(subtotal)}</div>
+              <div class="text-gray-700">${formatMoney(subtotal)}</div>
             </div>`;
         }).join('') : '<p class="text-sm text-gray-500">Sin productos</p>';
         const total = items.reduce((s, it) => s + (Number(it.price)||0)*(Number(it.quantity)||0), 0);
@@ -1789,7 +1963,7 @@
           <div class="border-t border-gray-200 my-2"></div>
           <div class="flex justify-between font-semibold text-gray-900">
             <span>Total</span>
-            <span>${formatARS(total)}</span>
+            <span>${formatMoney(total)}</span>
           </div>
         `;
       }
@@ -1855,8 +2029,8 @@
           return;
         }
 
-        // Read selected client from select
-        const sel = document.getElementById('currentOrderCustomerSelect');
+        // Read selected client from select (supports creation modal and current order header)
+        const sel = document.getElementById('currentOrderCustomerSelect') || document.getElementById('orderClientSelect');
         const selectedName = sel && sel.selectedIndex > 0 ? (sel.options[sel.selectedIndex].dataset.clientName || sel.options[sel.selectedIndex].textContent) : '';
         if (!selectedName) {
           alert('Por favor seleccione un cliente');
@@ -1864,6 +2038,26 @@
           return;
         }
         currentOrder.customer = selectedName;
+
+        // Capture delivery address and notes if present in creation modal
+        try {
+          const addrEl = document.getElementById('clientAddress');
+          const notesEl = document.getElementById('orderNotes');
+          if (addrEl) currentOrder.address = addrEl.value || currentOrder.address || '';
+          if (notesEl) currentOrder.notes = notesEl.value || currentOrder.notes || '';
+        } catch(_) {}
+
+        // Ensure ID, createdAt and totals
+        if (!currentOrder.id) {
+          currentOrder.id = 'ORD-' + new Date().getFullYear() + '-' + String(Date.now()).slice(-6);
+        }
+        if (!currentOrder.createdAt && !currentOrder.date) {
+          currentOrder.createdAt = new Date().toISOString();
+        }
+        // Ensure total is up to date
+        if (!Array.isArray(currentOrder.items)) currentOrder.items = [];
+        currentOrder.total = currentOrder.items.reduce((sum, item) => sum + (Number(item.subtotal) || (Number(item.price)||0) * (Number(item.quantity)||0)), 0);
+        currentOrder.updatedAt = new Date().toISOString();
 
         // Get existing orders
         const existingOrders = JSON.parse(localStorage.getItem('savedOrders') || '[]');
@@ -1898,6 +2092,22 @@
           refreshOrdersTable();
         }
       }
+
+      // Wrapper used by modal button
+      function saveOrder() {
+        try {
+          saveCurrentOrder();
+          // Close modal if save succeeded
+          try { document.getElementById('orderModal').classList.add('hidden'); } catch(_) {}
+          // Reload orders list
+          try { if (typeof loadOrders === 'function') loadOrders(); } catch(_) {}
+        } catch (e) {
+          console.error('Error al guardar la orden:', e);
+          alert('No se pudo guardar la orden');
+        }
+      }
+
+      try { window.saveOrder = saveOrder; } catch(e) {}
 
       // Update customer name
       function onSelectCurrentCustomer(value) {
@@ -1984,7 +2194,7 @@
             }
             
             const stockDisplay = `${product.stock} ${product.stockUnit}`;
-            const priceDisplay = `ARS ${product.price.toFixed(2)}/${product.priceType}`;
+            const priceDisplay = `${typeof formatCurrency === 'function' ? formatCurrency(product.price) : ('CLP ' + (Number(product.price)||0).toFixed(0))}/${product.priceType}`;
             
             row.innerHTML = `
               <td class="px-6 py-4 whitespace-nowrap">
@@ -2124,19 +2334,70 @@
         updateSelectedProductsDisplay();
       }
 
-      function addToOrder(productId) {
-        const input = document.getElementById(`qty_${productId}`);
-        const quantity = parseInt(input.value) || 0;
+      function addToOrder(productId, quantityParam = null) {
+        // Si no se proporciona un ID de producto, intentar obtener el primer producto disponible
+        if (!productId) {
+          const products = JSON.parse(localStorage.getItem('products') || '[]');
+          if (products.length > 0) {
+            // Tomar el primer producto disponible
+            productId = products[0].id;
+          } else {
+            showOrderNotification('No hay productos disponibles', 'error');
+            return;
+          }
+        }
         
-        if (quantity <= 0) return;
+        let quantity = 1; // Valor por defecto
         
-        // Get product data
+        // Si se proporciona la cantidad como parámetro, usarla
+        if (quantityParam !== null && !isNaN(quantityParam) && quantityParam > 0) {
+          quantity = parseInt(quantityParam);
+        } else {
+          // Intentar obtener la cantidad del input correspondiente al producto
+          const input = document.getElementById(`qty_${productId}`);
+          
+          if (input) {
+            // Si encontramos el input específico del producto, usar su valor
+            quantity = parseInt(input.value) || 1;
+            
+            // Resetear el input después de usarlo
+            input.value = 0;
+            updateQuantity(productId, 0);
+          } else {
+            // Si no hay input específico, buscar cualquier input de cantidad
+            const quantityInputs = document.querySelectorAll('input[type="number"][id^="qty_"]');
+            if (quantityInputs.length > 0) {
+              quantity = parseInt(quantityInputs[0].value) || 1;
+              // Resetear el input después de usarlo
+              quantityInputs[0].value = 0;
+              const inputId = quantityInputs[0].id;
+              const inputProductId = inputId.replace('qty_', '');
+              updateQuantity(inputProductId, 0);
+            }
+          }
+        }
+        
+        if (quantity <= 0) {
+          showOrderNotification('La cantidad debe ser mayor a cero', 'error');
+          return;
+        }
+        
+        // Obtener datos del producto
         const products = JSON.parse(localStorage.getItem('products') || '[]');
         const product = products.find(p => p.id === productId);
         
-        if (!product) return;
+        if (!product) {
+          showOrderNotification('Producto no encontrado', 'error');
+          return;
+        }
         
-        // Add to current order
+        // Verificar stock disponible si existe la propiedad
+        if (typeof product.stock !== 'undefined' && quantity > product.stock) {
+          showOrderNotification(`No hay suficiente stock. Stock disponible: ${product.stock}`, 'error');
+          return;
+        }
+        
+        // Agregar al pedido actual
         const existingItem = currentOrder.items.find(item => item.productId === productId);
         
         if (existingItem) {
@@ -2144,10 +2405,11 @@
         } else {
           currentOrder.items.push({
             productId: product.id,
+            sku: product.sku || `SKU-${product.id}`, // Incluir SKU si existe
             productName: product.name,
-            productImage: product.image,
-            price: product.price,
-            priceType: product.priceType,
+            productImage: product.image || 'https://via.placeholder.com/100',
+            price: product.price || 0,
+            priceType: product.priceType || 'unidad',
             quantity: quantity
           });
         }
@@ -2275,7 +2537,7 @@
         
         if (selectedItems.length === 0) {
           container.innerHTML = '<p class="text-gray-500 text-sm">No hay productos seleccionados</p>';
-          totalElement.textContent = 'ARS 0.00';
+          totalElement.textContent = (typeof formatCurrency === 'function' ? formatCurrency(0) : 'CLP 0');
           
           // Disable "Agregar Seleccionados" button
           const addAllBtn = document.getElementById('addAllSelectedBtn');
@@ -2293,11 +2555,11 @@
                   <span class="text-xs text-gray-500 ml-2">x${item.quantity}</span>
                 </div>
               </div>
-              <div class="text-sm font-semibold text-gray-900">ARS ${item.subtotal.toFixed(2)}</div>
+              <div class="text-sm font-semibold text-gray-900">${typeof formatCurrency === 'function' ? formatCurrency(item.subtotal) : ('CLP ' + (Number(item.subtotal)||0).toFixed(0))}</div>
             </div>
           `).join('');
           
-          totalElement.textContent = `ARS ${total.toFixed(2)}`;
+          totalElement.textContent = (typeof formatCurrency === 'function' ? formatCurrency(total) : `CLP ${(Number(total)||0).toFixed(0)}`);
           
           // Enable "Agregar Seleccionados" button
           const addAllBtn = document.getElementById('addAllSelectedBtn');
@@ -2372,7 +2634,7 @@
                 <img src="${item.productImage || 'https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80'}" alt="${item.productName}" class="w-12 h-12 rounded-lg object-cover">
                 <div>
                   <div class="text-sm font-medium text-gray-900">${item.productName}</div>
-                  <div class="text-xs text-gray-500">ARS ${item.price.toFixed(2)}/${item.priceType}</div>
+                  <div class="text-xs text-gray-500">${typeof formatCurrency === 'function' ? formatCurrency(item.price) : ('CLP ' + (Number(item.price)||0).toFixed(0))}/${item.priceType}</div>
                 </div>
               </div>
               <div class="flex items-center space-x-3">
@@ -2381,7 +2643,7 @@
                   <span class="w-8 text-center text-sm font-medium">${item.quantity}</span>
                   <button onclick="increaseOrderItemQuantity(${index})" class="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm">+</button>
                 </div>
-                <div class="text-sm font-semibold text-gray-900 w-20 text-right">ARS ${itemTotal.toFixed(2)}</div>
+                <div class="text-sm font-semibold text-gray-900 w-20 text-right">${typeof formatCurrency === 'function' ? formatCurrency(itemTotal) : ('CLP ' + (Number(itemTotal)||0).toFixed(0))}</div>
                 <button onclick="removeItemFromOrder(${index})" class="text-red-600 hover:text-red-800 text-sm">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -2395,7 +2657,7 @@
         }
         
         // Update total display
-        document.getElementById('orderTotal').textContent = `ARS ${currentOrder.total.toFixed(2)}`;
+        document.getElementById('orderTotal').textContent = (typeof formatCurrency === 'function' ? formatCurrency(currentOrder.total) : `CLP ${(Number(currentOrder.total)||0).toFixed(0)}`);
       }
 
       // Functions for managing order item quantities
@@ -2594,7 +2856,7 @@
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-              ARS ${order.total ? order.total.toFixed(2) : '0.00'}
+              ${typeof formatCurrency === 'function' ? formatCurrency(order.total || 0) : ('CLP ' + (Number(order.total)||0).toFixed(0))}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
               <button onclick="viewOrderDetails('${order.id}')" class="text-blue-600 hover:text-blue-900">
@@ -2628,7 +2890,7 @@
         }
         
         let itemsList = order.items.map(item => 
-          `• ${item.productName} - Cantidad: ${item.quantity} - Precio: ARS ${item.price.toFixed(2)} - Subtotal: ARS ${(item.price * item.quantity).toFixed(2)}`
+          `• ${item.productName} - Cantidad: ${item.quantity} - Precio: CLP ${item.price.toFixed(2)} - Subtotal: CLP ${(item.price * item.quantity).toFixed(2)}`
         ).join('\n');
         
         alert(`Detalles de la Orden ${order.id}:
@@ -2636,7 +2898,7 @@
 Cliente: ${order.customer || order.client}
 Fecha: ${new Date(order.createdAt || order.date).toLocaleDateString('es-ES')}
 Estado: ${order.status}
-Total: ARS ${order.total.toFixed(2)}
+Total: CLP ${order.total.toFixed(2)}
 
 Productos:
 ${itemsList}`);
@@ -2750,8 +3012,8 @@ ${itemsList}`);
         const modal = document.getElementById('orderModal');
         if (!modal) return;
         modal.classList.remove('hidden');
-        // Populate clients
-        try { populateClientSelect(document.getElementById('orderClientSelect')); } catch(e) {}
+        // Populate clients and wire change handlers (includes address auto-fill)
+        try { populateClientSelects(); } catch(e) { try { populateClientSelect(document.getElementById('orderClientSelect')); } catch(_) {} }
         // Set current datetime
         const now = new Date();
         const pad = n => String(n).padStart(2, '0');
@@ -2761,9 +3023,13 @@ ${itemsList}`);
         // Clear preview container explicitly
         const preview = document.getElementById('receiptPreview');
         if (preview) preview.innerHTML = '<p class="text-sm text-gray-500">Sin productos</p>';
-        // Bind onchange and render fresh preview
+        // Bind onchange to keep preview updated and trigger address auto-fill
         const sel = document.getElementById('orderClientSelect');
-        if (sel) sel.onchange = renderReceiptPreview;
+        if (sel) {
+          sel.addEventListener('change', renderReceiptPreview);
+          // Trigger a change once to attempt address auto-fill if a default is selected
+          try { sel.dispatchEvent(new Event('change')); } catch(_) {}
+        }
         renderReceiptPreview();
       }
 
@@ -2828,7 +3094,11 @@ ${itemsList}`);
                 status: 'Pendiente',
                 owner: '',
                 etaIn: '',
-                orderId: order.id || null
+                orderId: order.id || null,
+                // Asociar cliente a la OP para trazabilidad
+                customerName: order.customer || order.customerName || '',
+                customerId: String(order.customerId || order.clientId || order.clienteId || '').trim() || null,
+                address: order.address || order.deliveryAddress || ''
               };
               mfgList.unshift(obj);
               created++;
@@ -2844,38 +3114,43 @@ ${itemsList}`);
         } catch(e){ console.error('generateProductionForOrder error', e); return 0; }
       }
 
-      function saveOrder() {
-        // Validate required fields
-        const clientSel = document.getElementById('orderClientSelect');
-        const client = clientSel && clientSel.selectedIndex > 0 ? (clientSel.options[clientSel.selectedIndex].dataset.clientName || clientSel.options[clientSel.selectedIndex].textContent) : '';
-        const dateInput = document.getElementById('orderDate').value; // already prefilled and readonly
+      function saveCurrentOrder() {
+        // Get form values
+        const clientSelect = document.getElementById('orderClientSelect');
+        const clientId = clientSelect.value;
+        const clientName = clientSelect.options[clientSelect.selectedIndex]?.text || 'Cliente no especificado';
+        const clientAddress = document.getElementById('clientAddress').value || '';
+        const orderDate = document.getElementById('orderDate').value || new Date().toISOString();
+        const orderNotes = document.getElementById('orderNotes').value || '';
         
-        if (!client) {
-          alert('Por favor seleccione un cliente');
-          if (clientSel) clientSel.focus();
+        if (!clientId) {
+          showOrderNotification('Por favor seleccione un cliente', 'error');
           return;
         }
         
         if (currentOrder.items.length === 0) {
-          alert('Por favor agregue al menos un producto a la orden');
+          showOrderNotification('Por favor agregue al menos un producto al pedido', 'error');
           return;
         }
         
-        // Create order object
-        const nowIso = new Date().toISOString();
-        const order = {
-          id: 'ORD-' + new Date().getFullYear() + '-' + (Math.floor(Math.random() * 1000) + 1000),
-          client: client, // backward compatibility
-          customer: client,
-          customerName: client,
-          createdAt: nowIso,
-          date: nowIso,
-          notes: document.getElementById('orderNotes').value.trim(),
-          items: currentOrder.items,
-          total: currentOrder.total,
-          status: 'Pendiente'
-        };
+        // Create or update order
+        const orderId = currentOrder.id || `order_${Date.now()}`;
+        const now = new Date().toISOString();
         
+        const order = {
+          id: orderId,
+          clientId,
+          clientName,
+          clientAddress, // Add client address to the order
+          date: orderDate,
+          status: 'pending',
+          notes: orderNotes,
+          items: [...currentOrder.items],
+          total: currentOrder.total,
+          createdAt: currentOrder.createdAt || now,
+          updatedAt: now
+        };
+
         // Get existing orders from localStorage
         const orders = JSON.parse(localStorage.getItem('orders') || '[]');
         

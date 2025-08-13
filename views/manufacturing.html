@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="../js/config.js"></script>
   <style>
     :root{ --bg:#f5f4f0; --bg2:#fff; --text:#181710; --muted:#6b7280; --border:#e7e5da; --ok:#16a34a; --blue:#0ea5e9; --red:#ef4444; --brand:#181710; }
     *{ box-sizing:border-box; }
@@ -44,6 +45,11 @@
   .bom-table { width: 100%; border-collapse: collapse; margin: 12px 0; }
   .bom-table th { background: #f8f9fa; font-weight: 600; text-align: left; padding: 10px; border-bottom: 2px solid var(--border); }
   .bom-table td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: middle; }
+    /* Raw materials */
+    .low-stock{ background:#fff7ed; }
+    .badge{ font-size:11px; padding:2px 6px; border-radius:999px; border:1px solid var(--border); background:#fafafa; }
+    .badge.warn{ background:#fef3c7; color:#92400e; border-color:#fde68a; }
+    .badge.ok{ background:#ecfdf5; color:#166534; border-color:#bbf7d0; }
   .bom-table input[type="text"], 
   .bom-table input[type="number"] { 
     width: 100%; 
@@ -74,8 +80,40 @@
       <a class="btn" href="./index.html">Inicio</a>
       <a class="btn" href="./orders.html">Pedidos</a>
       <a class="btn" href="./transport.html">Transporte</a>
+      <a class="btn" href="./hr.html">RRHH</a>
       <a class="btn" href="./finance.html">Finanzas</a>
     </div>
+
+  <!-- Modal: Material CRUD / Movimiento -->
+  <div class="modal" id="modalMaterial">
+    <div class="box">
+      <h3 id="matModalTitle">Material</h3>
+      <div class="row">
+        <div class="col"><label>Nombre</label><input id="mName" placeholder="Nombre del material" /></div>
+        <div class="col"><label>Unidad</label>
+          <select id="mUnit">
+            <option value="">Seleccionar</option>
+            <option>kg</option><option>g</option><option>L</option><option>ml</option><option>un</option><option>m</option><option>cm</option><option>mm</option>
+          </select>
+        </div>
+      </div>
+      <div style="height:8px"></div>
+      <div class="row">
+        <div class="col"><label>Cantidad disponible</label><input id="mQty" type="number" step="0.001" min="0" value="0" /></div>
+        <div class="col"><label>Costo por unidad</label><input id="mCost" type="number" step="0.01" min="0" value="0" /></div>
+      </div>
+      <div style="height:8px"></div>
+      <div class="row">
+        <div class="col"><label>Fecha ingreso</label><input id="mDate" type="date" /></div>
+        <div class="col"><label>Mínimo (umbral)</label><input id="mMin" type="number" step="0.001" min="0" value="0" /></div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="actions" style="justify-content:flex-end;">
+        <button class="btn" id="btnCloseMaterial">Cancelar</button>
+        <button class="btn primary" id="btnSaveMaterial">Guardar</button>
+      </div>
+    </div>
+  </div>
   </header>
 
   <div class="layout">
@@ -83,7 +121,9 @@
       <nav class="nav" id="sideNav">
         <a href="#dashboard" data-section="dashboard" class="active">Dashboard</a>
         <a href="#products" data-section="products">Productos</a>
+        <a href="#rawMaterials" data-section="rawMaterials">Materia Prima</a>
         <a href="#orders" data-section="mfgOrders">Órdenes de Producción</a>
+        <a href="#stockHistory" data-section="stockHistory">Historial Stock</a>
         <a href="#reports" data-section="reports">Reportes</a>
       </nav>
     </aside>
@@ -94,8 +134,53 @@
         <div class="grid">
           <div class="card kpi"><div><div class="muted">Órdenes en curso</div><div class="n" id="kpiEnCurso">0</div></div><span class="pill blue">En Proceso</span></div>
           <div class="card kpi"><div><div class="muted">Total insumos consumidos</div><div class="n" id="kpiInsumos">0</div></div><span class="pill gray">Acumulado</span></div>
-          <div class="card kpi"><div><div class="muted">Costo acumulado</div><div class="n" id="kpiCosto">ARS 0.00</div></div><span class="pill gray">Acumulado</span></div>
+          <div class="card kpi"><div><div class="muted">Costo acumulado</div><div class="n" id="kpiCosto">CLP 0.00</div></div><span class="pill gray">Acumulado</span></div>
           <div class="card kpi"><div><div class="muted">Unidades producidas</div><div class="n" id="kpiUnidades">0</div></div><span class="pill green">Finalizadas</span></div>
+        </div>
+      </section>
+
+      <!-- Materia Prima (Stock) -->
+      <section id="rawMaterials" class="section" style="display:none;">
+        <div class="toolbar">
+          <button class="btn primary" id="btnNewMaterial">+ Nuevo Material</button>
+          <input id="fMatSearch" placeholder="Buscar nombre..." />
+          <select id="fMatUnit">
+            <option value="">Unidad: Todas</option>
+            <option>kg</option><option>g</option><option>L</option><option>ml</option><option>un</option><option>m</option><option>cm</option><option>mm</option>
+          </select>
+          <button class="btn" id="btnExportMaterials">Exportar CSV</button>
+          <button class="btn" id="btnSuggestPurchases">Sugerir Compras</button>
+        </div>
+        <div class="card" style="overflow:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th><th>Unidad</th><th>Cantidad</th><th>Costo Prom.</th><th>Fecha Ingreso</th><th>Mínimo</th><th style="width:220px;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="matTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Historial de Movimientos de Stock -->
+      <section id="stockHistory" class="section" style="display:none;">
+        <div class="toolbar">
+          <input id="fMovSearch" placeholder="Buscar material / motivo / ref..." />
+          <input id="fMovFrom" type="date" />
+          <input id="fMovTo" type="date" />
+          <select id="fMovType"><option value="">Tipo: Todos</option><option value="entrada">Entrada</option><option value="salida">Salida</option><option value="ajuste">Ajuste</option></select>
+          <button class="btn" id="btnExportMovements">Exportar CSV</button>
+        </div>
+        <div class="card" style="overflow:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha</th><th>Tipo</th><th>Material</th><th>Cantidad</th><th>Unidad</th><th>Usuario</th><th>Motivo</th><th>Ref</th>
+              </tr>
+            </thead>
+            <tbody id="movTbody"></tbody>
+          </table>
         </div>
       </section>
 
@@ -188,7 +273,7 @@
         </div>
         <div class="bom-total">
           <span>Total BOM: </span>
-          <span id="pBomTotal" style="font-weight: 800; margin-left: 10px;">ARS 0.00</span>
+          <span id="pBomTotal" style="font-weight: 800; margin-left: 10px;">CLP 0.00</span>
         </div>
       </div>
       <div style="height:10px"></div>
@@ -211,6 +296,11 @@
       <div class="row">
         <div class="col"><label>Responsable</label><input id="moOwner" placeholder="Responsable" /></div>
         <div class="col"><label>Fecha fin estimada</label><input id="moEtaIn" type="datetime-local" /></div>
+      </div>
+      <div style="height:8px"></div>
+      <div class="row">
+        <div class="col"><label>Cliente</label><select id="moCustomer"></select></div>
+        <div class="col"><label>Dirección de entrega</label><input id="moAddress" placeholder="Dirección" /></div>
       </div>
       <div style="height:10px"></div>
       <div class="card">
@@ -236,9 +326,11 @@
     };
     const KEYS = {
       PROD: 'mfg_products', // [{id,name,sku,yield,timeMin,bom:[{name,qty,unit,unitCost}], bomTotal}]
-      MFG: 'mfg_orders',    // [{id,code,productId,productName,qty,status,owner,etaIn,startedAt,finishedAt,costTotal,orderRef,orderId}]
-      INV: 'inventory',     // { materials:[{name,qty,unit,avgCost}], finished:[{sku,name,qty}] }
-      FIN: 'finance_movements'
+      MFG: 'mfg_orders',    // [{id,code,productId,productName,qty,status,owner,etaIn,startedAt,finishedAt,costTotal,orderRef,orderId,customerName,customerId,address}]
+      INV: 'inventory',     // { materials:[{id,name,qty,unit,avgCost,dateIn,minQty}], finished:[{sku,name,qty}] }
+      FIN: 'finance_movements',
+      MOV: 'stock_movements', // [{id,ts,type,itemName,qty,unit,user,reason,ref}]
+      PURCHASE_SUG: 'purchase_suggestions'
     };
 
     function genId(prefix){ const n=Math.floor(1000+Math.random()*9000); return `${prefix}-${new Date().getFullYear()}-${n}`; }
@@ -251,6 +343,48 @@
       if (s.startsWith('fina')) return '<span class="pill green">Finalizada</span>';
       if (s.startsWith('retr')) return '<span class="pill red">Retrasada</span>';
       return `<span class="pill">${status||'—'}</span>`;
+    }
+
+    // ===== Stock Movements =====
+    function recordMovement(type, itemName, qty, unit, reason='', ref=''){
+      const list = DB.get(KEYS.MOV, []);
+      const mv = { id: genId('MOV'), ts: Date.now(), type, itemName, qty:Number(qty)||0, unit: unit||'', user: (localStorage.getItem('currentUser')||'sistema'), reason, ref };
+      list.unshift(mv); DB.set(KEYS.MOV, list);
+    }
+    function renderMovements(){
+      const q = (document.getElementById('fMovSearch').value||'').toLowerCase();
+      const t = (document.getElementById('fMovType').value||'').toLowerCase();
+      const from = document.getElementById('fMovFrom').value ? new Date(document.getElementById('fMovFrom').value).getTime() : 0;
+      const to = document.getElementById('fMovTo').value ? new Date(document.getElementById('fMovTo').value + 'T23:59:59').getTime() : Number.MAX_SAFE_INTEGER;
+      const list = DB.get(KEYS.MOV, []);
+      const rows = list.filter(m=> (!q || `${m.itemName} ${m.reason} ${m.ref}`.toLowerCase().includes(q)) && (!t || (m.type||'')===t) && m.ts>=from && m.ts<=to)
+        .map(m=>`<tr>
+          <td>${new Date(m.ts).toLocaleString('es-AR')}</td>
+          <td>${m.type}</td>
+          <td>${m.itemName}</td>
+          <td>${(m.qty||0).toFixed(3)}</td>
+          <td>${m.unit||''}</td>
+          <td>${m.user||''}</td>
+          <td>${m.reason||''}</td>
+          <td>${m.ref||''}</td>
+        </tr>`).join('');
+      document.getElementById('movTbody').innerHTML = rows || '<tr><td colspan="8" class="muted">Sin movimientos</td></tr>';
+    }
+
+    // ===== Clientes (select) =====
+    function populateCustomerSelect(){
+      const sel = document.getElementById('moCustomer'); if(!sel) return;
+      let clients = [];
+      try { clients = JSON.parse(localStorage.getItem('clients') || localStorage.getItem('clientes') || '[]'); } catch(_) { clients = []; }
+      const opts = ['<option value="">Seleccionar cliente…</option>'].concat(
+        (clients||[]).map(c=>{
+          const data = JSON.stringify(c).replace(/\"/g,'\\\"');
+          const id = c.id || c.clientId || c.clienteId || '';
+          const name = c.name || c.nombre || c.fullName || c.email || (`Cliente ${id}`);
+          return `<option value="${id}" data-client-data="${data}">${name}</option>`;
+        })
+      ).join('');
+      sel.innerHTML = opts;
     }
 
     // ===== Nav =====
@@ -266,13 +400,14 @@
       const insumos = orders.reduce((acc,o)=> acc + Number(o.materialsCost||0), 0);
       document.getElementById('kpiEnCurso').textContent = enCurso;
       document.getElementById('kpiUnidades').textContent = unidades;
-      document.getElementById('kpiCosto').textContent = `ARS ${costo.toFixed(2)}`;
+      document.getElementById('kpiCosto').textContent = `CLP ${costo.toFixed(2)}`;
       document.getElementById('kpiInsumos').textContent = insumos.toFixed(2);
     }
 
     // ===== Productos (BOM) =====
     let editProdId = null;
     let bomRows = [];
+    function getMaterials(){ const inv = DB.get(KEYS.INV, { materials:[], finished:[] }); return inv.materials || []; }
 
     function bomTotal(rows){ return rows.reduce((a,r)=> a + (Number(r.qty||0)*Number(r.unitCost||0)), 0); }
 
@@ -280,7 +415,7 @@
       const q = (document.getElementById('fProdSearch').value||'').toLowerCase();
       const list = DB.get(KEYS.PROD, []);
       const rows = list.filter(p=> !q || `${p.name} ${p.sku}`.toLowerCase().includes(q)).map(p=>`<tr>
-        <td>${p.name}</td><td>${p.sku}</td><td>${p.yield||1}</td><td>${p.timeMin||0}</td><td>ARS ${(p.bomTotal||0).toFixed(2)}</td>
+        <td>${p.name}</td><td>${p.sku}</td><td>${p.yield||1}</td><td>${p.timeMin||0}</td><td>CLP ${(p.bomTotal||0).toFixed(2)}</td>
         <td class='actions'>
           <button class='btn icon' title='Editar' onclick="editProduct('${p.id}')">✏️</button>
           <button class='btn icon' title='Clonar' onclick="cloneProduct('${p.id}')">📋</button>
@@ -300,20 +435,36 @@
       renderBomRows();
       openModal('modalProduct');
     }
+    function normalizeBomFromMaterials(rows){
+      const mats = getMaterials();
+      const missing = [];
+      const out = (rows||[]).map(r=>{
+        const name = (r.name||'').trim();
+        const m = mats.find(mm=> (mm.name||'').toLowerCase() === name.toLowerCase());
+        if (!m){ missing.push(name||'(sin nombre)'); return r; }
+        return {
+          name: m.name,
+          qty: Math.max(0, Number(r.qty||0)),
+          unit: r.unit || m.unit || '',
+          unitCost: (r.unitCost!=null && r.unitCost!==''? Number(r.unitCost): Number(m.avgCost||0))
+        };
+      });
+      return { out, missing };
+    }
     function renderBomRows(){
       const tbody = document.getElementById('pBomTbody');
       const unitOptions = ['', 'kg', 'g', 'L', 'ml', 'un', 'm', 'cm', 'mm'];
+      const mats = getMaterials();
       
       tbody.innerHTML = (bomRows||[]).map((r,i)=>{
         const total = (Number(r.qty||0)*Number(r.unitCost||0)).toFixed(2);
         return `
         <tr>
           <td>
-            <input type="text" 
-                   value="${(r.name||'').replace(/"/g, '&quot;')}" 
-                   oninput="updateBom(${i},'name',this.value)" 
-                   placeholder="Nombre del insumo" 
-                   style="min-width: 200px;" />
+            <select onchange="updateBom(${i},'name',this.value)" style="min-width: 240px;">
+              <option value="">Seleccionar material…</option>
+              ${mats.map(m => `<option value="${(m.name||'').replace(/"/g,'&quot;')}" ${((m.name||'')===(r.name||''))? 'selected':''}>${m.name} · ${Number(m.qty||0).toFixed(3)} ${m.unit||''}</option>`).join('')}
+            </select>
           </td>
           <td>
             <input type="number" 
@@ -338,7 +489,7 @@
                    oninput="updateBom(${i},'unitCost',this.value)"
                    style="text-align: right;" />
           </td>
-          <td style="text-align: right;">ARS ${total}</td>
+          <td style="text-align: right;">CLP ${total}</td>
           <td>
             <button class='btn icon' 
                     onclick='event.stopPropagation(); removeBom(${i})' 
@@ -356,12 +507,125 @@
       
       pBomTotal.textContent = bomTotal(bomRows).toFixed(2);
     }
-    function updateBom(i,k,v){ bomRows[i] = Object.assign({}, bomRows[i], { [k]: (k==='qty'||k==='unitCost')? Number(v||0) : v }); renderBomRows(); }
+    function updateBom(i,k,v){
+      const row = Object.assign({}, bomRows[i]);
+      if (k==='qty' || k==='unitCost') row[k] = Number(v||0); else row[k]=v;
+      if (k==='name'){
+        // Auto completar unidad y costo desde Materia Prima
+        const mats = getMaterials();
+        const m = mats.find(mm => (mm.name||'').toLowerCase() === String(v||'').toLowerCase());
+        if (m){ row.unit = m.unit || row.unit || ''; row.unitCost = (m.avgCost!=null? Number(m.avgCost): row.unitCost)||0; }
+      }
+      bomRows[i] = row; renderBomRows();
+    }
     function removeBom(i){ bomRows.splice(i,1); renderBomRows(); }
 
     function editProduct(id){ const p = DB.get(KEYS.PROD, []).find(x=>x.id===id); if (!p) return; openProductModal(p); }
     function deleteProduct(id){ if (!confirm('¿Eliminar producto?')) return; DB.set(KEYS.PROD, DB.get(KEYS.PROD, []).filter(x=>x.id!==id)); renderProducts(); }
     function cloneProduct(id){ const list = DB.get(KEYS.PROD, []); const p=list.find(x=>x.id===id); if(!p) return; const c=JSON.parse(JSON.stringify(p)); c.id=genId('MFGP'); c.name = p.name + ' (copia)'; list.unshift(c); DB.set(KEYS.PROD,list); renderProducts(); }
+
+    // ===== Materia Prima (CRUD) =====
+    let editMatId = null;
+    function renderMaterials(){
+      const q = (document.getElementById('fMatSearch').value||'').toLowerCase();
+      const unit = (document.getElementById('fMatUnit').value||'');
+      const inv = DB.get(KEYS.INV, { materials:[], finished:[] });
+      const rows = (inv.materials||[])
+        .filter(m=> (!q || (m.name||'').toLowerCase().includes(q)) && (!unit || (m.unit||'')===unit))
+        .map(m=>{
+          const low = Number(m.minQty||0) > 0 && Number(m.qty||0) < Number(m.minQty||0);
+          const badge = low? '<span class="badge warn">Bajo stock</span>' : '<span class="badge ok">OK</span>';
+          return `<tr class='${low? 'low-stock':''}'>
+            <td>${m.name} ${badge}</td>
+            <td>${m.unit||''}</td>
+            <td>${Number(m.qty||0).toFixed(3)}</td>
+            <td>CLP ${(Number(m.avgCost||0)).toFixed(2)}</td>
+            <td>${m.dateIn? new Date(m.dateIn).toLocaleDateString('es-AR'): '—'}</td>
+            <td>${Number(m.minQty||0)}</td>
+            <td class='actions'>
+              <button class='btn icon' title='Editar' onclick="editMaterial('${m.id}')">✏️</button>
+              <button class='btn icon' title='Entrada' onclick="adjustMaterial('${m.id}','entrada')">➕</button>
+              <button class='btn icon' title='Ajuste' onclick="adjustMaterial('${m.id}','ajuste')">🛠️</button>
+              <button class='btn icon' title='Eliminar' onclick="deleteMaterial('${m.id}')">🗑️</button>
+            </td>
+          </tr>`;
+        }).join('');
+      document.getElementById('matTbody').innerHTML = rows || '<tr><td colspan="7" class="muted">Sin materiales</td></tr>';
+    }
+    function openMaterialModal(m){
+      editMatId = m? m.id : null;
+      document.getElementById('matModalTitle').textContent = editMatId? 'Editar Material' : 'Nuevo Material';
+      mName.value = m? (m.name||'') : '';
+      mUnit.value = m? (m.unit||'') : '';
+      mQty.value = m? Number(m.qty||0) : 0;
+      mCost.value = m? Number(m.avgCost||0) : 0;
+      mDate.value = m && m.dateIn ? new Date(m.dateIn).toISOString().slice(0,10) : '';
+      mMin.value = m? Number(m.minQty||0) : 0;
+      openModal('modalMaterial');
+    }
+    function editMaterial(id){ const inv=DB.get(KEYS.INV,{materials:[],finished:[]}); const m=(inv.materials||[]).find(x=>x.id===id); if(!m) return; openMaterialModal(m); }
+    function deleteMaterial(id){ if(!confirm('¿Eliminar material?')) return; const inv=DB.get(KEYS.INV,{materials:[],finished:[]}); inv.materials=(inv.materials||[]).filter(x=>x.id!==id); DB.set(KEYS.INV,inv); renderMaterials(); }
+    function saveMaterial(){
+      const inv = DB.get(KEYS.INV, { materials:[], finished:[] });
+      const obj = {
+        id: editMatId || genId('MAT'),
+        name: mName.value.trim(), unit: mUnit.value||'',
+        qty: Math.max(0, Number(mQty.value||0)),
+        avgCost: Math.max(0, Number(mCost.value||0)),
+        dateIn: mDate.value ? new Date(mDate.value).toISOString() : '',
+        minQty: Math.max(0, Number(mMin.value||0))
+      };
+      const list = inv.materials||[];
+      if (editMatId){ const i=list.findIndex(x=>x.id===editMatId); list[i]=obj; }
+      else { list.unshift(obj); }
+      inv.materials = list; DB.set(KEYS.INV, inv);
+      // movement for creation or edit difference as ajuste
+      recordMovement('ajuste', obj.name, 0, obj.unit, editMatId? 'Edición material':'Alta material');
+      closeModal('modalMaterial'); renderMaterials();
+    }
+    function adjustMaterial(id, type){
+      const inv=DB.get(KEYS.INV,{materials:[],finished:[]}); const m=(inv.materials||[]).find(x=>x.id===id); if(!m) return;
+      const qtyStr = prompt(`Cantidad para ${type} (${m.unit||''})`, '0'); if(qtyStr===null) return; const qty=Number(qtyStr)||0;
+      const reason = prompt('Motivo', type==='entrada'? 'Compra/Ingreso':'Ajuste manual') || '';
+      if (type==='entrada'){
+        m.qty = Number(m.qty||0) + Math.max(0, qty);
+        // actualizar costo promedio simple (no ponderado por valor histórico para simplificar)
+        const costStr = prompt('Costo por unidad (opcional, deja vacío para mantener)', '');
+        if (costStr!==null && costStr!=='') m.avgCost = Math.max(0, Number(costStr)||0);
+        if (!m.dateIn) m.dateIn = new Date().toISOString();
+        recordMovement('entrada', m.name, qty, m.unit, reason, 'manual');
+      } else {
+        // ajuste puede ser positivo o negativo
+        m.qty = Math.max(0, Number(m.qty||0) + qty);
+        recordMovement('ajuste', m.name, qty, m.unit, reason, 'manual');
+      }
+      DB.set(KEYS.INV, inv); renderMaterials();
+    }
+    function exportCSV(filename, rows, headers){
+      const csv = [headers.join(',')].concat(rows.map(r=> headers.map(h=> JSON.stringify(r[h] ?? '')).join(','))).join('\n');
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; a.click(); URL.revokeObjectURL(url);
+    }
+    function exportMaterials(){
+      const inv=DB.get(KEYS.INV,{materials:[],finished:[]});
+      const data=(inv.materials||[]).map(m=>({
+        Nombre:m.name, Unidad:m.unit, Cantidad:m.qty, CostoPromedio:m.avgCost, FechaIngreso:m.dateIn, Minimo:m.minQty
+      }));
+      exportCSV('materiales.csv', data, ['Nombre','Unidad','Cantidad','CostoPromedio','FechaIngreso','Minimo']);
+    }
+    function exportMovements(){
+      const list=DB.get(KEYS.MOV,[]);
+      const data=list.map(m=>({ Fecha:new Date(m.ts).toISOString(), Tipo:m.type, Material:m.itemName, Cantidad:m.qty, Unidad:m.unit, Usuario:m.user, Motivo:m.reason, Ref:m.ref }));
+      exportCSV('movimientos_stock.csv', data, ['Fecha','Tipo','Material','Cantidad','Unidad','Usuario','Motivo','Ref']);
+    }
+    function suggestPurchases(){
+      const inv=DB.get(KEYS.INV,{materials:[],finished:[]}); const list=(inv.materials||[]).filter(m=> Number(m.minQty||0)>0 && Number(m.qty||0)<Number(m.minQty||0));
+      if (!list.length) return alert('No hay materiales por debajo del mínimo.');
+      const sug = DB.get(KEYS.PURCHASE_SUG, []);
+      list.forEach(m=>{ sug.unshift({ id: genId('SUG'), ts: Date.now(), name:m.name, unit:m.unit, qtySuggested: Number(m.minQty||0) - Number(m.qty||0) }); });
+      DB.set(KEYS.PURCHASE_SUG, sug);
+      alert('Sugerencias de compra generadas.');
+    }
 
     // ===== Órdenes de Producción =====
     let editMfgId = null;
@@ -399,6 +663,34 @@
       moQty.value = seed? (seed.qty||1) : 1;
       moOwner.value = seed? (seed.owner||'') : '';
       moEtaIn.value = seed && seed.etaIn ? new Date(seed.etaIn).toISOString().slice(0,16) : '';
+      // populate customers and try select
+      try { populateCustomerSelect(); } catch(_) {}
+      if (seed && (seed.customerId || seed.customerName)) {
+        try {
+          const sel = document.getElementById('moCustomer');
+          const targetId = String(seed.customerId||'').trim();
+          const targetName = String(seed.customerName||'').trim();
+          for (let i=0;i<sel.options.length;i++){
+            const o = sel.options[i];
+            const data = (()=>{ try{return JSON.parse(o.dataset.clientData||'{}')}catch(_){return {}} })();
+            const cid = String(data.id || data.clientId || data.clienteId || '');
+            const cname = data.name || data.nombre || data.fullName || o.textContent;
+            if ((targetId && cid===targetId) || (targetName && cname===targetName)) { sel.selectedIndex = i; break; }
+          }
+        } catch(_) {}
+      }
+      // bind change to autofill address
+      try {
+        const sel = document.getElementById('moCustomer');
+        sel.addEventListener('change', ()=>{
+          try{
+            const opt = sel.options[sel.selectedIndex];
+            const d = JSON.parse(opt?.dataset?.clientData||'{}');
+            const addr = d.address || (Array.isArray(d.addresses)? d.addresses[0]: '') || '';
+            const a = document.getElementById('moAddress'); if (a) a.value = addr;
+          }catch(_){ }
+        });
+      } catch(_) {}
       updateConsumoPreview();
       openModal('modalMfgOrder');
     }
@@ -421,7 +713,13 @@
       document.getElementById('moConsumoTbody').innerHTML = rows;
     }
 
-    function editMfg(id){ const o=DB.get(KEYS.MFG, []).find(x=>x.id===id); if(!o) return; openMfgModal({ id:o.id, qty:o.qty, owner:o.owner, etaIn:o.etaIn }); moProduct.value = o.productId; updateConsumoPreview(); }
+    function editMfg(id){
+      const o=DB.get(KEYS.MFG, []).find(x=>x.id===id); if(!o) return;
+      openMfgModal({ id:o.id, qty:o.qty, owner:o.owner, etaIn:o.etaIn, customerId:o.customerId, customerName:o.customerName });
+      moProduct.value = o.productId;
+      try{ const a=document.getElementById('moAddress'); if(a) a.value = o.address||''; }catch(_){ }
+      updateConsumoPreview();
+    }
     function deleteMfg(id){ if(!confirm('¿Eliminar orden?')) return; DB.set(KEYS.MFG, DB.get(KEYS.MFG, []).filter(x=>x.id!==id)); renderMfgOrders(); }
 
     // ===== Producción (inventario y finanzas) =====
@@ -436,7 +734,11 @@
       (product.bom||[]).forEach(r=>{
         const req = Number(r.qty||0)*factor;
         const stock = (inv.materials||[]).find(m=> (m.name||'').toLowerCase() === (r.name||'').toLowerCase());
-        if (stock){ stock.qty = Math.max(0, Number(stock.qty||0) - req); }
+        if (stock){
+          const before = Number(stock.qty||0);
+          stock.qty = Math.max(0, before - req);
+          recordMovement('salida', stock.name || r.name, -req, stock.unit || r.unit || '', `Consumo para producción ${product.name}`, 'produccion');
+        }
       });
       DB.set(KEYS.INV, inv);
     }
@@ -464,6 +766,19 @@
       const it = list.find(x=>x.id===id); if (!it) return;
       if ((it.status||'').toLowerCase().startsWith('en p')) return;
       const product = DB.get(KEYS.PROD, []).find(p=>p.id===it.productId); if(!product) return;
+      // Validar stock suficiente para todos los insumos
+      const inv = DB.get(KEYS.INV, { materials:[], finished:[] });
+      const factor = Number(it.qty||0) / Math.max(1, Number(product.yield||1));
+      const deficits = (product.bom||[]).map(r=>{
+        const req = Number(r.qty||0)*factor;
+        const stock = (inv.materials||[]).find(m=> (m.name||'').toLowerCase() === (r.name||'').toLowerCase());
+        const have = stock? Number(stock.qty||0):0; const miss = req - have; return {name:r.name, unit:r.unit||'', req, have, miss};
+      }).filter(x=> x.miss>1e-9);
+      if (deficits.length){
+        const lines = deficits.map(d=> `- ${d.name}: requiere ${d.req.toFixed(3)} ${d.unit}, disponible ${d.have.toFixed(3)} (faltan ${d.miss.toFixed(3)})`).join('\n');
+        alert('Stock insuficiente para iniciar producción:\n\n' + lines + '\n\nReponer existencias antes de continuar.');
+        return;
+      }
       it.status = 'En Proceso'; it.startedAt = new Date().toISOString();
       // registrar costo estimado de materiales y consumir inventario
       it.materialsCost = computeMaterialsCost(product, it.qty);
@@ -488,7 +803,49 @@
         if (it.orderId){
           const orders = JSON.parse(localStorage.getItem('orders')||'[]');
           const idx = orders.findIndex(o=> String(o.id)===String(it.orderId));
-          if (idx>=0){ orders[idx].status = 'ready_for_dispatch'; localStorage.setItem('orders', JSON.stringify(orders)); }
+          if (idx>=0){
+            orders[idx].status = 'ready_for_dispatch';
+            localStorage.setItem('orders', JSON.stringify(orders));
+            // Crear orden de despacho automáticamente
+            try {
+              const src = orders[idx];
+              const dlist = JSON.parse(localStorage.getItem('dispatchOrders')||'[]');
+              const dispatch = {
+                id: genId('DISP'),
+                code: genId('DSP'),
+                orderRef: src.id,
+                customer: src.customer || src.customerName || '',
+                address: src.address || src.deliveryAddress || '',
+                vehicleId: '',
+                driverId: '',
+                etaOut: '',
+                etaIn: '',
+                status: 'Creado',
+                notes: 'Auto-generado al finalizar producción',
+                items: (Array.isArray(src.items)? src.items: []).map(itm => ({ name: itm.productName || itm.name || 'Producto', qty: Number(itm.quantity)||1 })),
+                history: [{ ts: Date.now(), ev: 'Creado automáticamente desde producción' }]
+              };
+              dlist.unshift(dispatch);
+              localStorage.setItem('dispatchOrders', JSON.stringify(dlist));
+            } catch(_) { /* noop */ }
+          }
+        } else {
+          // Si no viene de pedido, pero la OP tiene cliente/dirección, crear despacho con esa info
+          try {
+            if (it.customerName || it.address){
+              const dlist = JSON.parse(localStorage.getItem('dispatchOrders')||'[]');
+              const dispatch = {
+                id: genId('DISP'), code: genId('DSP'), orderRef: it.orderRef || '',
+                customer: it.customerName || '', address: it.address || '',
+                vehicleId: '', driverId: '', etaOut: '', etaIn: '', status: 'Creado',
+                notes: 'Auto-generado al finalizar producción',
+                items: [{ name: it.productName, qty: Number(it.qty)||1 }],
+                history: [{ ts: Date.now(), ev: 'Creado automáticamente desde producción (sin pedido)'}]
+              };
+              dlist.unshift(dispatch);
+              localStorage.setItem('dispatchOrders', JSON.stringify(dlist));
+            }
+          } catch(_) { /* noop */ }
         }
       } catch(_) {}
       renderMfgOrders(); refreshKPIs();
@@ -504,7 +861,7 @@
         <div class='muted'>Cant.: ${o.qty} · Responsable: ${o.owner||'—'} · Inicio: ${o.startedAt? new Date(o.startedAt).toLocaleString('es-AR'):'—'} · Fin: ${o.finishedAt? new Date(o.finishedAt).toLocaleString('es-AR'):'—'}</div>
         <div style='height:8px'></div>
         <strong>Desglose de costos</strong>
-        <div class='muted'>Materiales: ARS ${(o.materialsCost||0).toFixed(2)} · Overhead: ARS ${Number(localStorage.getItem('mfg_overhead')||0).toFixed(2)} · Total: ARS ${(Number(o.costTotal||0)).toFixed(2)}</div>
+        <div class='muted'>Materiales: CLP ${(o.materialsCost||0).toFixed(2)} · Overhead: CLP ${Number(localStorage.getItem('mfg_overhead')||0).toFixed(2)} · Total: CLP ${(Number(o.costTotal||0)).toFixed(2)}</div>
       </div>`;
       alert('Detalle Producción:\n\n' + html.replace(/<[^>]+>/g,' '));
     }
@@ -512,13 +869,18 @@
     // ===== CRUD save actions =====
     function saveProduct(){
       const list = DB.get(KEYS.PROD, []);
+      const norm = normalizeBomFromMaterials(bomRows||[]);
+      if ((norm.missing||[]).length){
+        alert('Los siguientes insumos del BOM no existen en Materia Prima y deben ser creados/seleccionados:\n\n' + norm.missing.join('\n'));
+        return;
+      }
       const obj = {
         id: editProdId || genId('MFGP'),
         name: pName.value.trim(), sku: pSKU.value.trim(),
         yield: Math.max(1, Number(pYield.value||1)),
         timeMin: Math.max(0, Number(pTime.value||0)),
-        bom: JSON.parse(JSON.stringify(bomRows||[])),
-        bomTotal: bomTotal(bomRows||[])
+        bom: JSON.parse(JSON.stringify(norm.out||[])),
+        bomTotal: bomTotal(norm.out||[])
       };
       if (editProdId){ const i=list.findIndex(x=>x.id===editProdId); list[i]=obj; } else { list.unshift(obj); }
       DB.set(KEYS.PROD, list); closeModal('modalProduct'); renderProducts();
@@ -528,11 +890,22 @@
       const prods = DB.get(KEYS.PROD, []);
       const p = prods.find(x=>x.id===moProduct.value); if(!p) return alert('Seleccione un producto');
       const list = DB.get(KEYS.MFG, []);
+      // resolve customer
+      let cName = '', cId = '', cAddr='';
+      try{
+        const sel = document.getElementById('moCustomer');
+        const opt = sel.options[sel.selectedIndex];
+        const d = JSON.parse(opt?.dataset?.clientData||'{}');
+        cName = (d.name || d.nombre || d.fullName || opt.textContent || sel.value || '').trim();
+        cId = String(d.id || d.clientId || d.clienteId || '').trim();
+      }catch(_){ }
+      try{ cAddr = String(document.getElementById('moAddress').value||'').trim(); }catch(_){ }
       const obj = {
         id: editMfgId || genId('MFG'),
         code: editMfgId ? (list.find(x=>x.id===editMfgId)||{}).code : genId('MFGO'),
         productId: p.id, productName: p.name, qty: Math.max(1, Number(moQty.value||1)),
-        status: 'Pendiente', owner: moOwner.value.trim(), etaIn: moEtaIn.value ? new Date(moEtaIn.value).toISOString() : ''
+        status: 'Pendiente', owner: moOwner.value.trim(), etaIn: moEtaIn.value ? new Date(moEtaIn.value).toISOString() : '',
+        customerName: cName, customerId: cId || null, address: cAddr
       };
       if (editMfgId){ const i=list.findIndex(x=>x.id===editMfgId); list[i]=obj; } else { list.unshift(obj); }
       DB.set(KEYS.MFG, list); closeModal('modalMfgOrder'); renderMfgOrders();
@@ -551,27 +924,31 @@
         if (!chosen && seed.productSKU) chosen = prods.find(p=> (p.sku||'')===seed.productSKU);
         if (!chosen && seed.productName) chosen = prods.find(p=> (p.name||'').toLowerCase()===String(seed.productName).toLowerCase());
         if (chosen){ moProduct.value = chosen.id; }
-        moQty.value = Math.max(1, Number(seed.qty||1));
-        updateConsumoPreview();
-        // store linkage on save
-        const _origSave = saveMfgOrder;
-        window.saveMfgOrder = function(){
-          const prods = DB.get(KEYS.PROD, []);
-          const p = prods.find(x=>x.id===moProduct.value); if(!p) return alert('Seleccione un producto');
-          const list = DB.get(KEYS.MFG, []);
-          const obj = {
-            id: editMfgId || genId('MFG'),
-            code: editMfgId ? (list.find(x=>x.id===editMfgId)||{}).code : genId('MFGO'),
-            productId: p.id, productName: p.name, qty: Math.max(1, Number(moQty.value||1)),
-            status: 'Pendiente', owner: moOwner.value.trim(), etaIn: moEtaIn.value ? new Date(moEtaIn.value).toISOString() : '',
-            orderId: seed.orderId || null
-          };
-          if (editMfgId){ const i=list.findIndex(x=>x.id===editMfgId); list[i]=obj; } else { list.unshift(obj); }
-          DB.set(KEYS.MFG, list); closeModal('modalMfgOrder'); renderMfgOrders();
-          // restore
-          window.saveMfgOrder = _origSave;
-        };
-      } catch(_) {}
+        // qty
+        if (seed.qty) { try{ moQty.value = Number(seed.qty)||1; }catch(_){}}
+        // customer/address from order
+        try {
+          if (seed.orderId){
+            const orders = JSON.parse(localStorage.getItem('orders')||'[]');
+            const o = orders.find(x=> String(x.id)===String(seed.orderId));
+            if (o){
+              populateCustomerSelect();
+              const sel = document.getElementById('moCustomer');
+              const wantedId = String(o.customerId || o.clientId || o.clienteId || '').trim();
+              const wantedName = o.customer || o.customerName || '';
+              for (let i=0;i<sel.options.length;i++){
+                const opt = sel.options[i];
+                const d = (()=>{ try{return JSON.parse(opt.dataset.clientData||'{}')}catch(_){return {}} })();
+                const cid = String(d.id || d.clientId || d.clienteId || '');
+                const cname = d.name || d.nombre || d.fullName || opt.textContent;
+                if ((wantedId && cid===wantedId) || (wantedName && cname===wantedName)) { sel.selectedIndex = i; break; }
+              }
+              const addr = o.address || o.deliveryAddress || '';
+              if (addr) document.getElementById('moAddress').value = addr;
+            }
+          }
+        } catch(_) {}
+      } catch(e) { console.error(e); }
     }
     try { window.createProductionFromOrder = createProductionFromOrder; } catch(e) {}
 
@@ -606,7 +983,7 @@
       document.getElementById('btnExportXLS').addEventListener('click', ()=> alert('Exportar a Excel (pendiente)'));
 
       // Initial renders
-      renderProducts(); renderMfgOrders(); refreshKPIs();
+      renderProducts(); renderMfgOrders(); renderMaterials(); renderMovements(); refreshKPIs();
 
       // Quick action via URL param
       try {
@@ -617,6 +994,17 @@
           setTimeout(()=>{ try{ document.getElementById('moProduct').focus(); }catch(_){} }, 50);
         }
       } catch(_) {}
+      // Bind materials UI
+      document.getElementById('btnNewMaterial').addEventListener('click', ()=>{ editMatId=null; openMaterialModal(null); });
+      document.getElementById('btnSaveMaterial').addEventListener('click', saveMaterial);
+      document.getElementById('btnCloseMaterial').addEventListener('click', ()=> closeModal('modalMaterial'));
+      document.getElementById('fMatSearch').addEventListener('input', renderMaterials);
+      document.getElementById('fMatUnit').addEventListener('change', renderMaterials);
+      document.getElementById('btnExportMaterials').addEventListener('click', exportMaterials);
+      document.getElementById('btnSuggestPurchases').addEventListener('click', suggestPurchases);
+      // Bind movements UI
+      ['fMovSearch','fMovFrom','fMovTo','fMovType'].forEach(id=>{ try{ document.getElementById(id).addEventListener('input', renderMovements); }catch(_){}});
+      document.getElementById('btnExportMovements').addEventListener('click', exportMovements);
     });
   </script>
 </body>

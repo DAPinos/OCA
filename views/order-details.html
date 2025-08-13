@@ -86,7 +86,7 @@
       const p = new URLSearchParams(window.location.search);
       return p.get(name);
     }
-    function nf(n) { try { return new Intl.NumberFormat('es-AR', {style:'currency', currency:'ARS'}).format(Number(n)||0); } catch { return `$ ${Number(n)||0}`; } }
+    function nf(n) { try { return new Intl.NumberFormat('es-CL', {style:'currency', currency:'CLP'}).format(Number(n)||0); } catch { return `$ ${Number(n)||0}`; } }
     function fmtDate(d) { try { return new Date(d).toLocaleString('es-AR'); } catch { return d; } }
 
     function loadOrder(id) {
@@ -106,7 +106,22 @@
     function render(order) {
       document.getElementById('orderId').textContent = `Pedido #${order.id}`;
       document.getElementById('orderDate').textContent = fmtDate(order.createdAt || order.date);
-      document.getElementById('orderCustomer').textContent = `Cliente: ${order.customer || order.customerName || '—'}`;
+      const customerName = order.customer || order.customerName || '—';
+      document.getElementById('orderCustomer').textContent = `Cliente: ${customerName}`;
+      // Resolve delivery address from order or clients storage
+      let deliveryAddress = order.address || order.deliveryAddress || '';
+      if (!deliveryAddress) {
+        try {
+          const clientsRaw = localStorage.getItem('clients') || localStorage.getItem('clientes') || '[]';
+          const clients = JSON.parse(clientsRaw);
+          const match = (clients || []).find(c => {
+            const name = c.name || c.nombre || c.fullName || c.email || '';
+            const id = String(c.id || c.clientId || c.clienteId || '');
+            return (name && name === customerName) || (order.customerId && String(order.customerId) === id);
+          });
+          if (match) deliveryAddress = match.address || (Array.isArray(match.addresses) ? match.addresses[0] : '') || '';
+        } catch(_) {}
+      }
       statusPill(document.getElementById('orderStatus'), order.status || 'Pendiente');
 
       const items = Array.isArray(order.items) ? order.items : [];
@@ -123,6 +138,7 @@
       document.getElementById('totalCell').textContent = nf(total);
 
       const extras = [];
+      if (deliveryAddress) extras.push(`Dirección: ${deliveryAddress}`);
       if (order.notes) extras.push(`Notas: ${order.notes}`);
       if (order.paymentMethod) extras.push(`Pago: ${order.paymentMethod}`);
       if (order.table || order.mesa) extras.push(`Mesa: ${order.table || order.mesa}`);
@@ -132,6 +148,19 @@
     // ===== Utilidad local: imprimir recibo en popup y autocerrar =====
     function openReceiptPrintPopup(order) {
       const date = fmtDate(order.createdAt || order.date || Date.now());
+      // Resolve address for print meta
+      let deliveryAddress = order.address || order.deliveryAddress || '';
+      if (!deliveryAddress) {
+        try {
+          const clients = JSON.parse(localStorage.getItem('clients') || localStorage.getItem('clientes') || '[]');
+          const match = (clients || []).find(c => {
+            const name = c.name || c.nombre || c.fullName || c.email || '';
+            const id = String(c.id || c.clientId || c.clienteId || '');
+            return (name && name === (order.customer || order.customerName)) || (order.customerId && String(order.customerId) === id);
+          });
+          if (match) deliveryAddress = match.address || (Array.isArray(match.addresses) ? match.addresses[0] : '') || '';
+        } catch(_) {}
+      }
       const rows = (Array.isArray(order.items) ? order.items : []).map(it => {
         const name = it.productName || it.name || 'Producto';
         const qty = Number(it.quantity) || 0;
@@ -168,7 +197,7 @@
             <button class="btn primary" onclick="window.print()">Imprimir / Exportar PDF</button>
           </div>
           <h1>Recibo - Pedido #${order.id}</h1>
-          <p class="meta">Fecha: ${date} · Cliente: ${order.customer || order.customerName || '—'} · Estado: ${order.status || '—'}</p>
+          <p class="meta">Fecha: ${date} · Cliente: ${order.customer || order.customerName || '—'}${deliveryAddress ? ` · Dirección: ${deliveryAddress}` : ''} · Estado: ${order.status || '—'}</p>
           <table>
             <thead><tr><th>Producto</th><th class="ta-r">Cant.</th><th class="ta-r">Precio</th><th class="ta-r">Subtotal</th></tr></thead>
             <tbody>${rows || '<tr><td colspan="4">Sin productos</td></tr>'}</tbody>

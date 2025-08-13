@@ -5,4 +5,13 @@
   from = "/"
   to = "/login.html"
   status = 301
-  
+
+[[redirects]]
+  from = "/views/*"
+  to = "/:splat"
+  status = 301
+
+[[redirects]]
+  from = "/views/login.html"
+  to = "/login.html"
+  status = 301
