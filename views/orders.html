@@ -13,6 +13,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="../js/product-selector.js"></script>
+    <script src="../js/session-role.js"></script>
     <style>
       /* Botones uniformes (armonizados con la paleta existente) */
       .btn-u { height: 32px; padding: 0 12px; border-radius: 8px; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; transition: background .15s ease, color .15s ease, border-color .15s ease; }
@@ -493,7 +494,7 @@
               <div class="flex flex-col gap-4">
                 <h1 class="text-[#181710] text-base font-medium leading-normal">OCA Minimarkets</h1>
                 <div class="flex flex-col gap-2">
-                  <a href="index.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <a href="index.html" data-roles="administracion,produccion,cliente" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <div class="text-[#181710]" data-icon="House" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
@@ -503,7 +504,7 @@
                     </div>
                     <p class="text-[#181710] text-sm font-medium leading-normal">Inicio</p>
                   </a>
-                  <a href="hr.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <a href="hr.html" data-roles="administracion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <div class="text-[#181710]" data-icon="UsersThree" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path d="M168,120a40,40,0,1,0-40-40A40,40,0,0,0,168,120Zm-80,0A40,40,0,1,0,48,80,40,40,0,0,0,88,120Zm80,16c-22.09,0-64,11.05-64,32v16a8,8,0,0,0,8,8h112a8,8,0,0,0,8-8V168C232,147.05,190.09,136,168,136Zm-80,0c-22.09,0-64,11.05-64,32v16a8,8,0,0,0,8,8h72a8,8,0,0,0,8-8V168C168,147.05,126.09,136,88,136Z"/>
@@ -511,7 +512,7 @@
                     </div>
                     <p class="text-[#181710] text-sm font-medium leading-normal">RRHH</p>
                   </a>
-                  <a href="orders.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#f5f4f0] hover:bg-[#e8e6e0] transition-colors">
+                  <a href="orders.html" data-roles="administracion,cliente,produccion" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#f5f4f0] hover:bg-[#e8e6e0] transition-colors">
                     <div class="text-[#181710]" data-icon="Receipt" data-size="24px" data-weight="fill">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
@@ -521,7 +522,7 @@
                     </div>
                     <p class="text-[#181710] text-sm font-bold leading-normal">Pedidos</p>
                   </a>
-                  <a href="products.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <a href="products.html" data-roles="administracion,produccion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <div class="text-[#181710]" data-icon="Package" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
@@ -531,7 +532,7 @@
                     </div>
                     <p class="text-[#181710] text-sm font-medium leading-normal">Productos</p>
                   </a>
-                  <a href="clients.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <a href="clients.html" data-roles="administracion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <div class="text-[#181710]" data-icon="Users" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
@@ -541,7 +542,7 @@
                     </div>
                     <p class="text-[#181710] text-sm font-medium leading-normal">Clientes</p>
                   </a>
-                  <a href="finance.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <a href="finance.html" data-roles="administracion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <div class="text-[#181710]" data-icon="CurrencyDollar" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
@@ -552,7 +553,7 @@
                     <p class="text-[#181710] text-sm font-medium leading-normal">Finanzas</p>
                   </a>
                   <!-- Transport Menu Item -->
-                  <a href="transport.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <a href="transport.html" data-roles="administracion,produccion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <div class="text-[#181710]" data-icon="Truck" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path d="M248,120h-24V88a16,16,0,0,0-16-16H160V64a16,16,0,0,0-16-16H32A16,16,0,0,0,16,64V176a16,16,0,0,0,16,16H56a32,32,0,0,0,64,0h48a32,32,0,0,0,64,0h8a8,8,0,0,0,0-16h-8V136h16a8,8,0,0,0,0-16ZM32,64H144V176H120a32,32,0,0,0-64,0H32ZM208,88v32H160V88ZM88,200a16,16,0,1,1,16-16A16,16,0,0,1,88,200Zm112,0a16,16,0,1,1,16-16A16,16,0,0,1,200,200Z"/>
@@ -561,7 +562,7 @@
                     <p class="text-[#181710] text-sm font-medium leading-normal">Transporte y Despacho</p>
                   </a>
                   <!-- Manufacturing Menu Item -->
-                  <a href="manufacturing.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <a href="manufacturing.html" data-roles="administracion,produccion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <div class="text-[#181710]" data-icon="Factory" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path d="M216,56H184V32a8,8,0,0,0-16,0V56H136V32a8,8,0,0,0-16,0V56H88V32a8,8,0,0,0-16,0V56H40A16,16,0,0,0,24,72V208a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V72A16,16,0,0,0,216,56ZM40,72H216V96H40ZM216,208H40V112H216ZM72,176a8,8,0,0,1,0-16H96a8,8,0,0,1,0,16Zm56,0a8,8,0,0,1,0-16h24a8,8,0,0,1,0,16Z"/>
@@ -569,7 +570,7 @@
                     </div>
                     <p class="text-[#181710] text-sm font-medium leading-normal">Manufactura</p>
                   </a>
-                  <a href="settings.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <a href="settings.html" data-roles="administracion,produccion,cliente" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <div class="text-[#181710]" data-icon="Gear" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
@@ -587,10 +588,10 @@
             <!-- Global Top Actions -->
             <div class="w-full px-4 pt-4">
               <div class="flex flex-wrap items-center gap-2 border border-[#e7e5da] rounded-lg p-2">
-                <a href="index.html" class="btn-u ghost">Inicio</a>
-                <a href="transport.html" class="btn-u ghost">Transporte</a>
-                <a href="manufacturing.html" class="btn-u ghost">Manufactura</a>
-                <a href="finance.html" class="btn-u ghost">Finanzas</a>
+                <a href="index.html" data-roles="administracion,produccion,cliente" class="btn-u ghost">Inicio</a>
+                <a href="transport.html" data-roles="administracion,produccion" class="btn-u ghost">Transporte</a>
+                <a href="manufacturing.html" data-roles="administracion,produccion" class="btn-u ghost">Manufactura</a>
+                <a href="finance.html" data-roles="administracion" class="btn-u ghost">Finanzas</a>
               </div>
             </div>
 

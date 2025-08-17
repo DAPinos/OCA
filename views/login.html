@@ -105,7 +105,7 @@
             <div class="demo-users">
                 <div class="demo-user" 
                      data-email="admin@ocaminimarkets.com" 
-                     data-role="administrador"
+                     data-role="administracion"
                      onclick="loginWithDemoUser('admin')">
                     <div class="demo-user-info">
                         <div class="demo-user-role">
@@ -180,6 +180,18 @@
                         <i class="fas fa-envelope"></i> Correo electrónico
                     </label>
                     <input type="email" id="registerEmail" class="form-input" placeholder="tu@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerRole" class="form-label">
+                        <i class="fas fa-user-tag"></i> Tipo de usuario
+                    </label>
+                    <select id="registerRole" class="form-input" required>
+                        <option value="" disabled selected>Selecciona un tipo</option>
+                        <option value="administracion">Administración</option>
+                        <option value="cliente">Cliente</option>
+                        <option value="produccion">Producción</option>
+                    </select>
                 </div>
                 
                 <div class="form-group">
@@ -310,7 +322,7 @@
                     id: 'demo_admin_001',
                     name: 'Administrador Demo',
                     email: 'admin@ocaminimarkets.com',
-                    role: 'administrador',
+                    role: 'administracion',
                     department: 'administracion',
                     isDemo: true,
                     permissions: ['all']
@@ -351,6 +363,9 @@
             // Guardar datos de sesión
             localStorage.setItem('authToken', token);
             localStorage.setItem('userData', JSON.stringify(user));
+            // Claves utilizadas por el control de UI basado en rol
+            localStorage.setItem('userRole', user.role);
+            localStorage.setItem('userName', user.name);
             localStorage.setItem('sessionActive', 'true');
             localStorage.setItem('lastLogin', new Date().toISOString());
             localStorage.setItem('loginTimestamp', timestamp.toString());

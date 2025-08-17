@@ -77,11 +77,18 @@
   <header>
     <h1>Manufactura</h1>
     <div class="actions">
-      <a class="btn" href="./index.html">Inicio</a>
-      <a class="btn" href="./orders.html">Pedidos</a>
-      <a class="btn" href="./transport.html">Transporte</a>
-      <a class="btn" href="./hr.html">RRHH</a>
-      <a class="btn" href="./finance.html">Finanzas</a>
+      <a class="btn" href="./index.html" data-roles="administracion,produccion,cliente">Inicio</a>
+      <a class="btn" href="./orders.html" data-roles="administracion,cliente,produccion">Pedidos</a>
+      <a class="btn" href="./transport.html" data-roles="administracion,produccion">Transporte</a>
+      <a class="btn" href="./hr.html" data-roles="administracion">RRHH</a>
+      <a class="btn" href="./finance.html" data-roles="administracion">Finanzas</a>
+      <span id="userBadge" style="display:inline-flex;align-items:center;gap:8px;margin-left:8px;">
+        <span id="userInitials" style="width:28px;height:28px;border-radius:50%;background:#111827;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;">--</span>
+        <span style="display:flex;flex-direction:column;line-height:1.1;">
+          <span id="userNameText" style="font-size:13px;font-weight:700;">Usuario</span>
+          <span id="userRoleText" class="muted" style="font-size:11px;">Rol</span>
+        </span>
+      </span>
     </div>
 
   <!-- Modal: Material CRUD / Movimiento -->
@@ -115,16 +122,50 @@
     </div>
   </div>
   </header>
+  <script>
+    (function initRoleUI(){
+      try {
+        const role = (localStorage.getItem('userRole')||'').toLowerCase();
+        const name = localStorage.getItem('userName')||'';
+        // Populate user badge
+        const nameEl = document.getElementById('userNameText');
+        const roleEl = document.getElementById('userRoleText');
+        const iniEl = document.getElementById('userInitials');
+        if (nameEl) nameEl.textContent = name || 'Usuario';
+        if (roleEl) roleEl.textContent = role || 'sin rol';
+        if (iniEl) {
+          const initials = (name||'').split(/\s+/).filter(Boolean).slice(0,2).map(s=>s[0]?.toUpperCase()||'').join('') || '--';
+          iniEl.textContent = initials;
+        }
+        // Enforce role-based visibility
+        document.querySelectorAll('[data-roles]').forEach(el => {
+          const allowed = (el.getAttribute('data-roles')||'')
+            .split(',')
+            .map(s=>s.trim().toLowerCase())
+            .filter(Boolean);
+          if (role && allowed.length && !allowed.includes(role)) {
+            el.style.display = 'none';
+          }
+        });
+        // Optional page guard: block "cliente" on production pages
+        const p = location.pathname.toLowerCase();
+        const isProdPage = p.endsWith('manufacturing.html') || p.endsWith('products.html') || p.endsWith('transport.html');
+        if (role === 'cliente' && isProdPage) {
+          window.location.href = './index.html';
+        }
+      } catch(_){ /* noop */ }
+    })();
+  </script>
 
   <div class="layout">
     <aside class="sidebar">
       <nav class="nav" id="sideNav">
-        <a href="#dashboard" data-section="dashboard" class="active">Dashboard</a>
-        <a href="#products" data-section="products">Productos</a>
-        <a href="#rawMaterials" data-section="rawMaterials">Materia Prima</a>
-        <a href="#orders" data-section="mfgOrders">Órdenes de Producción</a>
-        <a href="#stockHistory" data-section="stockHistory">Historial Stock</a>
-        <a href="#reports" data-section="reports">Reportes</a>
+        <a href="#dashboard" data-section="dashboard" class="active" data-roles="administracion,produccion">Dashboard</a>
+        <a href="#products" data-section="products" data-roles="administracion,produccion">Productos</a>
+        <a href="#rawMaterials" data-section="rawMaterials" data-roles="administracion,produccion">Materia Prima</a>
+        <a href="#orders" data-section="mfgOrders" data-roles="administracion,produccion">Órdenes de Producción</a>
+        <a href="#stockHistory" data-section="stockHistory" data-roles="administracion,produccion">Historial Stock</a>
+        <a href="#reports" data-section="reports" data-roles="administracion,produccion">Reportes</a>
       </nav>
     </aside>
 

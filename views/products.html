@@ -13,6 +13,7 @@
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="../js/config.js"></script>
+    <script src="../js/session-role.js"></script>
   </head>
   <body>
     <div class="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
@@ -25,7 +26,7 @@
                 <h1 class="text-[#181710] text-base font-medium leading-normal">OCA Minimarkets</h1>
                 <div class="flex flex-col gap-2">
                   <!-- Dashboard Menu Item -->
-                  <a href="index.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <a href="index.html" data-roles="administracion,cliente,produccion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <div class="text-[#181710]" data-icon="House" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path d="M216,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z"></path>
@@ -35,7 +36,7 @@
                   </a>
                   
                   <!-- Orders Menu Item -->
-                  <a href="orders.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <a href="orders.html" data-roles="administracion,cliente,produccion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <div class="text-[#181710]" data-icon="Receipt" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path d="M216,40H40A16,16,0,0,0,24,56V208a8,8,0,0,0,11.58,7.15L64,200.94l28.42,14.21a8,8,0,0,0,7.16,0L128,200.94l28.42,14.21a8,8,0,0,0,7.16,0L192,200.94l28.42,14.21A8,8,0,0,0,232,208V56A16,16,0,0,0,216,40ZM176,144H80a8,8,0,0,1,0-16h96a8,8,0,0,1,0,16Zm0-32H80a8,8,0,0,1,0-16h96a8,8,0,0,1,0,16Z"></path>
@@ -45,7 +46,7 @@
                   </a>
                   
                   <!-- Products Menu Item (Active) -->
-                  <a href="products.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#f5f4f0] hover:bg-[#e8e6e0] transition-colors">
+                  <a href="products.html" data-roles="administracion,produccion" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#f5f4f0] hover:bg-[#e8e6e0] transition-colors">
                     <div class="text-[#181710]" data-icon="Package" data-size="24px" data-weight="fill">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path d="M223.68,66.15,135.68,18a15.88,15.88,0,0,0-15.36,0l-88,48.17a16,16,0,0,0-8.32,14v95.64a16,16,0,0,0,8.32,14l88,48.17a15.88,15.88,0,0,0,15.36,0l88-48.17a16,16,0,0,0,8.32-14V80.18A16,16,0,0,0,223.68,66.15ZM128,120,47.66,76l33.9-18.56,80.34,44ZM40,90l80,43.78v85.79L40,175.82Zm176,85.78h0l-80,43.79V133.82l80-43.78Z"></path>
@@ -55,7 +56,7 @@
                   </a>
                   
                   <!-- Clients Menu Item -->
-                  <a href="clients.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <a href="clients.html" data-roles="administracion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <div class="text-[#181710]" data-icon="Users" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,1,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"></path>
@@ -65,7 +66,7 @@
                   </a>
 
                   <!-- Finance Menu Item -->
-                  <a href="finance.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <a href="finance.html" data-roles="administracion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <div class="text-[#181710]" data-icon="CurrencyDollar" data-size="24px" data-weight="regular">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                             <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm40-64a32,32,0,0,1-32,32v8a8,8,0,0,1-16,0v-8H112a8,8,0,0,1,0-16h24a16,16,0,0,0,0-32H128a32,32,0,0,1,0-64v-8a8,8,0,0,1,16,0v8h8a8,8,0,0,1,0,16H128a16,16,0,0,0,0,32h8a32,32,0,0,1,32,32Z"></path>
@@ -75,7 +76,7 @@
                   </a>
                   
                   <!-- Transport Menu Item -->
-                  <a href="transport.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <a href="transport.html" data-roles="administracion,produccion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <div class="text-[#181710]" data-icon="Truck" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path d="M248,120h-24V88a16,16,0,0,0-16-16H160V64a16,16,0,0,0-16-16H32A16,16,0,0,0,16,64V176a16,16,0,0,0,16,16H56a32,32,0,0,0,64,0h48a32,32,0,0,0,64,0h8a8,8,0,0,0,0-16h-8V136h16a8,8,0,0,0,0-16ZM32,64H144V176H120a32,32,0,0,0-64,0H32ZM208,88v32H160V88ZM88,200a16,16,0,1,1,16-16A16,16,0,0,1,88,200Zm112,0a16,16,0,1,1,16-16A16,16,0,0,1,200,200Z"/>
@@ -85,7 +86,7 @@
                   </a>
                   
                   <!-- Manufacturing Menu Item -->
-                  <a href="manufacturing.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <a href="manufacturing.html" data-roles="administracion,produccion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <div class="text-[#181710]" data-icon="Factory" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path d="M216,56H184V32a8,8,0,0,0-16,0V56H136V32a8,8,0,0,0-16,0V56H88V32a8,8,0,0,0-16,0V56H40A16,16,0,0,0,24,72V208a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V72A16,16,0,0,0,216,56ZM40,72H216V96H40ZM216,208H40V112H216ZM72,176a8,8,0,0,1,0-16H96a8,8,0,0,1,0,16Zm56,0a8,8,0,0,1,0-16h24a8,8,0,0,1,0,16Z"/>
@@ -94,11 +95,19 @@
                     <p class="text-[#181710] text-sm font-medium leading-normal">Manufactura</p>
                   </a>
                   
+                  <a href="hr.html" data-roles="administracion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="UsersThree" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M168,120a40,40,0,1,0-40-40A40,40,0,0,0,168,120Zm-80,0A40,40,0,1,0,48,80,40,40,0,0,0,88,120Zm80,16c-22.09,0-64,11.05-64,32v16a8,8,0,0,0,8,8h112a8,8,0,0,0,8-8V168C232,147.05,190.09,136,168,136Zm-80,0c-22.09,0-64,11.05-64,32v16a8,8,0,0,0,8,8h72a8,8,0,0,0,8-8V168C168,147.05,126.09,136,88,136Z"/>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">RRHH</p>
+                  </a>
                   <!-- Settings Menu Item -->
-                  <a href="settings.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <a href="settings.html" data-roles="administracion,produccion,cliente" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <div class="text-[#181710]" data-icon="Gear" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M230.92,120c0,0-2.2-2.4-6-6.53a94.82,94.82,0,0,0-9.1-8.67,2,2,0,0,1-.55-1.81,97,97,0,0,0,.42-15.37,1.9,1.9,0,0,0-1.32-1.61c-9.36-3.51-15.2-5.6-22.63-10.5a1.9,1.9,0,0,0-2.57.18c-5.9,5.7-9.2,9.07-15.1,10.65a2,2,0,0,1-1.81-.21,103.15,103.15,0,0,0-12.89-8.43,2,2,0,0,1-.68-2.38c2.22-5.52,3.7-9.24,4.42-14.63a1.9,1.9,0,0,0-1.4-2.11c-6.52-1.54-10.7-2.53-17.2-4.8a1.89,1.89,0,0,0-2.17.73c-4.1,6.13-5.9,9.2-10.48,13.46a2,2,0,0,1-1.61.55,100,100,0,0,0-15.36.42,2,2,0,0,1-1.61-1.32c-3.51-9.36-5.6-15.2-10.5-22.63a1.9,1.9,0,0,0-2.57-.72c-6.3,3.49-10.34,5.72-16.42,7.1a2,2,0,0,1-2-3.31c5.7-5.9,9.07-9.2,10.65-15.1a2,2,0,0,0-.21-1.81A103.15,103.15,0,0,0,88.7,56.59a2,2,0,0,0-2.38-.68c-5.52,2.22-9.24,3.7-14.63,4.42a1.9,1.9,0,0,1-2.11-1.4c-1.54-6.52-2.53-10.7-4.8-17.2a1.89,1.89,0,0,0-2.52-1.11c-6.44,2.39-10.58,3.93-15.7,4.62a1.9,1.9,0,0,0-1.33,3.23c5.38,5.43,8.2,8.27,10.46,13.07a2,2,0,0,1-.55,2.37,100,100,0,0,0-8.42,12.89,2,2,0,0,1-1.81.69c-5.52-1.37-9.24-2.28-14.63-1.57a1.9,1.9,0,0,0-1.4,2.11c1.54,6.52,2.53,10.7,4.8,17.2a1.89,1.89,0,0,0,2.52,1.11c6.44,2.39,10.58,3.93,15.7,4.62a1.9,1.9,0,0,1,1.33,3.23c-5.38,5.43-8.2,8.27-10.46,13.07a2,2,0,0,0,.55,2.37,103.15,103.15,0,0,0-8.43,12.89,2,2,0,0,0,.69,2.74c5.52,2.22,9.24,3.7,14.63,4.42a1.9,1.9,0,0,1,1.4,2.11c-1.54,6.52-2.53,10.7-4.8,17.2a1.89,1.89,0,0,0,1.11,2.52c6.44,2.39,10.58,3.93,15.7,4.62a1.9,1.9,0,0,1,1.33,3.23c-5.38,5.43-8.2,8.27-10.46,13.07a2,2,0,0,0,.55,2.37,100,100,0,0,0,8.42,12.89,2,2,0,0,0,2.74.69c5.52-2.22,9.24-3.7,14.63-4.42a1.9,1.9,0,0,1,2.11,1.4c1.54,6.52,2.53,10.7,4.8,17.2a1.89,1.89,0,0,0,2.52,1.11c6.44-2.39,10.58-3.93,15.7-4.62a1.9,1.9,0,0,1,1.33,3.23c-5.38,5.43-8.2,8.27-10.46,13.07a2,2,0,0,0,.55,2.37,100,100,0,0,0,12.89,8.42,2,2,0,0,0,2.38-.68c2.22-5.52,3.7-9.24,4.42-14.63a1.9,1.9,0,0,1,1.4-2.11c6.52-1.54,10.7-2.53,17.2-4.8a1.89,1.89,0,0,0,1.11-2.52c-2.39-6.44-3.93-10.58-4.62-15.7a1.9,1.9,0,0,1,1.33-3.23c5.43,5.38,8.27,8.2,13.07,10.46a2,2,0,0,0,2.37-.55,100,100,0,0,0,12.89-8.42,2,2,0,0,0,.69-2.74c-2.22-5.52-3.7-9.24-4.42-14.63a1.9,1.9,0,0,1,1.4-2.11c6.52-1.54,10.7-2.53,17.2-4.8a1.89,1.89,0,0,0,1.11-2.52c-2.39-6.44-3.93-10.58-4.62-15.7a1.9,1.9,0,0,1,1.33-3.23c5.43,5.38,8.27,8.2,13.07,10.46a2,2,0,0,0,2.37-.55,100,100,0,0,0,8.42-12.89,2,2,0,0,0-.21-2.37c-5.7-5.9-9.07-9.2-10.65-15.1a2,2,0,0,1,.21-1.81c3.51-5.32,5.6-8.65,10.5-12.13a1.9,1.9,0,0,1,2.57.18c5.9,5.7,9.2,9.07,15.1,10.65a2,2,0,0,1,1.21.93A95.5,95.5,0,0,0,230.92,120ZM128,176a56,56,0,1,1,56-56A56.06,56.06,0,0,1,128,176Z"></path>
+                        <path d="M230.92,120c0,0-2.2-2.4-6-6.53a94.82,94.82,0,0,0-9.1-8.67,2,2,0,0,1-.55-1.81,97,97,0,0,0,.42-15.37,1.9,1.9,0,0,0-1.32-1.61c-9.36-3.51-15.2-5.6-22.63-10.5a1.9,1.9,0,0,0-2.57.18c-5.9,5.7-9.2,9.07-15.1,10.65a2,2,0,0,1-1.81-.21,103.15,103.15,0,0,0-12.89-8.43,2,2,0,0,1-.68-2.38c2.22-5.52,3.7-9.24,4.42-14.63a1.9,1.9,0,0,0-1.4-2.11c-6.52-1.54-10.7-2.53-17.2-4.8a1.89,1.89,0,0,0-2.17.73c-4.1,6.13-5.9,9.2-10.48,13.46a2,2,0,0,1-1.61.55,100,100,0,0,0-15.36.42,2,2,0,0,1-1.61-1.32c-3.51-9.36-5.6-15.2-10.5-22.63a1.9,1.9,0,0,0-2.57-.72c-6.3,3.49-10.34,5.72-16.42,7.1a2,2,0,0,1-2-3.31c5.7-5.9,9.07-9.2,10.65-15.1a2,2,0,0,0-.21-1.81A103.15,103.15,0,0,0,88.7,56.59a2,2,0,0,0-2.38-.68c-5.52,2.22-9.24,3.7-14.63,4.42a1.9,1.9,0,0,1-2.11-1.4c-1.54-6.52-2.53-10.7-4.8-17.2a1.89,1.89,0,0,0-2.52-1.11c-6.44,2.39-10.58,3.93-15.7,4.62a1.9,1.9,0,0,0-1.33,3.23c5.38,5.43,8.2,8.27,10.46,13.07a2,2,0,0,1-.55,2.37,100,100,0,0,0-8.42,12.89,2,2,0,0,1-1.81.69c-5.52-1.37-9.24-2.28-14.63-1.57a1.9,1.9,0,0,0-1.4,2.11c9.36,3.51,15.2,5.6,22.63,10.5a1.89,1.89,0,0,0,2.17-.73c4.1-6.13,5.9-9.2,10.48-13.46a2,2,0,0,0,1.61-.55,100,100,0,0,0,15.36-.42,2,2,0,0,1,1.61,1.32c3.51,9.36,5.6,15.2,10.5,22.63a1.9,1.9,0,0,1,1.4,2.11c-1.54,6.52-2.53,10.7-4.8,17.2a1.89,1.89,0,0,0,1.11,2.52c6.44,2.39,10.58,3.93,15.7,4.62a1.9,1.9,0,0,1,1.33,3.23c-5.38,5.43-8.2,8.27-10.46,13.07a2,2,0,0,0,.55,2.37,100,100,0,0,0,8.42,12.89,2,2,0,0,0,2.74.69c5.52-2.22,9.24-3.7,14.63-4.42a1.9,1.9,0,0,1,2.11,1.4c1.54,6.52,2.53,10.7,4.8,17.2a1.89,1.89,0,0,0,2.52,1.11c6.44-2.39,10.58-3.93,15.7-4.62a1.9,1.9,0,0,1,1.33,3.23c-5.38,5.43-8.2,8.27-10.46,13.07a2,2,0,0,0,.55,2.37,100,100,0,0,0,12.89,8.42,2,2,0,0,0,2.38-.68c2.22-5.52,3.7-9.24,4.42-14.63a1.9,1.9,0,0,1,1.4-2.11c6.52-1.54,10.7-2.53,17.2-4.8a1.89,1.89,0,0,0,1.11-2.52c-2.39-6.44-3.93-10.58-4.62-15.7a1.9,1.9,0,0,1,1.33-3.23c5.43,5.38,8.27,8.2,13.07,10.46a2,2,0,0,0,2.37-.55,100,100,0,0,0,12.89-8.42,2,2,0,0,0,.69-2.74c-2.22-5.52-3.7-9.24-4.42-14.63a1.9,1.9,0,0,1,1.4-2.11c6.52-1.54,10.7-2.53,17.2-4.8a1.89,1.89,0,0,0,1.11-2.52c-2.39-6.44-3.93-10.58-4.62-15.7a1.9,1.9,0,0,1,1.33-3.23c5.43,5.38,8.27,8.2,13.07,10.46a2,2,0,0,0,2.37-.55,100,100,0,0,0,8.42-12.89,2,2,0,0,0-.21-2.37c-5.7-5.9-9.07-9.2-10.65-15.1a2,2,0,0,1,.21-1.81c3.51-5.32,5.6-8.65,10.5-12.13a1.9,1.9,0,0,1,2.57.18c5.9,5.7,9.2,9.07,15.1,10.65a2,2,0,0,1,1.21.93A95.5,95.5,0,0,0,230.92,120ZM128,176a56,56,0,1,1,56-56A56.06,56.06,0,0,1,128,176Z"></path>
                       </svg>
                     </div>
                     <p class="text-[#181710] text-sm font-medium leading-normal">Ajustes</p>
@@ -112,11 +121,20 @@
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
             <!-- Global Top Actions -->
             <div class="w-full px-4 pt-4">
-              <div class="flex flex-wrap items-center gap-2 border border-[#e7e5da] rounded-lg p-2">
-                <a href="index.html" class="px-3 py-1.5 text-sm rounded-md border border-[#e7e5da] hover:bg-gray-50 text-[#181710]">Inicio</a>
-                <a href="transport.html" class="px-3 py-1.5 text-sm rounded-md border border-[#e7e5da] hover:bg-gray-50 text-[#181710]">Transporte</a>
-                <a href="manufacturing.html" class="px-3 py-1.5 text-sm rounded-md border border-[#e7e5da] hover:bg-gray-50 text-[#181710]">Manufactura</a>
-                <a href="finance.html" class="px-3 py-1.5 text-sm rounded-md border border-[#e7e5da] hover:bg-gray-50 text-[#181710]">Finanzas</a>
+              <div class="flex flex-wrap items-center justify-between gap-2 border border-[#e7e5da] rounded-lg p-2">
+                <div class="flex flex-wrap items-center gap-2">
+                  <a href="index.html" data-roles="administracion,cliente,produccion" class="px-3 py-1.5 text-sm rounded-md border border-[#e7e5da] hover:bg-gray-50 text-[#181710]">Inicio</a>
+                  <a href="transport.html" data-roles="administracion,produccion" class="px-3 py-1.5 text-sm rounded-md border border-[#e7e5da] hover:bg-gray-50 text-[#181710]">Transporte</a>
+                  <a href="manufacturing.html" data-roles="administracion,produccion" class="px-3 py-1.5 text-sm rounded-md border border-[#e7e5da] hover:bg-gray-50 text-[#181710]">Manufactura</a>
+                  <a href="finance.html" data-roles="administracion" class="px-3 py-1.5 text-sm rounded-md border border-[#e7e5da] hover:bg-gray-50 text-[#181710]">Finanzas</a>
+                </div>
+                <div class="flex items-center gap-3 pl-2 border-l border-[#e7e5da]">
+                  <div class="text-right leading-tight">
+                    <div class="text-sm font-semibold text-[#181710] user-name">Usuario</div>
+                    <div class="text-xs text-gray-500 user-role">Rol</div>
+                  </div>
+                  <div class="size-8 rounded-full bg-[#181710] text-white flex items-center justify-center font-bold" id="userInitials">U</div>
+                </div>
               </div>
             </div>
 

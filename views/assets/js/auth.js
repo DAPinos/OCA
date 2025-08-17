@@ -27,6 +27,8 @@ class AuthSystem {
         const user = localStorage.getItem('userData');
         
         if (token && user) {
+            let parsedUser;
+            try { parsedUser = JSON.parse(user); } catch(_) { parsedUser = null; }
             const isDemoToken = token.startsWith('demo_');
             const isLocalEnv = ['file:', 'http:'].includes(window.location.protocol) && (/localhost|127\.0\.0\.1/.test(window.location.hostname) || window.location.protocol === 'file:');
 
@@ -34,7 +36,7 @@ class AuthSystem {
                 // En modo demo o local, no validar contra API remota
                 if (window.location.pathname.includes('login') || 
                     window.location.pathname.includes('register')) {
-                    const targetUrl = 'index.html';
+                    const targetUrl = this.getRedirectForRole(parsedUser && parsedUser.role);
                     console.log('Sesión detectada (demo/local). Redirigiendo a:', targetUrl);
                     window.location.replace(targetUrl);
                 }
@@ -46,7 +48,7 @@ class AuthSystem {
                 if (isValid) {
                     if (window.location.pathname.includes('login') || 
                         window.location.pathname.includes('register')) {
-                        const targetUrl = 'index.html';
+                        const targetUrl = this.getRedirectForRole(parsedUser && parsedUser.role);
                         console.log('Sesión válida. Redirigiendo a:', targetUrl);
                         window.location.replace(targetUrl);
                     }
@@ -167,6 +169,7 @@ class AuthSystem {
         
         const name = document.getElementById('registerName').value;
         const email = document.getElementById('registerEmail').value;
+        const role = (document.getElementById('registerRole') && document.getElementById('registerRole').value) || '';
         const password = document.getElementById('registerPassword').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
         
@@ -178,6 +181,13 @@ class AuthSystem {
         
         if (!this.validateEmail(email)) {
             this.showMessage('Por favor, ingresa un email válido.', 'error');
+            return;
+        }
+        
+        // Validar tipo de usuario
+        const allowedRoles = ['administracion', 'cliente', 'produccion'];
+        if (!allowedRoles.includes(role)) {
+            this.showMessage('Selecciona un tipo de usuario válido (Administración, Cliente o Producción).', 'error');
             return;
         }
         
@@ -199,7 +209,7 @@ class AuthSystem {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name, email, password })
+                body: JSON.stringify({ name, email, password, role })
             });
 
             const data = await response.json();
@@ -410,20 +420,40 @@ class AuthSystem {
         }
     }
 
-    // Manejar autenticación exitosa
+    // Manejar autenticación exitosa con redirección por rol
     handleAuthSuccess(data) {
         // Guardar datos de sesión
         localStorage.setItem('authToken', data.token);
         localStorage.setItem('userData', JSON.stringify(data.user));
-        
-        // Mostrar mensaje de éxito
-        this.showMessage('¡Bienvenido! Redirigiendo al panel principal...', 'success');
-        
-        // Redirigir al dashboard
+        // Claves de conveniencia para UI
+        if (data.user) {
+            if (data.user.role) localStorage.setItem('userRole', data.user.role);
+            if (data.user.name) localStorage.setItem('userName', data.user.name);
+        }
+
+        // Mensaje de bienvenida específico
+        try { this.showMessage(this.getWelcomeMessage(data.user || {}), 'success'); } catch(_) { this.showMessage('¡Bienvenido! Redirigiendo...', 'success'); }
+
+        // Redirigir según rol
         setTimeout(() => {
-            // En esta estructura, index.html está en la misma carpeta que login.html (views/)
-            window.location.href = 'index.html';
-        }, 1500);
+            const target = this.getRedirectForRole(data.user && data.user.role);
+            window.location.href = target;
+        }, 1200);
+    }
+
+    // Obtener ruta de redirección según rol
+    getRedirectForRole(role) {
+        switch ((role || '').toLowerCase()) {
+            case 'administracion':
+            case 'administrador':
+                return 'index.html';
+            case 'cliente':
+                return 'orders.html';
+            case 'produccion':
+                return 'kds.html';
+            default:
+                return 'index.html';
+        }
     }
 
     // Cerrar sesión
