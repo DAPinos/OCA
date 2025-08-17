@@ -659,6 +659,7 @@
           <div class='muted'>${v? (v.plate+' · '+v.model):'—'} · ${d? d.name:'—'}</div>
           <div style='margin-top:6px;'>📍 Lat: ${lat} · Lng: ${lng}</div>
           <div class='actions' style='margin-top:8px;'>
+            <button class='btn' onclick="openDispatchRoute('${o.id}')">Ruta</button>
             <button class='btn' onclick="advanceTrack('${o.id}')">Avanzar Ruta</button>
             <button class='btn' onclick="markDelivered('${o.id}')">Marcar Entregado</button>
           </div>
@@ -676,6 +677,29 @@
       if (step>3) it.status = 'Entregado';
       DB.set(KEYS.ORDERS, list);
       renderTracking(); renderDispatchTable();
+    }
+
+    // Abrir Google Maps con la dirección/coords asignadas del despacho
+    function openDispatchRoute(id){
+      try{
+        const list = DB.get(KEYS.ORDERS, []);
+        const it = list.find(x=>x.id===id);
+        if (!it) { alert('No se encontró la orden de despacho'); return; }
+        // Preferir dirección textual
+        let destination = (it.address || '').trim();
+        // Si no hay dirección, usar coordenadas simuladas o guardadas
+        const lat = (it.lat != null ? it.lat : it.mockLat);
+        const lng = (it.lng != null ? it.lng : it.mockLng);
+        if (!destination && lat != null && lng != null) {
+          destination = `${lat},${lng}`;
+        }
+        if (!destination) { alert('Este despacho no tiene dirección ni coordenadas.'); return; }
+        const url = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(destination) + '&travelmode=driving';
+        const w = window.open(url, '_blank', 'noopener,noreferrer');
+        if (!w) window.location.href = url;
+      }catch(e){
+        alert('No se pudo abrir la ruta: ' + (e && e.message ? e.message : e));
+      }
     }
 
     // Event bindings

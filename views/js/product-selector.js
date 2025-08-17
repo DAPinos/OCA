@@ -8,18 +8,73 @@ function initializeProductSelector() {
   setupProductSelectorEventListeners();
 }
 
+// Create a DOM-safe id from any product id
+function computeDomId(id) {
+  return String(id).replace(/[^a-zA-Z0-9_-]/g, '_');
+}
+
+// Normalize strings for robust comparison
+function norm(v) {
+  return (v == null ? '' : String(v))
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{Diacritic}+/gu, '')
+    .trim();
+}
+
+// Populate category select from available products
+function populateCategorySelect() {
+  const sel = document.getElementById('productCategory');
+  if (!sel) return;
+  const current = sel.value;
+  const map = new Map(); // normalized -> original display
+  (availableProducts || []).forEach(p => {
+    const raw = p && p.category != null ? String(p.category) : '';
+    const parts = raw.split(/[|,/]/).map(s => s.trim()).filter(Boolean);
+    if (parts.length === 0) parts.push(raw.trim());
+    parts.forEach(part => {
+      const key = norm(part);
+      if (key && !map.has(key)) map.set(key, part);
+    });
+  });
+  // Build options: first the "Todas" option
+  const opts = [{ value: '', label: 'Todas las categorías' }];
+  Array.from(map.entries())
+    .sort((a, b) => a[1].localeCompare(b[1]))
+    .forEach(([key, label]) => opts.push({ value: key, label }));
+  // Replace options only if changed
+  sel.innerHTML = opts.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
+  // Try to restore previous selection (by normalized)
+  const wanted = norm(current);
+  const has = opts.some(o => o.value === wanted);
+  sel.value = has ? wanted : '';
+}
+
 // Helper: determine if a product has unlimited stock
 function isUnlimitedStock(product){
+  // Explicit flags for no stock control
+  const noControl = product?.noStockControl === true
+    || product?.stockControl === false
+    || product?.manageStock === false
+    || product?.controlStock === false;
+  if (noControl) return true;
+
+  // Other common flags
+  const explicitUnlimited = product?.unlimited === true
+    || product?.stockUnlimited === true
+    || product?.infiniteStock === true;
+  if (explicitUnlimited) return true;
+
   const s = product?.stock;
-  const flag = product?.unlimited === true || product?.stockUnlimited === true || product?.infiniteStock === true;
-  if (flag) return true;
+  // Missing/empty/invalid stock is treated as unlimited
   if (s === undefined || s === null || s === '') return true;
   if (typeof s === 'string') {
     const txt = s.trim().toLowerCase();
-    if (txt === 'ilimitado' || txt === 'infinito' || txt === 'unlimited') return true;
+    if (txt === 'ilimitado' || txt === 'infinito' || txt === 'unlimited' || txt === 'na' || txt === 'n/a' || txt === 'null') return true;
     const n = Number(txt);
     if (!Number.isFinite(n)) return true;
   }
+  if (typeof s === 'number' && !Number.isFinite(s)) return true;
   if (typeof s === 'number' && s < 0) return true;
   return false;
 }
@@ -34,13 +89,61 @@ function setupProductSelectorEventListeners() {
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
     loadAvailableProducts();
+    populateCategorySelect();
+    // Hook up filters
+    const sel = document.getElementById('productCategory');
+    if (sel) sel.addEventListener('change', () => searchProducts());
+    const q = document.getElementById('productSearch');
+    if (q) q.addEventListener('input', () => searchProducts());
   });
+}
+
+// Ensure filters are wired even if script loads after DOMContentLoaded
+function ensureProductSelectorWired() {
+  try {
+    loadAvailableProducts();
+    const sel = document.getElementById('productCategory');
+    const q = document.getElementById('productSearch');
+    if (sel) {
+      // Populate categories if only placeholder present
+      if (sel.options && sel.options.length <= 1) {
+        populateCategorySelect();
+      }
+      if (!sel.dataset.wired) {
+        sel.addEventListener('change', () => searchProducts());
+        sel.dataset.wired = '1';
+      }
+    }
+    if (q && !q.dataset.wired) {
+      q.addEventListener('input', () => searchProducts());
+      q.dataset.wired = '1';
+    }
+    // If list container exists, render with current filters
+    if (document.getElementById('productList')) {
+      if (sel || q) {
+        searchProducts();
+      } else {
+        renderProductSelectorTable();
+      }
+    }
+  } catch (e) {
+    // Avoid throwing in UI
+    console && console.warn && console.warn('ensureProductSelectorWired error', e);
+  }
 }
 
 // Open product selector modal
 window.openProductSelectorModal = function() {
+  // Ensure inputs are wired irrespective of load order
+  ensureProductSelectorWired();
   loadAvailableProducts();
-  renderProductSelectorTable();
+  populateCategorySelect();
+  // Render respecting current filters (categoría y búsqueda)
+  if (document.getElementById('productCategory') || document.getElementById('productSearch')) {
+    searchProducts();
+  } else {
+    renderProductSelectorTable();
+  }
   document.getElementById('productSelectorModal').classList.remove('hidden');
   document.body.style.overflow = 'hidden';
 }
@@ -50,6 +153,10 @@ window.closeProductSelectorModal = function() {
   document.getElementById('productSelectorModal').classList.add('hidden');
   document.body.style.overflow = 'auto';
 }
+
+// Backward-compatible aliases expected by HTML
+window.openProductSelector = window.openProductSelectorModal;
+window.closeProductSelector = window.closeProductSelectorModal;
 
 // Make functions available globally for onclick handlers
 window.closeProductSelector = window.closeProductSelectorModal;
@@ -68,22 +175,27 @@ function renderProductSelectorTable() {
   productList.innerHTML = '';
   
   availableProducts.forEach(product => {
+    const domId = computeDomId(product.id);
     const row = document.createElement('tr');
     row.className = 'hover:bg-gray-50';
     
     // Determine stock status
-    const unlimited = isUnlimitedStock(product);
+    let unlimited = isUnlimitedStock(product);
+    const stockNum = Number(product.stock);
+    if (!unlimited && !Number.isFinite(stockNum)) {
+      unlimited = true;
+    }
     let stockStatus = unlimited ? 'Ilimitado' : 'En Stock';
     let stockStatusClass = unlimited ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800';
     
-    if (!unlimited && product.stock === 0) {
+    if (!unlimited && stockNum === 0) {
       stockStatus = 'Sin Stock';
       stockStatusClass = 'bg-red-100 text-red-800';
-    } else if (!unlimited && product.stock < 10) {
+    } else if (!unlimited && stockNum < 10) {
       stockStatus = 'Stock Bajo';
       stockStatusClass = 'bg-yellow-100 text-yellow-800';
     }
-    const stockDisplay = unlimited ? 'Ilimitado' : `${product.stock} ${product.stockUnit||''}`.trim();
+    const stockDisplay = unlimited ? 'Ilimitado' : `${stockNum} ${product.stockUnit||''}`.trim();
     const priceDisplay = `CLP ${product.price.toFixed(2)}/${product.priceType}`;
     const currentQuantity = selectedProductsForOrder[product.id]?.quantity || 0;
     
@@ -110,23 +222,24 @@ function renderProductSelectorTable() {
         </span>
       </td>
       <td class="px-6 py-4 whitespace-nowrap">
-        <div class="flex items-center space-x-2">
-          <button onclick="decreaseProductQuantity('${product.id}')" class="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm ${(!unlimited && product.stock === 0) ? 'opacity-50 cursor-not-allowed' : ''}" ${(!unlimited && product.stock === 0) ? 'disabled' : ''}>
+        <div class="flex items-center justify-center gap-2">
+          <button data-pid="${product.id}" data-did="${domId}" onclick="decreaseProductQuantity(this.dataset.pid)" class="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 inline-flex items-center justify-center text-sm ${(!unlimited && stockNum === 0) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}" ${(!unlimited && stockNum === 0) ? 'disabled' : ''}>
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
             </svg>
           </button>
           <input 
             type="number" 
-            id="quantity_${product.id}" 
+            id="quantity_${domId}" 
             min="0" 
-            ${unlimited ? '' : `max="${product.stock}"`} 
+            ${unlimited ? '' : `max="${stockNum}"`} 
             value="${currentQuantity}" 
-            class="w-16 text-center border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onchange="updateProductSelection('${product.id}', this.value)"
-            ${(!unlimited && product.stock === 0) ? 'disabled' : ''}
+            class="w-16 h-8 text-center border border-gray-300 rounded px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onchange="updateProductSelection(this.dataset.pid || '${product.id}', this.value)"
+            data-pid="${product.id}"
+            ${(!unlimited && stockNum === 0) ? 'disabled' : ''}
           >
-          <button onclick="increaseProductQuantity('${product.id}')" class="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm ${(!unlimited && product.stock === 0) ? 'opacity-50 cursor-not-allowed' : ''}" ${(!unlimited && product.stock === 0) ? 'disabled' : ''}>
+          <button data-pid="${product.id}" data-did="${domId}" onclick="increaseProductQuantity(this.dataset.pid)" class="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 inline-flex items-center justify-center text-sm ${(!unlimited && stockNum === 0) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}" ${(!unlimited && stockNum === 0) ? 'disabled' : ''}>
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
             </svg>
@@ -134,7 +247,7 @@ function renderProductSelectorTable() {
         </div>
       </td>
       <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-        <button id="addBtn_${product.id}" class="text-blue-600 hover:text-blue-900 ${currentQuantity > 0 ? '' : 'opacity-50 cursor-not-allowed'}" onclick="addSelectedProductToOrder('${product.id}')" ${currentQuantity > 0 ? '' : 'disabled'}>
+        <button id="addBtn_${domId}" data-pid="${product.id}" class="text-blue-600 hover:text-blue-900 ${currentQuantity > 0 ? '' : 'opacity-50 cursor-not-allowed'}" onclick="addSelectedProductToOrder(this.dataset.pid)" ${currentQuantity > 0 ? '' : 'disabled'}>
           Agregar
         </button>
       </td>
@@ -148,14 +261,15 @@ function renderProductSelectorTable() {
 
 // Increase product quantity
 function increaseProductQuantity(productId) {
-  const product = availableProducts.find(p => p.id === productId);
+  const product = availableProducts.find(p => String(p.id) === String(productId));
   if (!product) return;
   const unlimited = isUnlimitedStock(product);
-  
-  const input = document.getElementById(`quantity_${productId}`);
+  const domId = computeDomId(productId);
+  const input = document.getElementById(`quantity_${domId}`);
+  if (!input) return;
   const currentValue = parseInt(input.value) || 0;
   
-  if (unlimited || currentValue < product.stock) {
+  if (unlimited || currentValue < Number(product.stock)) {
     const newValue = currentValue + 1;
     input.value = newValue;
     updateProductSelection(productId, newValue);
@@ -164,7 +278,9 @@ function increaseProductQuantity(productId) {
 
 // Decrease product quantity
 function decreaseProductQuantity(productId) {
-  const input = document.getElementById(`quantity_${productId}`);
+  const domId = computeDomId(productId);
+  const input = document.getElementById(`quantity_${domId}`);
+  if (!input) return;
   const currentValue = parseInt(input.value) || 0;
   
   if (currentValue > 0) {
@@ -176,14 +292,15 @@ function decreaseProductQuantity(productId) {
 
 // Update product selection
 function updateProductSelection(productId, quantity) {
-  const product = availableProducts.find(p => p.id === productId);
+  const product = availableProducts.find(p => String(p.id) === String(productId));
   if (!product) return;
   const unlimited = isUnlimitedStock(product);
   
   const qty = parseInt(quantity) || 0;
-  const addBtn = document.getElementById(`addBtn_${productId}`);
+  const domId = computeDomId(productId);
+  const addBtn = document.getElementById(`addBtn_${domId}`);
   
-  if (qty > 0 && (unlimited || qty <= product.stock)) {
+  if (qty > 0 && (unlimited || qty <= Number(product.stock))) {
     selectedProductsForOrder[productId] = {
       ...product,
       quantity: qty,
@@ -273,14 +390,15 @@ function addSelectedProductToOrder(productId) {
   
   // Reset selection for this product
   delete selectedProductsForOrder[productId];
-  document.getElementById(`quantity_${productId}`).value = 0;
+  const domId = computeDomId(productId);
+  document.getElementById(`quantity_${domId}`).value = 0;
   
   // Update displays
   updateSelectedProductsDisplay();
   updateAddAllButton();
   
   // Update add button state
-  const addBtn = document.getElementById(`addBtn_${productId}`);
+  const addBtn = document.getElementById(`addBtn_${domId}`);
   addBtn.disabled = true;
   addBtn.className = 'text-blue-600 hover:text-blue-900 opacity-50 cursor-not-allowed';
   
@@ -391,12 +509,17 @@ function addToGlobalOrder(orderItem) {
 
 // Search products in selector
 window.searchProducts = function() {
-  const searchTerm = document.getElementById('productSearch').value.toLowerCase();
-  const categoryFilter = document.getElementById('productCategory').value;
+  const searchTerm = norm((document.getElementById('productSearch') || {}).value || '');
+  const rawCat = (document.getElementById('productCategory') || {}).value || '';
+  const categoryFilter = norm(rawCat);
   
   const filteredProducts = availableProducts.filter(product => {
-    const matchesSearch = !searchTerm || product.name.toLowerCase().includes(searchTerm);
-    const matchesCategory = !categoryFilter || product.category === categoryFilter;
+    const name = norm(product && product.name);
+    const matchesSearch = !searchTerm || name.includes(searchTerm);
+    // Category can be string or list-like; compare normalized tokens
+    const raw = product && product.category != null ? String(product.category) : '';
+    const parts = raw.split(/[|,/]/).map(s => norm(s)).filter(Boolean);
+    const matchesCategory = !categoryFilter || parts.includes(categoryFilter);
     return matchesSearch && matchesCategory;
   });
   
@@ -411,22 +534,19 @@ function renderFilteredProducts(products) {
   productList.innerHTML = '';
   
   products.forEach(product => {
+    const domId = computeDomId(product.id);
     const row = document.createElement('tr');
     row.className = 'hover:bg-gray-50';
     
-    // Determine stock status
-    let stockStatus = 'En Stock';
-    let stockStatusClass = 'bg-green-100 text-green-800';
-    
-    if (product.stock === 0) {
-      stockStatus = 'Sin Stock';
-      stockStatusClass = 'bg-red-100 text-red-800';
-    } else if (product.stock < 10) {
-      stockStatus = 'Stock Bajo';
-      stockStatusClass = 'bg-yellow-100 text-yellow-800';
-    }
-    
-    const stockDisplay = `${product.stock} ${product.stockUnit}`;
+    // Determine stock status with unlimited support
+    let unlimited = isUnlimitedStock(product);
+    const stockNum = Number(product.stock);
+    if (!unlimited && !Number.isFinite(stockNum)) unlimited = true;
+    let stockStatus = unlimited ? 'Ilimitado' : 'En Stock';
+    let stockStatusClass = unlimited ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800';
+    if (!unlimited && stockNum === 0) { stockStatus = 'Sin Stock'; stockStatusClass = 'bg-red-100 text-red-800'; }
+    else if (!unlimited && stockNum < 10) { stockStatus = 'Stock Bajo'; stockStatusClass = 'bg-yellow-100 text-yellow-800'; }
+    const stockDisplay = unlimited ? 'Ilimitado' : `${stockNum} ${product.stockUnit||''}`.trim();
     const priceDisplay = `CLP ${product.price.toFixed(2)}/${product.priceType}`;
     const currentQuantity = selectedProductsForOrder[product.id]?.quantity || 0;
     
@@ -453,23 +573,24 @@ function renderFilteredProducts(products) {
         </span>
       </td>
       <td class="px-6 py-4 whitespace-nowrap">
-        <div class="flex items-center space-x-2">
-          <button onclick="decreaseProductQuantity('${product.id}')" class="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm ${product.stock === 0 ? 'opacity-50 cursor-not-allowed' : ''}" ${product.stock === 0 ? 'disabled' : ''}>
+        <div class="flex items-center justify-center gap-2">
+          <button data-pid="${product.id}" data-did="${domId}" onclick="decreaseProductQuantity(this.dataset.pid)" class="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 inline-flex items-center justify-center text-sm ${(!unlimited && stockNum === 0) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}" ${(!unlimited && stockNum === 0) ? 'disabled' : ''}>
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
             </svg>
           </button>
           <input 
             type="number" 
-            id="quantity_${product.id}" 
+            id="quantity_${domId}" 
             min="0" 
-            max="${product.stock}" 
+            ${unlimited ? '' : `max="${stockNum}"`} 
             value="${currentQuantity}" 
-            class="w-16 text-center border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onchange="updateProductSelection('${product.id}', this.value)"
-            ${product.stock === 0 ? 'disabled' : ''}
+            class="w-16 h-8 text-center border border-gray-300 rounded px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onchange="updateProductSelection(this.dataset.pid || '${product.id}', this.value)"
+            data-pid="${product.id}"
+            ${(!unlimited && stockNum === 0) ? 'disabled' : ''}
           >
-          <button onclick="increaseProductQuantity('${product.id}')" class="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm ${product.stock === 0 ? 'opacity-50 cursor-not-allowed' : ''}" ${product.stock === 0 ? 'disabled' : ''}>
+          <button data-pid="${product.id}" data-did="${domId}" onclick="increaseProductQuantity(this.dataset.pid)" class="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 inline-flex items-center justify-center text-sm ${(!unlimited && stockNum === 0) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}" ${(!unlimited && stockNum === 0) ? 'disabled' : ''}>
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
             </svg>
@@ -477,7 +598,7 @@ function renderFilteredProducts(products) {
         </div>
       </td>
       <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-        <button id="addBtn_${product.id}" class="text-blue-600 hover:text-blue-900 ${currentQuantity > 0 ? '' : 'opacity-50 cursor-not-allowed'}" onclick="addSelectedProductToOrder('${product.id}')" ${currentQuantity > 0 ? '' : 'disabled'}>
+        <button id="addBtn_${domId}" data-pid="${product.id}" class="text-blue-600 hover:text-blue-900 ${currentQuantity > 0 ? '' : 'opacity-50 cursor-not-allowed'}" onclick="addSelectedProductToOrder(this.dataset.pid)" ${currentQuantity > 0 ? '' : 'disabled'}>
           Agregar
         </button>
       </td>
@@ -485,7 +606,6 @@ function renderFilteredProducts(products) {
     
     productList.appendChild(row);
   });
-  
   updateSelectedProductsDisplay();
 }
 

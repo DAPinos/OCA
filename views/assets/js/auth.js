@@ -27,25 +27,27 @@ class AuthSystem {
         const user = localStorage.getItem('userData');
         
         if (token && user) {
-            // Verificar si el token es válido
+            const isDemoToken = token.startsWith('demo_');
+            const isLocalEnv = ['file:', 'http:'].includes(window.location.protocol) && (/localhost|127\.0\.0\.1/.test(window.location.hostname) || window.location.protocol === 'file:');
+
+            if (isDemoToken || isLocalEnv) {
+                // En modo demo o local, no validar contra API remota
+                if (window.location.pathname.includes('login') || 
+                    window.location.pathname.includes('register')) {
+                    const targetUrl = 'index.html';
+                    console.log('Sesión detectada (demo/local). Redirigiendo a:', targetUrl);
+                    window.location.replace(targetUrl);
+                }
+                return;
+            }
+
+            // Verificar si el token es válido (entorno real)
             this.validateToken(token).then(isValid => {
                 if (isValid) {
-                    // Redirigir al dashboard si ya está autenticado
                     if (window.location.pathname.includes('login') || 
                         window.location.pathname.includes('register')) {
-                        // Determinar la ruta correcta al index.html
-                        const currentPath = window.location.pathname;
-                        let targetUrl;
-                        
-                        if (currentPath.includes('/auth/')) {
-                            // Estamos en la carpeta auth, ir un nivel arriba
-                            targetUrl = '../index.html';
-                        } else {
-                            // Estamos en la raíz o en otra ubicación
-                            targetUrl = 'index.html';
-                        }
-                        
-                        console.log('Redirigiendo desde sesión existente:', targetUrl);
+                        const targetUrl = 'index.html';
+                        console.log('Sesión válida. Redirigiendo a:', targetUrl);
                         window.location.replace(targetUrl);
                     }
                 } else {
@@ -419,7 +421,8 @@ class AuthSystem {
         
         // Redirigir al dashboard
         setTimeout(() => {
-            window.location.href = '../index.html';
+            // En esta estructura, index.html está en la misma carpeta que login.html (views/)
+            window.location.href = 'index.html';
         }, 1500);
     }
 
@@ -427,7 +430,8 @@ class AuthSystem {
     logout() {
         localStorage.removeItem('authToken');
         localStorage.removeItem('userData');
-        window.location.href = 'auth/login.html';
+        // Login está en views/login.html
+        window.location.href = 'login.html';
     }
 
     // Validar token

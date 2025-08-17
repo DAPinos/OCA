@@ -94,8 +94,8 @@
             <div class="flex flex-wrap justify-between gap-3 p-4">
               <h1 class="text-[#181710] tracking-light text-[32px] font-bold leading-tight min-w-72" data-i18n="settings.title">Configuración</h1>
               <div class="flex items-center gap-2">
-                <button id="btnLogout" class="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50" data-i18n="action.logout">Cerrar sesión</button>
-                <button id="btnSwitchProfile" class="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50" data-i18n="action.switch_profile">Cambiar perfil</button>
+                <a id="btnLogout" href="login.html" class="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50" data-i18n="action.logout">Cerrar sesión</a>
+                <button id="btnInvoiceConfig" class="inline-flex justify-center rounded-md border border-[#181710] bg-[#181710] py-2 px-3 text-sm font-medium text-white shadow-sm hover:opacity-90">Configurar factura</button>
               </div>
             </div>
             
@@ -214,58 +214,210 @@
         </div>
       </div>
     </div>
+    <!-- Modal Configurar Factura -->
+    <div id="invoice-modal" class="fixed inset-0 z-[10000] hidden">
+      <div class="absolute inset-0 bg-black/50"></div>
+      <div class="relative mx-auto my-6 w-full max-w-2xl bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        <div class="flex items-center justify-between px-5 py-3 border-b">
+          <h3 class="text-lg font-semibold">Configuración de factura</h3>
+          <button id="im-close-x" class="text-gray-500 hover:text-gray-700">✕</button>
+        </div>
+        <div class="p-5 space-y-5 max-h-[75vh] overflow-auto">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Nombre empresa</label>
+              <input id="im-company" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">RUT / ID fiscal</label>
+              <input id="im-taxid" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium text-gray-700">Dirección</label>
+              <input id="im-address" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Teléfono</label>
+              <input id="im-phone" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Email</label>
+              <input id="im-email" type="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium text-gray-700">Logo (URL o base64)</label>
+              <input id="im-logo" type="text" placeholder="https://... o data:image/png;base64,..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Tasa impuesto (%)</label>
+              <input id="im-taxrate" type="number" step="0.01" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Mostrar descuento</label>
+              <input id="im-show-discount" type="checkbox" class="mt-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Mostrar impuesto</label>
+              <input id="im-show-tax" type="checkbox" class="mt-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Tamaño papel</label>
+              <select id="im-paper" class="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm">
+                <option value="A4">A4</option>
+                <option value="Ticket80">Ticket 80mm</option>
+                <option value="Ticket58">Ticket 58mm</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Nota al pie</label>
+              <input id="im-footer" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+            </div>
+          </div>
+        </div>
+        <div class="px-5 py-3 bg-gray-50 border-t flex justify-end gap-2">
+          <button id="im-cancel" class="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">Cancelar</button>
+          <button id="im-save" class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700">Guardar</button>
+        </div>
+      </div>
+    </div>
     <script>
       (function(){
         function byId(id){ return document.getElementById(id); }
         function init(){
-          try { AppConfig.apply(); } catch(_){}
-          // Set current values
-          byId('language').value = AppConfig.language;
-          byId('timezone').value = AppConfig.timezone || 'America/Santiago';
-          byId('currency').value = AppConfig.currency || 'CLP';
-          byId('auto-save').checked = !!AppConfig.autosave;
-          const t = AppConfig.theme || 'light';
+          const hasCfg = typeof window.AppConfig !== 'undefined' && window.AppConfig;
+          try { hasCfg && AppConfig.apply && AppConfig.apply(); } catch(_){}
+          // Set current values (seguros si no hay AppConfig)
+          const cfg = hasCfg ? AppConfig : {};
+          byId('language').value = cfg.language || 'es';
+          byId('timezone').value = cfg.timezone || 'America/Santiago';
+          byId('currency').value = cfg.currency || 'CLP';
+          byId('auto-save').checked = !!cfg.autosave;
+          const t = cfg.theme || 'light';
           byId('light-theme').checked = (t==='light');
           byId('dark-theme').checked = (t==='dark');
           byId('system-theme').checked = (t==='system');
           // Profile fields
-          const prof = AppConfig.profile || {name:'',phone:'',email:'',address:''};
+          const prof = (cfg.profile) || {name:'',phone:'',email:'',address:''};
           byId('profile-name').value = prof.name || '';
           byId('profile-phone').value = prof.phone || '';
           byId('profile-email').value = prof.email || '';
           byId('profile-address').value = prof.address || '';
 
-          // Bind events
-          byId('language').addEventListener('change', e=> AppConfig.setLanguage(e.target.value));
-          byId('timezone').addEventListener('change', e=> AppConfig.setTimezone(e.target.value));
-          byId('currency').addEventListener('change', e=> AppConfig.setCurrency(e.target.value));
-          byId('auto-save').addEventListener('change', e=> AppConfig.setAutosave(e.target.checked));
-          byId('light-theme').addEventListener('change', ()=> AppConfig.setTheme('light'));
-          byId('dark-theme').addEventListener('change', ()=> AppConfig.setTheme('dark'));
-          byId('system-theme').addEventListener('change', ()=> AppConfig.setTheme('system'));
-          byId('btnSave').addEventListener('click', ()=>{ AppConfig.save(); AppConfig.apply(); alert('Configuración guardada'); });
-          byId('btnLogout').addEventListener('click', ()=>{
+          // Bind events (solo si hay AppConfig)
+          if (hasCfg){
+            byId('language').addEventListener('change', e=> AppConfig.setLanguage && AppConfig.setLanguage(e.target.value));
+            byId('timezone').addEventListener('change', e=> AppConfig.setTimezone && AppConfig.setTimezone(e.target.value));
+            byId('currency').addEventListener('change', e=> AppConfig.setCurrency && AppConfig.setCurrency(e.target.value));
+            byId('auto-save').addEventListener('change', e=> AppConfig.setAutosave && AppConfig.setAutosave(e.target.checked));
+            byId('light-theme').addEventListener('change', ()=> AppConfig.setTheme && AppConfig.setTheme('light'));
+            byId('dark-theme').addEventListener('change', ()=> AppConfig.setTheme && AppConfig.setTheme('dark'));
+            byId('system-theme').addEventListener('change', ()=> AppConfig.setTheme && AppConfig.setTheme('system'));
+            byId('btnSave').addEventListener('click', ()=>{ AppConfig.save && AppConfig.save(); AppConfig.apply && AppConfig.apply(); alert('Configuración guardada'); });
+          }
+          // Logout: siempre enlazado
+          byId('btnLogout').addEventListener('click', (ev)=>{
             try{
               localStorage.removeItem('currentUser');
               localStorage.removeItem('authToken');
-            }catch(_){}
-            window.location.href = '/login.html';
-          });
-          byId('btnSwitchProfile').addEventListener('click', ()=>{
-            try{
-              localStorage.removeItem('currentUser');
-              localStorage.removeItem('authToken');
-            }catch(_){}
-            window.location.href = '/login.html';
+            }catch(_){ }
+            // Redirigir al login dentro de views/
+            const target = 'login.html';
+            try { window.top.location.href = target; } catch(_) {}
+            try { window.location.replace(target); } catch(_) {}
+            try { window.location.href = target; } catch(_) {}
+            // Fallback por si el navegador ignora la navegación inmediata
+            setTimeout(()=>{ try { window.location.href = target; } catch(_){} }, 100);
+            setTimeout(()=>{ try { window.top.location.assign(target); } catch(_){} }, 250);
           });
           // Profile listeners (autosave-friendly)
-          byId('profile-name').addEventListener('input', e=> AppConfig.setProfileField('name', e.target.value));
-          byId('profile-phone').addEventListener('input', e=> AppConfig.setProfileField('phone', e.target.value));
-          byId('profile-email').addEventListener('input', e=> AppConfig.setProfileField('email', e.target.value));
-          byId('profile-address').addEventListener('input', e=> AppConfig.setProfileField('address', e.target.value));
+          if (hasCfg){
+            byId('profile-name').addEventListener('input', e=> AppConfig.setProfileField && AppConfig.setProfileField('name', e.target.value));
+            byId('profile-phone').addEventListener('input', e=> AppConfig.setProfileField && AppConfig.setProfileField('phone', e.target.value));
+            byId('profile-email').addEventListener('input', e=> AppConfig.setProfileField && AppConfig.setProfileField('email', e.target.value));
+            byId('profile-address').addEventListener('input', e=> AppConfig.setProfileField && AppConfig.setProfileField('address', e.target.value));
+          }
         }
+   // --- Factura: modal configuración ---
+          const modal = byId('invoice-modal');
+          const btnOpen = byId('btnInvoiceConfig');
+          const btnSave = byId('im-save');
+          const btnCancel = byId('im-cancel');
+          const btnCloseX = byId('im-close-x');
+
+          function readJSON(key){
+            try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : null; } catch(_) { return null; }
+          }
+          function writeJSON(key, val){ try { localStorage.setItem(key, JSON.stringify(val)); } catch(_){} }
+
+          function loadInvoiceConfig(){
+            const biz = readJSON('business') || readJSON('empresa') || {};
+            const inv = readJSON('invoiceSettings') || {};
+            byId('im-company').value = biz.name || biz.company || '';
+            byId('im-taxid').value = biz.taxId || biz.rut || '';
+            byId('im-address').value = biz.address || '';
+            byId('im-phone').value = biz.phone || '';
+            byId('im-email').value = biz.email || '';
+            byId('im-logo').value = (inv.logo || biz.logo || '');
+            byId('im-taxrate').value = (inv.taxRate ?? '');
+            byId('im-show-discount').checked = !!(inv.showDiscount ?? true);
+            byId('im-show-tax').checked = !!(inv.showTax ?? true);
+            byId('im-paper').value = inv.paper || 'A4';
+            byId('im-footer').value = inv.footer || '';
+          }
+
+          function openInvoiceModal(){
+            loadInvoiceConfig();
+            modal.classList.remove('hidden');
+            const prev = document.body.style.overflow;
+            modal.dataset.prevOverflow = prev;
+            document.body.style.overflow = 'hidden';
+          }
+          function closeInvoiceModal(){
+            modal.classList.add('hidden');
+            document.body.style.overflow = modal.dataset.prevOverflow || '';
+          }
+
+          function saveInvoiceConfig(){
+            const business = {
+              name: byId('im-company').value.trim(),
+              taxId: byId('im-taxid').value.trim(),
+              address: byId('im-address').value.trim(),
+              phone: byId('im-phone').value.trim(),
+              email: byId('im-email').value.trim(),
+              logo: byId('im-logo').value.trim(),
+            };
+            const invoiceSettings = {
+              taxRate: (function(){
+                const v = parseFloat(byId('im-taxrate').value);
+                return isNaN(v) ? null : v;
+              })(),
+              showDiscount: byId('im-show-discount').checked,
+              showTax: byId('im-show-tax').checked,
+              paper: byId('im-paper').value,
+              footer: byId('im-footer').value.trim(),
+              logo: byId('im-logo').value.trim(),
+            };
+            writeJSON('business', business);
+            writeJSON('invoiceSettings', invoiceSettings);
+            alert('Configuración de factura guardada');
+            closeInvoiceModal();
+          }
+
+          if (btnOpen) btnOpen.addEventListener('click', openInvoiceModal);
+          if (btnSave) btnSave.addEventListener('click', saveInvoiceConfig);
+          if (btnCancel) btnCancel.addEventListener('click', closeInvoiceModal);
+          if (btnCloseX) btnCloseX.addEventListener('click', closeInvoiceModal);
+          if (modal) modal.addEventListener('click', (e)=>{
+            const backdrop = e.target.classList && e.target.classList.contains('bg-black/50');
+            if (e.target === modal || backdrop) closeInvoiceModal();
+          });
+          window.addEventListener('keydown', (e)=>{ if (!modal.classList.contains('hidden') && e.key==='Escape') closeInvoiceModal(); });
         if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', init); else init();
-      })();
+        })();
     </script>
   </body>
 </html>

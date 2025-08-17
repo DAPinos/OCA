@@ -267,15 +267,16 @@
       render(order);
 
       document.getElementById('btnPrint').onclick = () => {
-        // Reutilizamos print desde orders si existe; si no, usamos popup local con autocierre
-        try {
-          if (window.opener && window.opener.printOrder) {
-            window.opener.printOrder(order.id);
-            return;
-          }
-        } catch {}
+        // Imprimir siempre usando el popup local robusto (con fallbacks)
         openReceiptPrintPopup(order);
       };
+      // Si viene con flag print=1, abrir automáticamente
+      try {
+        const sp = new URLSearchParams(window.location.search);
+        if (sp.get('print') === '1') {
+          setTimeout(() => openReceiptPrintPopup(order), 150);
+        }
+      } catch(_) {}
       document.getElementById('btnKDS').onclick = () => {
         try {
           const w = window.open('kds.html', '_blank', 'noopener');

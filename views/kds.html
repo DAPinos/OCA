@@ -69,17 +69,68 @@
     let currentFilter = localStorage.getItem('kdsFilter') || 'todos';
     const selectedIds = new Set();
 
+    // Helpers de clientes
+    function getClientsFromStorage(){
+      try {
+        const clients = JSON.parse(localStorage.getItem('clients') || '[]');
+        if (Array.isArray(clients) && clients.length) return clients;
+      } catch(_) {}
+      try {
+        const clientes = JSON.parse(localStorage.getItem('clientes') || '[]');
+        if (Array.isArray(clientes)) return clientes;
+      } catch(_) {}
+      return [];
+    }
+
+    function getClientDisplayName(c){
+      if (!c) return '';
+      if (typeof c === 'string') return c;
+      return c.name || c.nombre || c.fullName || c.razonSocial || c.email || '';
+    }
+
     function getAllOrders() {
       const a = JSON.parse(localStorage.getItem('orders') || '[]');
       const b = JSON.parse(localStorage.getItem('savedOrders') || '[]');
-      // Unificamos estructura esperada: {id, customer, date, status, items:[{name, productName, quantity, price}]}
-      const mapOrder = (o) => ({
-        id: o.id ?? o.orderId ?? '',
-        customer: o.customer ?? o.cliente ?? o.customerName ?? 'Cliente',
-        date: o.date ?? o.fecha ?? o.createdAt ?? o.updatedAt ?? new Date().toISOString(),
-        status: o.status ?? o.estado ?? 'Pendiente',
-        items: Array.isArray(o.items) ? o.items : [],
+      const clients = getClientsFromStorage();
+      const byId = new Map();
+      clients.forEach(c=>{
+        const id = c.id || c.clientId || c.clienteId || c.customerId || c.codigo || c.code;
+        if (id != null) byId.set(String(id), c);
       });
+
+      // Unificamos estructura esperada: {id, customer, date, status, items:[{name, productName, quantity, price}]}
+      const mapOrder = (o) => {
+        const id = o.id ?? o.orderId ?? '';
+        // Detectar posible cliente desde distintos campos
+        const rawCustomer = o.customer ?? o.cliente ?? o.customerInfo ?? o.customerData ?? null;
+        const customerId = o.customerId ?? o.clientId ?? o.clienteId ?? null;
+        let customerName = '';
+        if (typeof rawCustomer === 'string') {
+          customerName = rawCustomer;
+        } else if (rawCustomer && typeof rawCustomer === 'object') {
+          customerName = getClientDisplayName(rawCustomer);
+        }
+        if (!customerName && customerId != null) {
+          const c = byId.get(String(customerId));
+          customerName = getClientDisplayName(c) || customerName;
+        }
+        if (!customerName && Array.isArray(clients) && clients.length) {
+          // último intento: match la primera coincidencia por nombre aproximado si viene en o.customerName
+          const hint = (o.customerName || o.nombreCliente || '').toLowerCase();
+          if (hint) {
+            const c = clients.find(x => getClientDisplayName(x).toLowerCase() === hint);
+            if (c) customerName = getClientDisplayName(c);
+          }
+        }
+
+        return {
+          id: id,
+          customer: customerName || o.customerName || 'Cliente',
+          date: o.date ?? o.fecha ?? o.createdAt ?? o.updatedAt ?? new Date().toISOString(),
+          status: o.status ?? o.estado ?? 'Pendiente',
+          items: Array.isArray(o.items) ? o.items : [],
+        };
+      };
       return [...a.map(mapOrder), ...b.map(mapOrder)];
     }
 
@@ -198,7 +249,7 @@
 
     // Actualización en tiempo real por eventos de storage y cada 10s
     window.addEventListener('storage', (e) => {
-      if (['orders','savedOrders'].includes(e.key)) renderKDS();
+      if (['orders','savedOrders','clients','clientes'].includes(e.key)) renderKDS();
     });
     setInterval(renderKDS, 10000);
 

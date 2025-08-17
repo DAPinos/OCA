@@ -37,18 +37,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Verificar estado de autenticación
 function checkAuth() {
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+  // Considerar tanto la antigua bandera isLoggedIn como las claves usadas por el nuevo login
+  const hasToken = !!localStorage.getItem('authToken') && !!localStorage.getItem('userData');
+  const legacyLogged = localStorage.getItem('isLoggedIn') === 'true';
+  const isLoggedIn = legacyLogged || hasToken;
   const currentPath = window.location.pathname;
   
   // Si no está autenticado y no está en la página de login o reset-password, redirigir a login
   if (!isLoggedIn && !currentPath.includes('login') && !currentPath.includes('reset-password')) {
-    window.location.href = 'auth/login.html';
+    // En este proyecto, login está en views/login.html. Usar ruta relativa desde las vistas.
+    window.location.href = 'login.html';
     return;
   }
   
   // Si está autenticado y está en la página de login, redirigir al dashboard
   if (isLoggedIn && (currentPath.includes('login') || currentPath === '/')) {
-    window.location.href = 'views/dashboard.html';
+    // El dashboard es index.html dentro de views
+    window.location.href = 'index.html';
   }
 }
 
