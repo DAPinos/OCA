@@ -83,7 +83,7 @@ body::before {
 }
 
 .auth-logo {
-  max-width: 120px;
+  max-width: 200px;
   height: auto;
   margin-bottom: 1rem;
 }
@@ -632,6 +632,10 @@ body::before {
     margin: 1rem;
     padding: 2rem 1.5rem;
     max-width: none;
+  }
+  
+  .auth-logo {
+    max-width: 160px;
   }
   
   .auth-title {

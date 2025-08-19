@@ -22,6 +22,7 @@
     <!-- Scripts -->
     <script src="assets/js/app.js" defer></script>
     <script src="../js/session-role.js"></script>
+    <script src="js/config.js"></script>
   </head>
   <body class="font-sans antialiased text-gray-900 bg-gray-50">
     <!-- Contenedor principal -->
@@ -38,7 +39,7 @@
                   <a href="index.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#f5f4f0] hover:bg-[#e8e6e0] transition-colors">
                     <div class="text-[#181710]" data-icon="House" data-size="24px" data-weight="fill">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z"></path>
+                        <path d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55ZM128,32l80.34,44-29.77,16.3-80.35-44ZM128,32l-80.34,44,29.77,16.3,80.35-44ZM128,120,47.66,76l33.9-18.56,80.34,44ZM40,90l80,43.78v85.79L40,175.82Zm176,85.78h0l-80,43.79V133.82l32-17.51V152a8,8,0,0,0,16,0V107.55L216,90v85.77Z"></path>
                       </svg>
                     </div>
                     <p class="text-[#181710] text-sm font-bold leading-normal">Inicio</p>
@@ -48,7 +49,7 @@
                   <a href="orders.html" data-roles="administracion, cliente, produccion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <div class="text-[#181710]" data-icon="Receipt" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M216,40H40A16,16,0,0,0,24,56V208a8,8,0,0,0,11.58,7.15L64,200.94l28.42,14.21a8,8,0,0,0,7.16,0L128,200.94l28.42,14.21a8,8,0,0,0,7.16,0L192,200.94l28.42,14.21A8,8,0,0,0,232,208V56A16,16,0,0,0,216,40ZM176,144H80a8,8,0,0,1,0-16h96a8,8,0,0,1,0,16Zm0-32H80a8,8,0,0,1,0-16h96a8,8,0,0,1,0,16Z"></path>
+                        <path d="M216,40H40A16,16,0,0,0,24,56V208a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40ZM176,144H80a8,8,0,0,1,0-16h96a8,8,0,0,1,0,16Zm0-32H80a8,8,0,0,1,0-16h96a8,8,0,0,1,0,16Z"></path>
                       </svg>
                     </div>
                     <p class="text-[#181710] text-sm font-medium leading-normal">Pedidos</p>
@@ -58,7 +59,7 @@
                   <a href="products.html" data-roles="administracion, produccion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <div class="text-[#181710]" data-icon="Package" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M223.68,66.15,135.68,18a15.88,15.88,0,0,0-15.36,0l-88,48.17a16,16,0,0,0-8.32,14v95.64a16,16,0,0,0,8.32,14l88,48.17a15.88,15.88,0,0,0,15.36,0l88-48.17a16,16,0,0,0,8.32-14V80.18A16,16,0,0,0,223.68,66.15ZM128,32l80.34,44-29.77,16.3-80.35-44ZM128,120,47.66,76l33.9-18.56,80.34,44ZM40,90l80,43.78v85.79L40,175.82Zm176,85.78h0l-80,43.79V133.82l32-17.51V152a8,8,0,0,0,16,0V107.55L216,90v85.77Z"></path>
+                        <path d="M223.68,66.15,135.68,18a15.88,15.88,0,0,0-15.36,0l-88,48.17a16,16,0,0,0-8.32,14v95.64a16,16,0,0,0,8.32,14l88,48.17a15.88,15.88,0,0,0,15.36,0l88-48.17a16,16,0,0,0,8.32-14V80.18A16,16,0,0,0,223.68,66.15ZM128,32l80.34,44-29.77,16.3-80.35-44ZM128,32l-80.34,44,29.77,16.3,80.35-44ZM128,120,47.66,76l33.9-18.56,80.34,44ZM40,90l80,43.78v85.79L40,175.82Zm176,85.78h0l-80,43.79V133.82l32-17.51V152a8,8,0,0,0,16,0V107.55L216,90v85.77Z"></path>
                       </svg>
                     </div>
                     <p class="text-[#181710] text-sm font-medium leading-normal">Productos</p>
@@ -88,7 +89,7 @@
                   <a href="transport.html" data-roles="administracion, produccion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <div class="text-[#181710]" data-icon="Truck" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M248,120h-24V88a16,16,0,0,0-16-16H160V64a16,16,0,0,0-16-16H32A16,16,0,0,0,16,64V176a16,16,0,0,0,16,16H56a32,32,0,0,0,64,0h48a32,32,0,0,0,64,0h8a8,8,0,0,0,0-16h-8V136h16a8,8,0,0,0,0-16ZM32,64H144V176H120a32,32,0,0,0-64,0H32ZM208,88v32H160V88ZM88,200a16,16,0,1,1,16-16A16,16,0,0,1,88,200Zm112,0a16,16,0,1,1,16-16A16,16,0,0,1,200,200Z"/>
+                        <path d="M248,120h-24V88a16,16,0,0,0-16-16H160V64a16,16,0,0,0-16-16H32A16,16,0,0,0,16,64V176a16,16,0,0,0,16,16H56a32,32,0,0,0,64,0h48a32,32,0,0,0,64,0h8a8,8,0,0,0,0-16h-8V136h16a8,8,0,0,0,0-16ZM32,64H144V176H120a32,32,0,0,0-64,0H32ZM208,88v32H160V88ZM88,200a16,16,0,1,1,16-16A16,16,0,0,1,88,200Zm112,0a16,16,0,1,1,16-16A16,16,0,0,1,200,200Z"></path>
                       </svg>
                     </div>
                     <p class="text-[#181710] text-sm font-medium leading-normal">Transporte y Despacho</p>
@@ -98,7 +99,7 @@
                   <a href="manufacturing.html" data-roles="administracion, produccion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <div class="text-[#181710]" data-icon="Factory" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M216,56H184V32a8,8,0,0,0-16,0V56H136V32a8,8,0,0,0-16,0V56H88V32a8,8,0,0,0-16,0V56H40A16,16,0,0,0,24,72V208a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V72A16,16,0,0,0,216,56ZM40,72H216V96H40ZM216,208H40V112H216ZM72,176a8,8,0,0,1,0-16H96a8,8,0,0,1,0,16Zm56,0a8,8,0,0,1,0-16h24a8,8,0,0,1,0,16Z"/>
+                        <path d="M216,56H184V32a8,8,0,0,0-16,0V56H136V32a8,8,0,0,0-16,0V56H88V32a8,8,0,0,0-16,0V56H40A16,16,0,0,0,24,72V208a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V72A16,16,0,0,0,216,56ZM40,72H216V96H40ZM216,208H40V112H216ZM72,176a8,8,0,0,1,0-16H96a8,8,0,0,1,0,16Zm56,0a8,8,0,0,1,0-16h24a8,8,0,0,1,0,16Z"></path>
                       </svg>
                     </div>
                     <p class="text-[#181710] text-sm font-medium leading-normal">Manufactura</p>
@@ -151,12 +152,12 @@
             
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-4">
-              <!-- Total Orders -->
-              <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+              <!-- Active Orders -->
+              <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm cursor-pointer" role="button" tabindex="0" data-link="orders.html?filter=active">
                 <div class="flex items-center justify-between">
                   <div>
-                    <p class="text-sm font-medium text-gray-500">Total Orders</p>
-                    <p class="text-2xl font-bold text-gray-900">1,234</p>
+                    <p class="text-sm font-medium text-gray-500">Órdenes Activas</p>
+                    <p class="text-2xl font-bold text-gray-900"><span id="activeOrdersCount">0</span></p>
                   </div>
                   <div class="p-3 rounded-full bg-blue-100 text-blue-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -165,14 +166,13 @@
                   </div>
                 </div>
                 <div class="mt-2">
-                  <span class="text-xs font-medium text-green-600">+12% from last month</span>
+                  <span class="text-xs font-medium text-green-600">Abiertas y en proceso</span>
                 </div>
               </div>
               
-              <!-- Total Revenue -->
-              <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+              <!-- My Spend (Finance restricted) -->
+              <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm cursor-pointer" role="button" tabindex="0" data-link="finance.html?scope=mine">
                 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                  <!-- Total Sales -->
                   <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="p-5">
                       <div class="flex items-center">
@@ -184,11 +184,11 @@
                         <div class="ml-5 w-0 flex-1">
                           <dl>
                             <dt class="text-sm font-medium text-gray-500 truncate">
-                              Total Sales
+                              Mis Gastos
                             </dt>
                             <dd>
                               <div class="text-lg font-medium text-gray-900">
-                                $24,780.80
+                                <span id="mySpendAmount">$0.00</span>
                               </div>
                             </dd>
                           </dl>
@@ -197,73 +197,51 @@
                     </div>
                     <div class="bg-gray-50 px-5 py-3">
                       <div class="text-sm">
-                        <a href="finance.html" class="font-medium text-blue-600 hover:text-blue-500">
-                          View all
+                        <a href="finance.html?scope=mine" class="font-medium text-blue-600 hover:text-blue-500">
+                          Ver detalle
                         </a>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div class="mt-2">
-                  <span class="text-xs font-medium text-green-600">+19% from last month</span>
+                  <span class="text-xs font-medium text-green-600">Gasto asociado a tu cuenta</span>
                 </div>
               </div>
               
-              <!-- Active Products -->
-              <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+              <!-- Orders In Transport -->
+              <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm cursor-pointer" role="button" tabindex="0" data-link="transport.html">
                 <div class="flex items-center justify-between">
                   <div>
-                    <p class="text-sm font-medium text-gray-500">Active Products</p>
-                    <p class="text-2xl font-bold text-gray-900">573</p>
+                    <p class="text-sm font-medium text-gray-500">En Transporte</p>
+                    <p class="text-2xl font-bold text-gray-900"><span id="transportOrdersCount">0</span></p>
                   </div>
                   <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13h2l1 3h11l1-3h2M5 13l1-3h12l1 3M7 16a2 2 0 104 0M15 16a2 2 0 104 0" />
                     </svg>
                   </div>
                 </div>
                 <div class="mt-2">
-                  <span class="text-xs font-medium text-green-600">+3 since last month</span>
+                  <span class="text-xs font-medium text-blue-600">Despachadas / En ruta</span>
                 </div>
               </div>
               
-              <!-- Total Clients -->
-              <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+              <!-- Total Clients (hidden for cliente via data-roles) -->
+              <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm cursor-pointer" role="button" tabindex="0" data-link="clients.html" data-roles="administracion, produccion">
                 <div class="flex items-center justify-between">
-                  <!-- Total Customers -->
-                  <div class="bg-white overflow-hidden shadow rounded-lg">
-                    <div class="p-5">
-                      <div class="flex items-center">
-                        <div class="flex-shrink-0 bg-purple-500 rounded-md p-3">
-                          <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                          </svg>
-                        </div>
-                        <div class="ml-5 w-0 flex-1">
-                          <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">
-                              Total Customers
-                            </dt>
-                            <dd>
-                              <div class="text-lg font-medium text-gray-900">
-                                2,543
-                              </div>
-                            </dd>
-                          </dl>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="bg-gray-50 px-5 py-3">
-                      <div class="text-sm">
-                        <a href="clients.html" class="font-medium text-blue-600 hover:text-blue-500">
-                          View all
-                        </a>
-                      </div>
-                    </div>
+                  <div>
+                    <p class="text-sm font-medium text-gray-500">Total Clientes</p>
+                    <p class="text-2xl font-bold text-gray-900"><span id="totalCustomersCount">0</span></p>
+                  </div>
+                  <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
                   </div>
                 </div>
                 <div class="mt-2">
-                  <span class="text-xs font-medium text-green-600">+5% from last month</span>
+                  <span class="text-xs font-medium text-green-600">+5% desde el mes pasado</span>
                 </div>
               </div>
             </div>
@@ -286,34 +264,7 @@
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
                       </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                      <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#ORD-2023-1001</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">John Doe</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-15</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Completed</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$120.00</td>
-                      </tr>
-                      <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#ORD-2023-1002</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Jane Smith</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-14</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Processing</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$89.99</td>
-                      </tr>
-                      <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#ORD-2023-1003</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Robert Johnson</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-14</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Shipped</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$156.75</td>
-                      </tr>
+                    <tbody id="recentOrdersTbody" class="bg-white divide-y divide-gray-200">
                     </tbody>
                   </table>
                 </div>
@@ -327,51 +278,7 @@
                   <h3 class="text-lg leading-6 font-medium text-gray-900">Top Products</h3>
                   <a href="products.html" class="text-sm font-medium text-blue-600 hover:text-blue-500">View all</a>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <!-- Product 1 -->
-                  <div class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                    <div class="flex-shrink-0 h-16 w-16 bg-gray-200 rounded-md overflow-hidden">
-                      <img src="https://via.placeholder.com/64" alt="Product" class="h-full w-full object-cover">
-                    </div>
-                    <div class="ml-4 flex-1">
-                      <h3 class="text-sm font-medium text-gray-900">Organic Apples</h3>
-                      <p class="text-sm text-gray-500">Fruits</p>
-                      <div class="mt-1">
-                        <span class="text-sm font-medium text-gray-900">$4.99</span>
-                        <span class="text-xs text-gray-500 ml-2">per kg</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <!-- Product 2 -->
-                  <div class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                    <div class="flex-shrink-0 h-16 w-16 bg-gray-200 rounded-md overflow-hidden">
-                      <img src="https://via.placeholder.com/64" alt="Product" class="h-full w-full object-cover">
-                    </div>
-                    <div class="ml-4 flex-1">
-                      <h3 class="text-sm font-medium text-gray-900">Fresh Milk</h3>
-                      <p class="text-sm text-gray-500">Dairy</p>
-                      <div class="mt-1">
-                        <span class="text-sm font-medium text-gray-900">$3.49</span>
-                        <span class="text-xs text-gray-500 ml-2">per liter</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <!-- Product 3 -->
-                  <div class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                    <div class="flex-shrink-0 h-16 w-16 bg-gray-200 rounded-md overflow-hidden">
-                      <img src="https://via.placeholder.com/64" alt="Product" class="h-full w-full object-cover">
-                    </div>
-                    <div class="ml-4 flex-1">
-                      <h3 class="text-sm font-medium text-gray-900">Whole Wheat Bread</h3>
-                      <p class="text-sm text-gray-500">Bakery</p>
-                      <div class="mt-1">
-                        <span class="text-sm font-medium text-gray-900">$2.99</span>
-                        <span class="text-xs text-gray-500 ml-2">per loaf</span>
-                      </div>
-                    </div>
-                  </div>
+                <div id="topProductsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 </div>
               </div>
             </div>
@@ -392,6 +299,9 @@
         
         // Verificar parámetros de URL del login
         handleLoginRedirect();
+
+        // Inicializar dashboard dinámico
+        try { initDashboard(); } catch(e) { console.error('initDashboard error', e); }
       });
       
       // Manejar sesión de usuario
@@ -415,6 +325,186 @@
           }, 100);
           return;
         }
+
+      // ================== DASHBOARD DINÁMICO ==================
+      function initDashboard() {
+        // Hacer clic en tarjetas superiores
+        document.querySelectorAll('[data-link]')?.forEach(card => {
+          card.addEventListener('click', () => { window.location.href = card.getAttribute('data-link'); });
+          card.addEventListener('keydown', (e) => { if (e.key === 'Enter') window.location.href = card.getAttribute('data-link'); });
+        });
+
+        // Render inicial
+        refreshDashboard();
+
+        // Escuchar cambios en localStorage (otras pestañas)
+        window.addEventListener('storage', (e) => {
+          if (["orders","savedOrders","clients","productos","products","app_settings"].includes(e.key)) {
+            refreshDashboard();
+          }
+        });
+
+        // Evento personalizado cuando orders cambian (memoria previa)
+        window.addEventListener('orderUpdated', () => refreshDashboard());
+      }
+
+      function safeJSON(key, fallback) {
+        try { return JSON.parse(localStorage.getItem(key) || (fallback !== undefined ? JSON.stringify(fallback) : 'null')); } catch(_) { return fallback; }
+      }
+
+      // Session helpers for user-specific filtering
+      function getUserRole(){
+        const r = localStorage.getItem('userRole');
+        return r ? r.toLowerCase() : '';
+      }
+      function getUserName(){
+        return localStorage.getItem('userName') || '';
+      }
+
+      function getAllOrders() {
+        const A = safeJSON('orders', []) || [];
+        const B = safeJSON('savedOrders', []) || [];
+        // Evitar duplicados por id
+        const byId = new Map();
+        [...A, ...B].forEach(o => { if (o && o.id != null) byId.set(String(o.id), o); });
+        return Array.from(byId.values());
+      }
+
+      function formatMoney(amount) {
+        try {
+          // Preferir AppConfig si existe
+          if (window.AppConfig && AppConfig.currency) {
+            const code = (AppConfig.currency.code || 'CLP');
+            return new Intl.NumberFormat(AppConfig.language || 'es-CL', { style: 'currency', currency: code, maximumFractionDigits: 0 }).format(Number(amount) || 0);
+          }
+        } catch(_) {}
+        // Fallback
+        return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(Number(amount) || 0);
+      }
+
+      function normalizeStatus(status) {
+        const s = (status || '').toString().toLowerCase();
+        if (s.includes('complet') || s.includes('final')) return { text: 'Completado', cls: 'bg-green-100 text-green-800' };
+        if (s.includes('ship') || s.includes('env')) return { text: 'Despachado', cls: 'bg-blue-100 text-blue-800' };
+        if (s.includes('proc') || s.includes('pend')) return { text: 'Pendiente', cls: 'bg-yellow-100 text-yellow-800' };
+        return { text: status || 'N/A', cls: 'bg-gray-100 text-gray-800' };
+      }
+
+      function refreshDashboard() {
+        const clients = safeJSON('clients', []) || safeJSON('clientes', []) || [];
+        const products = safeJSON('products', []) || safeJSON('productos', []) || [];
+        const orders = getAllOrders();
+
+        // KPIs
+        try {
+          const totalOrders = orders.length;
+          const totalRevenue = orders.reduce((sum, o) => sum + (Number(o.total) || (Array.isArray(o.items) ? o.items.reduce((s, it) => s + (Number(it.price)||0)*(Number(it.quantity)||0), 0) : 0)), 0);
+          const activeProducts = Array.isArray(products) ? products.filter(p => p && (p.active === undefined || p.active === true)).length : 0;
+          const totalCustomers = Array.isArray(clients) ? clients.length : 0;
+
+          const elOrders = document.getElementById('totalOrdersCount'); if (elOrders) elOrders.textContent = String(totalOrders);
+          const elRevenue = document.getElementById('totalRevenueAmount'); if (elRevenue) elRevenue.textContent = formatMoney(totalRevenue);
+          const elProd = document.getElementById('activeProductsCount'); if (elProd) elProd.textContent = String(activeProducts);
+          const elCust = document.getElementById('totalCustomersCount'); if (elCust) elCust.textContent = String(totalCustomers);
+
+          // Dashboard: My Spend (user-specific)
+          const moves = safeJSON('finance_movements', []) || [];
+          const currentUser = getUserName();
+          const mySpend = (moves || [])
+            .filter(m => m && m.createdBy === currentUser && String(m.type || '').toLowerCase() === 'egreso')
+            .reduce((s, m) => s + (Number(m.amount) || 0), 0);
+          const elMySpend = document.getElementById('mySpendAmount');
+          if (elMySpend) elMySpend.textContent = formatMoney(mySpend);
+        } catch(e) { console.warn('KPI calc error', e); }
+
+        // Recent Orders (top 5 by date)
+        try { renderRecentOrders(orders, clients); } catch(e) { console.warn('renderRecentOrders error', e); }
+
+        // Top Products (by quantity across all orders)
+        try { renderTopProducts(orders, products); } catch(e) { console.warn('renderTopProducts error', e); }
+      }
+
+      function getOrderCustomerName(order, clients) {
+        const direct = order.customer || order.customerName || order.client || (order.customer && order.customer.name);
+        if (direct) return (typeof direct === 'string') ? direct : (direct.name || '');
+        const cid = String(order.customerId || order.clientId || order.clienteId || '').trim();
+        if (!cid) return '—';
+        const c = Array.isArray(clients) ? clients.find(x => String(x.id || x.clientId || x.clienteId || '') === cid) : null;
+        return c ? (c.name || c.nombre || 'Cliente') : 'Cliente';
+      }
+
+      function renderRecentOrders(orders, clients) {
+        const tbody = document.getElementById('recentOrdersTbody');
+        if (!tbody) return;
+        const sorted = [...orders].sort((a,b) => {
+          const da = new Date(a.createdAt || a.date || 0).getTime();
+          const db = new Date(b.createdAt || b.date || 0).getTime();
+          return db - da;
+        }).slice(0,5);
+        if (sorted.length === 0) {
+          tbody.innerHTML = '<tr><td class="px-6 py-4 text-sm text-gray-500" colspan="5">Sin pedidos recientes</td></tr>';
+          return;
+        }
+        tbody.innerHTML = sorted.map(o => {
+          const id = o.id != null ? `#${o.id}` : '#—';
+          const customer = getOrderCustomerName(o, clients);
+          const dateTxt = new Date(o.createdAt || o.date || Date.now()).toLocaleString('es-ES');
+          const st = normalizeStatus(o.status);
+          const total = Number(o.total) || (Array.isArray(o.items) ? o.items.reduce((s, it) => s + (Number(it.price)||0)*(Number(it.quantity)||0), 0) : 0);
+          return `
+            <tr class="hover:bg-gray-50 cursor-pointer" onclick="try{window.openOrderDetails ? openOrderDetails(${JSON.stringify(o.id)}) : (window.location.href='orders.html');}catch(_){window.location.href='orders.html'}">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${id}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${customer}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${dateTxt}</td>
+              <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${st.cls}">${st.text}</span></td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatMoney(total)}</td>
+            </tr>`;
+        }).join('');
+      }
+
+      function renderTopProducts(orders, catalog) {
+        const grid = document.getElementById('topProductsGrid');
+        if (!grid) return;
+        const totals = new Map();
+        (orders || []).forEach(o => (o.items || []).forEach(it => {
+          const pid = String(it.productId || it.id || it.sku || it.code || it.name || it.productName || '').trim();
+          if (!pid) return;
+          const prev = totals.get(pid) || { qty: 0, revenue: 0, name: it.productName || it.name || pid, price: Number(it.price)||0 };
+          const q = Number(it.quantity)||0; const p = Number(it.price)||0;
+          prev.qty += q; prev.revenue += p*q; prev.name = prev.name || it.productName || it.name || pid;
+          totals.set(pid, prev);
+        }));
+
+        const list = Array.from(totals.entries())
+          .map(([pid,meta]) => ({ id: pid, ...meta, product: Array.isArray(catalog) ? catalog.find(p => String(p.id||p.code||p.sku||'') === pid) : null }))
+          .sort((a,b) => b.qty - a.qty)
+          .slice(0, 6);
+
+        if (list.length === 0) {
+          grid.innerHTML = '<div class="p-4 text-sm text-gray-500">Aún no hay productos en pedidos.</div>';
+          return;
+        }
+
+        grid.innerHTML = list.map(x => {
+          const img = (x.product && (x.product.image || x.product.img || x.product.photo)) || 'https://via.placeholder.com/64';
+          const cat = (x.product && (x.product.category || x.product.categoria)) || '';
+          const price = x.product && x.product.price ? Number(x.product.price) : x.price;
+          return `
+            <div class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+              <div class="flex-shrink-0 h-16 w-16 bg-gray-200 rounded-md overflow-hidden">
+                <img src="${img}" alt="Product" class="h-full w-full object-cover">
+              </div>
+              <div class="ml-4 flex-1">
+                <h3 class="text-sm font-medium text-gray-900">${x.name}</h3>
+                <p class="text-xs text-gray-500">${cat || 'Más vendido'} · ${x.qty} u.</p>
+                <div class="mt-1">
+                  <span class="text-sm font-medium text-gray-900">${formatMoney(price)}</span>
+                  <span class="text-xs text-gray-500 ml-2">Subtotal: ${formatMoney(x.revenue)}</span>
+                </div>
+              </div>
+            </div>`;
+        }).join('');
+      }
         
         try {
           const user = JSON.parse(userData);

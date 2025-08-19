@@ -339,6 +339,15 @@
         return `ORD-${orderId}`;
       }
 
+      // Session helpers for attribution
+      function getUserRole(){
+        const r = localStorage.getItem('userRole');
+        return r ? r.toLowerCase() : '';
+      }
+      function getUserName(){
+        return localStorage.getItem('userName') || '';
+      }
+
       function buildMovementFromOrder(order) {
         const id = movementIdForOrder(order.id);
         const date = new Date(order.createdAt || order.date || Date.now()).toISOString();
@@ -349,10 +358,12 @@
           date,
           description: desc,
           category: 'Ventas',
-          type: 'Ingreso',
+          type: 'ingreso',
           amount,
           source: 'order',
-          orderId: order.id
+          orderId: order.id,
+          createdBy: getUserName(),
+          createdByRole: getUserRole()
         };
       }
 

@@ -150,6 +150,12 @@
                   </div>
                   <input id="searchInput" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#181710] focus:border-[#181710] block w-full pl-10 p-2.5" placeholder="Buscar productos...">
                 </div>
+                <button type="button" id="addCategoryBtn" class="flex items-center justify-center px-4 py-2 text-sm font-medium text-[#181710] bg-white border border-[#e7e5da] rounded-lg hover:bg-gray-50 focus:ring-4 focus:ring-[#181710]">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6"></path>
+                  </svg>
+                  Agregar Categoría
+                </button>
                 <button type="button" id="newProductBtn" class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-[#181710] rounded-lg hover:bg-[#2a2922] focus:ring-4 focus:ring-[#181710]">
                   <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -184,14 +190,6 @@
               <div class="relative">
                 <select id="categoryFilter" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#181710] focus:border-[#181710] block w-full p-2 pr-8">
                   <option value="">Todas las categorías</option>
-                  <option value="frutas">Frutas</option>
-                  <option value="lácteos">Lácteos</option>
-                  <option value="panadería">Panadería</option>
-                  <option value="pastelería">Pastelería</option>
-                  <option value="carnes">Carnes</option>
-                  <option value="bebidas">Bebidas</option>
-                  <option value="snacks">Snacks</option>
-                  <option value="alimentos">Alimentos</option>
                 </select>
               </div>
               <div class="relative">
@@ -321,12 +319,6 @@
               <select id="productCategory" name="productCategory" required
                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#181710] focus:border-[#181710] sm:text-sm">
                 <option value="">Seleccione una categoría</option>
-                <option value="alimentos">Alimentos</option>
-                <option value="bebidas">Bebidas</option>
-                <option value="limpieza">Limpieza</option>
-                <option value="cuidado-personal">Cuidado Personal</option>
-                <option value="hogar">Hogar</option>
-                <option value="otros">Otros</option>
               </select>
             </div>
 
@@ -539,6 +531,27 @@
       </div>
     </div>
 
+    <!-- Category Modal -->
+    <div id="categoryAddModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
+      <div class="relative bg-white rounded-lg shadow max-w-md w-full">
+        <div class="flex items-center justify-between p-5 border-b rounded-t">
+          <h3 class="text-xl font-semibold text-gray-900">Agregar Categoría</h3>
+          <button type="button" id="categoryAddModalClose" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+          </button>
+        </div>
+        <div class="p-6 space-y-4">
+          <label class="block text-sm font-medium text-gray-700">Nombre de la categoría</label>
+          <input id="categoryAddModalName" type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#181710] focus:border-[#181710] sm:text-sm" placeholder="Ej: Lácteos" />
+          <p id="categoryAddModalError" class="text-sm text-red-600 hidden"></p>
+        </div>
+        <div class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b">
+          <button type="button" id="categoryAddModalCancel" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10">Cancelar</button>
+          <button type="button" id="categoryAddModalSave" class="text-white bg-[#181710] hover:bg-[#2a2922] focus:ring-4 focus:outline-none focus:ring-[#181710] font-medium rounded-lg text-sm px-5 py-2.5 text-center">Guardar</button>
+        </div>
+      </div>
+    </div>
+
     <script>
       // DOM Elements
       const modal = document.getElementById('productModal');
@@ -563,19 +576,67 @@
       let editingProductId = null;
       let editingProduct = null;
       
-      // Product categories
-      const categories = [
-        'Alimentos',
-        'Bebidas',
-        'Lácteos y huevos',
-        'Frutas y verduras',
-        'Carnes y pescados',
-        'Pastelería y Panadería',
-        'Limpieza',
-        'Cuidado personal',
-        'Hogar',
-        'Otros'
+      // --- Category management (localStorage-backed) ---
+      const CATEGORY_KEY = 'product_categories';
+      const defaultCategories = [
+        'Alimentos', 'Bebidas', 'Lácteos', 'Frutas', 'Verduras', 'Carnes', 'Pescados', 'Pastelería', 'Panadería', 'Limpieza', 'Cuidado personal', 'Hogar', 'Snacks', 'Otros'
       ];
+
+      function normStr(v){
+        return (v == null ? '' : String(v))
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/\p{Diacritic}+/gu, '')
+          .trim()
+          .replace(/\s+/g,'-');
+      }
+
+      function loadCategories(){
+        try{
+          let arr = JSON.parse(localStorage.getItem(CATEGORY_KEY) || '[]');
+          if (!Array.isArray(arr) || arr.length === 0) {
+            arr = [...defaultCategories];
+            localStorage.setItem(CATEGORY_KEY, JSON.stringify(arr));
+          }
+          return arr;
+        }catch(_){ return [...defaultCategories]; }
+      }
+
+      function saveCategories(arr){
+        localStorage.setItem(CATEGORY_KEY, JSON.stringify(arr || []));
+      }
+
+      function addCategory(name){
+        const label = (name||'').trim();
+        if (!label) return { ok:false, error:'El nombre no puede estar vacío.' };
+        const items = loadCategories();
+        const exists = items.some(it => normStr(it) === normStr(label));
+        if (exists) return { ok:false, error:'La categoría ya existe.' };
+        items.push(label);
+        items.sort((a,b)=>a.localeCompare(b));
+        saveCategories(items);
+        return { ok:true };
+      }
+
+      function populateCategorySelects(){
+        const cats = loadCategories();
+        // Product form select
+        const formSel = document.getElementById('productCategory');
+        if (formSel){
+          const current = formSel.value;
+          formSel.innerHTML = '<option value="">Seleccione una categoría</option>' +
+            cats.map(c => `<option value="${normStr(c)}">${c}</option>`).join('');
+          if (current){ formSel.value = current; }
+        }
+        // Filter select
+        const filterSel = document.getElementById('categoryFilter');
+        if (filterSel){
+          const currentF = filterSel.value;
+          filterSel.innerHTML = '<option value="">Todas las categorías</option>' +
+            cats.map(c => `<option value="${normStr(c)}">${c}</option>`).join('');
+          if (currentF){ filterSel.value = currentF; }
+        }
+      }
 
       // UI/Listing state
       const productState = {
@@ -623,15 +684,7 @@
       // Initialize the application
       function init() {
         // Populate categories dropdown in the form
-        const categorySelect = document.getElementById('productCategory');
-        if (categorySelect) {
-          categories.forEach(category => {
-            const option = document.createElement('option');
-            option.value = category.toLowerCase().replace(/\s+/g, '-');
-            option.textContent = category;
-            categorySelect.appendChild(option);
-          });
-        }
+        populateCategorySelects();
         
         // Populate units dropdown
         const unitSelect = document.getElementById('stockUnit');
@@ -777,13 +830,107 @@
           saveProducts(seedProducts);
         }
 
+        // --- Modal helpers (scoped) ---
+        const openModalById = (id) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.classList.remove('hidden');
+          document.body.style.overflow = 'hidden';
+        };
+        const closeModalById = (id) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.classList.add('hidden');
+          document.body.style.overflow = 'auto';
+        };
+        const closeAllModals = () => {
+          ['categoryAddModal','productModal','confirmationModal'].forEach(closeModalById);
+        };
+        const hideAllOverlays = () => {
+          try {
+            document.querySelectorAll('.fixed.inset-0.z-50').forEach(el => el.classList.add('hidden'));
+            document.body.style.overflow = 'auto';
+          } catch(_) {}
+        };
+
+        // Wire category add modal buttons (namespaced, unique IDs)
+        const addCategoryBtn = document.getElementById('addCategoryBtn');
+        const categoryAddModalSave = document.getElementById('categoryAddModalSave');
+        const categoryAddModalCancel = document.getElementById('categoryAddModalCancel');
+        const categoryAddModalClose = document.getElementById('categoryAddModalClose');
+        const categoryAddModalEl = document.getElementById('categoryAddModal');
+        const categoryAddModalError = document.getElementById('categoryAddModalError');
+        const categoryAddModalName = document.getElementById('categoryAddModalName');
+
+        const openCategoryAddModal = (e) => {
+          if (e) { e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation(); }
+          // Ensure no other modal is open
+          closeAllModals();
+          categoryAddModalError.classList.add('hidden');
+          categoryAddModalError.textContent = '';
+          categoryAddModalName.value = '';
+          openModalById('categoryAddModal');
+          // Ensure focus after open
+          setTimeout(() => categoryAddModalName && categoryAddModalName.focus(), 0);
+        };
+        const closeCategoryAddModal = (e) => {
+          if (e) { e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation(); }
+          closeModalById('categoryAddModal');
+        };
+
+        if (addCategoryBtn) addCategoryBtn.addEventListener('click', (e) => {
+          openCategoryAddModal(e);
+          // Fallback: directly show the modal to guarantee visibility
+          const el = document.getElementById('categoryAddModal');
+          if (el) {
+            el.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+          }
+        });
+        // Prevent click-through on backdrop and allow outside-click to close
+        if (categoryAddModalEl) {
+          categoryAddModalEl.addEventListener('click', (e) => {
+            // Click on backdrop closes the modal, and consume event
+            if (e.target === categoryAddModalEl) {
+              e.preventDefault();
+              e.stopPropagation();
+              if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+              closeCategoryAddModal(e);
+              return;
+            }
+            // Any other click within modal consumes propagation to avoid reaching underlying page
+            e.stopPropagation();
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+          });
+        }
+        if (categoryAddModalClose) categoryAddModalClose.addEventListener('click', closeCategoryAddModal);
+        if (categoryAddModalCancel) categoryAddModalCancel.addEventListener('click', closeCategoryAddModal);
+        if (categoryAddModalSave) categoryAddModalSave.addEventListener('click', (e) => {
+          if (e) { e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation(); }
+          const name = categoryAddModalName.value.trim();
+          const res = addCategory(name);
+          if (!res.ok){
+            categoryAddModalError.textContent = res.error || 'Error al guardar categoría';
+            categoryAddModalError.classList.remove('hidden');
+            return;
+          }
+          populateCategorySelects();
+          closeCategoryAddModal();
+          showNotification('success', 'Categoría agregada');
+        });
+
         // First render
         refreshProductsList();
       }
 
-      // Event Listeners
-      document.addEventListener('DOMContentLoaded', init);
-      newProductBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); openModal(e); });
+      // Event Listeners / App bootstrap
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        // DOM already loaded, run immediately
+        init();
+      }
+      newProductBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation(); try { closeAllModals(); } catch(_){} openModal(e); });
       closeModal.addEventListener('click', closeModalHandler);
       cancelBtn.addEventListener('click', closeModalHandler);
       productForm.addEventListener('submit', handleSubmit);
@@ -1163,12 +1310,17 @@
 
       // Functions
       function openModal(e) {
-        if (e && typeof e.stopPropagation === 'function') {
-          e.stopPropagation();
-        }
+        if (e && typeof e.preventDefault === 'function') e.preventDefault();
+        if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+        if (e && typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
         // Cerrar otros modales por seguridad
-        closeProductDetailModal();
         try { closeConfirmationModal(); } catch (_) {}
+        try { closeProductDetailModal(); } catch (_) {}
+        // Cerrar explícitamente el modal de categorías si está abierto (sin depender de helpers locales)
+        try {
+          const cam = document.getElementById('categoryAddModal');
+          if (cam) cam.classList.add('hidden');
+        } catch (_) {}
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
       }

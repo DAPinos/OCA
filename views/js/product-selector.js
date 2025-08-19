@@ -22,6 +22,14 @@ function norm(v) {
     .trim();
 }
 
+// Load persistent categories from localStorage (shared with products page)
+function loadPersistentCategories(){
+  try{
+    const arr = JSON.parse(localStorage.getItem('product_categories') || '[]');
+    return Array.isArray(arr) ? arr : [];
+  }catch(_){ return []; }
+}
+
 // Populate category select from available products
 function populateCategorySelect() {
   const sel = document.getElementById('productCategory');
@@ -36,6 +44,12 @@ function populateCategorySelect() {
       const key = norm(part);
       if (key && !map.has(key)) map.set(key, part);
     });
+  });
+  // Also include persistent categories even if not present in products yet
+  const persistent = loadPersistentCategories();
+  persistent.forEach(cat => {
+    const key = norm(cat);
+    if (key && !map.has(key)) map.set(key, cat);
   });
   // Build options: first the "Todas" option
   const opts = [{ value: '', label: 'Todas las categorías' }];
