@@ -58,7 +58,7 @@
         'nav.products': 'Productos',
         'nav.clients': 'Clientes',
         'nav.finance': 'Finanzas',
-        'nav.settings': 'Ajustes',
+        'nav.settings': 'Configuración',
         'settings.title': 'Configuración',
         'settings.general': 'General',
         'settings.language': 'Idioma',
