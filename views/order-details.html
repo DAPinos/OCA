@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detalle del Pedido</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{ --bg:#f5f4f0; --text:#181710; --muted:#8d865e; --border:#e7e5da; --ok:#16a34a; --warn:#f59e0b; --err:#ef4444; }
+    *{ box-sizing:border-box; }
+    body{ margin:0; font-family: Inter, "Noto Sans", sans-serif; background:var(--bg); color:var(--text); }
+    header{ display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border); background:#fff; position:sticky; top:0; z-index:10; }
+    h1{ margin:0; font-size:20px; font-weight:700; }
+    .container{ max-width:960px; margin:0 auto; padding:16px; }
+    .card{ background:#fff; border:1px solid var(--border); border-radius:12px; padding:16px; box-shadow:0 1px 2px rgba(0,0,0,.05); }
+    .row{ display:flex; justify-content:space-between; align-items:center; gap:12px; }
+    .muted{ color:var(--muted); font-size:13px; }
+    .pill{ font-size:12px; padding:2px 8px; border-radius:999px; border:1px solid var(--border); background:#fafafa; }
+    .pill.pend{ background:#fff7ed; border-color:#fed7aa; color:#9a3412; }
+    .pill.proc{ background:#ecfeff; border-color:#a5f3fc; color:#0e7490; }
+    .pill.comp{ background:#ecfdf5; border-color:#bbf7d0; color:#166534; }
+    .pill.canc{ background:#fee2e2; border-color:#fecaca; color:#991b1b; }
+    table{ width:100%; border-collapse:collapse; }
+    th, td{ padding:10px 8px; border-bottom:1px solid var(--border); text-align:left; font-size:14px; }
+    tfoot td{ font-weight:700; }
+    .actions{ display:flex; gap:8px; flex-wrap:wrap; }
+    .btn{ height:36px; padding:0 12px; border-radius:8px; border:1px solid var(--border); background:#fff; color:var(--text); font-size:14px; font-weight:600; cursor:pointer; }
+    .btn.primary{ background:var(--text); color:#fff; border-color:var(--text); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Detalle del Pedido</h1>
+    <div class="actions">
+      <a class="btn" href="./orders.html">Volver a Pedidos</a>
+      <button class="btn" id="btnPrint">Imprimir / Exportar PDF</button>
+      <button class="btn primary" id="btnKDS">Abrir en KDS</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="errorBox" class="card" style="display:none;">
+      No se encontró el pedido solicitado.
+    </div>
+
+    <div id="orderBox" class="card" style="display:none;">
+      <div class="row" style="margin-bottom:8px;">
+        <div>
+          <div id="orderId" style="font-weight:700; font-size:18px;">Pedido #</div>
+          <div class="muted" id="orderDate"></div>
+          <div class="muted" id="orderCustomer"></div>
+        </div>
+        <div id="orderStatus" class="pill">Estado</div>
+      </div>
+
+      <h3 style="margin:12px 0 6px 0;">Productos</h3>
+      <div style="overflow:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th style="width:80px;">Cant.</th>
+              <th style="width:140px;">Precio</th>
+              <th style="width:140px;">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody id="itemsBody"></tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" style="text-align:right;">Total</td>
+              <td id="totalCell">$ 0,00</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <h3 style="margin:16px 0 6px 0;">Información</h3>
+      <div class="muted" id="extraInfo">—</div>
+    </div>
+  </main>
+
+  <script>
+    function qs(name) {
+      const p = new URLSearchParams(window.location.search);
+      return p.get(name);
+    }
+    function nf(n) { try { return new Intl.NumberFormat('es-CL', {style:'currency', currency:'CLP'}).format(Number(n)||0); } catch { return `$ ${Number(n)||0}`; } }
+    function fmtDate(d) { try { return new Date(d).toLocaleString('es-AR'); } catch { return d; } }
+
+    function loadOrder(id) {
+      const a = JSON.parse(localStorage.getItem('orders') || '[]');
+      const b = JSON.parse(localStorage.getItem('savedOrders') || '[]');
+      const all = [...a, ...b];
+      const order = all.find(o => String(o.id) === String(id));
+      return order || null;
+    }
+
+    function statusPill(el, status) {
+      const s = (status || '').toLowerCase();
+      el.textContent = status || '—';
+      el.className = 'pill ' + (s.includes('compl') || s.includes('final') ? 'comp' : s.includes('proce') || s.includes('progress') ? 'proc' : s.includes('pend') ? 'pend' : 'canc');
+    }
+
+    function render(order) {
+      document.getElementById('orderId').textContent = `Pedido #${order.id}`;
+      document.getElementById('orderDate').textContent = fmtDate(order.createdAt || order.date);
+      const customerName = order.customer || order.customerName || '—';
+      document.getElementById('orderCustomer').textContent = `Cliente: ${customerName}`;
+      // Resolve delivery address from order or clients storage
+      let deliveryAddress = order.address || order.deliveryAddress || '';
+      if (!deliveryAddress) {
+        try {
+          const clientsRaw = localStorage.getItem('clients') || localStorage.getItem('clientes') || '[]';
+          const clients = JSON.parse(clientsRaw);
+          const match = (clients || []).find(c => {
+            const name = c.name || c.nombre || c.fullName || c.email || '';
+            const id = String(c.id || c.clientId || c.clienteId || '');
+            return (name && name === customerName) || (order.customerId && String(order.customerId) === id);
+          });
+          if (match) deliveryAddress = match.address || (Array.isArray(match.addresses) ? match.addresses[0] : '') || '';
+        } catch(_) {}
+      }
+      statusPill(document.getElementById('orderStatus'), order.status || 'Pendiente');
+
+      const items = Array.isArray(order.items) ? order.items : [];
+      const rows = items.map(it => {
+        const name = it.productName || it.name || 'Producto';
+        const qty = Number(it.quantity)||0;
+        const price = Number(it.price)||0;
+        const sub = qty * price;
+        return `<tr><td>${name}</td><td>${qty}</td><td>${nf(price)}</td><td>${nf(sub)}</td></tr>`;
+      }).join('');
+      document.getElementById('itemsBody').innerHTML = rows || '<tr><td colspan="4" class="muted">Sin productos</td></tr>';
+
+      const total = items.reduce((s, it) => s + (Number(it.price)||0)*(Number(it.quantity)||0), 0);
+      document.getElementById('totalCell').textContent = nf(total);
+
+      const extras = [];
+      if (deliveryAddress) extras.push(`Dirección: ${deliveryAddress}`);
+      if (order.notes) extras.push(`Notas: ${order.notes}`);
+      if (order.paymentMethod) extras.push(`Pago: ${order.paymentMethod}`);
+      if (order.table || order.mesa) extras.push(`Mesa: ${order.table || order.mesa}`);
+      document.getElementById('extraInfo').textContent = extras.join(' · ') || '—';
+    }
+
+    // ===== Utilidad local: imprimir recibo en popup y autocerrar =====
+    function openReceiptPrintPopup(order) {
+      const date = fmtDate(order.createdAt || order.date || Date.now());
+      // Resolve address for print meta
+      let deliveryAddress = order.address || order.deliveryAddress || '';
+      if (!deliveryAddress) {
+        try {
+          const clients = JSON.parse(localStorage.getItem('clients') || localStorage.getItem('clientes') || '[]');
+          const match = (clients || []).find(c => {
+            const name = c.name || c.nombre || c.fullName || c.email || '';
+            const id = String(c.id || c.clientId || c.clienteId || '');
+            return (name && name === (order.customer || order.customerName)) || (order.customerId && String(order.customerId) === id);
+          });
+          if (match) deliveryAddress = match.address || (Array.isArray(match.addresses) ? match.addresses[0] : '') || '';
+        } catch(_) {}
+      }
+      const rows = (Array.isArray(order.items) ? order.items : []).map(it => {
+        const name = it.productName || it.name || 'Producto';
+        const qty = Number(it.quantity) || 0;
+        const price = Number(it.price) || 0;
+        const sub = qty * price;
+        return `<tr><td>${name}</td><td class="ta-r">${qty}</td><td class="ta-r">${nf(price)}</td><td class="ta-r">${nf(sub)}</td></tr>`;
+      }).join('');
+      const total = (Array.isArray(order.items) ? order.items : []).reduce((s, it) => s + (Number(it.price)||0)*(Number(it.quantity)||0), 0);
+      const html = `<!DOCTYPE html>
+      <html lang="es"><head><meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>Recibo Pedido #${order.id}</title>
+      <style>
+        :root{--ink:#111;--muted:#666;--line:#e5e7eb;--brand:#2563eb}
+        *{box-sizing:border-box}
+        body{font-family:Inter,Arial,sans-serif;color:var(--ink);margin:0;background:#fff}
+        .wrap{max-width:800px;margin:0 auto;padding:24px}
+        .toolbar{position:sticky;top:0;background:#fff;padding:12px 0;border-bottom:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end}
+        .btn{appearance:none;border:1px solid var(--line);background:#fff;color:var(--ink);padding:8px 12px;border-radius:8px;cursor:pointer;font-size:14px}
+        .btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+        h1{font-size:20px;margin:16px 0 4px}
+        .meta{color:var(--muted);font-size:13px;margin:0 0 16px}
+        table{width:100%;border-collapse:collapse;margin-top:12px}
+        th,td{border:1px solid var(--line);padding:8px;font-size:13px}
+        th{background:#f9fafb;text-transform:uppercase;color:#374151;letter-spacing:.02em;text-align:left}
+        .ta-r{text-align:right}
+        tfoot td{font-weight:700}
+        @media print {.toolbar{display:none}}
+      </style></head>
+      <body>
+        <div class="wrap">
+          <div class="toolbar">
+            <button class="btn" onclick="window.close()">Cerrar</button>
+            <button class="btn primary" onclick="window.print()">Imprimir / Exportar PDF</button>
+          </div>
+          <h1>Recibo - Pedido #${order.id}</h1>
+          <p class="meta">Fecha: ${date} · Cliente: ${order.customer || order.customerName || '—'}${deliveryAddress ? ` · Dirección: ${deliveryAddress}` : ''} · Estado: ${order.status || '—'}</p>
+          <table>
+            <thead><tr><th>Producto</th><th class="ta-r">Cant.</th><th class="ta-r">Precio</th><th class="ta-r">Subtotal</th></tr></thead>
+            <tbody>${rows || '<tr><td colspan="4">Sin productos</td></tr>'}</tbody>
+            <tfoot><tr><td colspan="3">Total</td><td class="ta-r">${nf(total)}</td></tr></tfoot>
+          </table>
+        </div>
+      </body></html>`;
+      let w = null;
+      try { w = window.open('about:blank', '_blank', 'noopener,noreferrer'); } catch(e) { w = null; }
+      if (w && w.document) {
+        w.document.open();
+        w.document.write(html);
+        w.document.close();
+        try {
+          w.onafterprint = function(){ try { w.close(); } catch(_) {} };
+          w.onload = function(){
+            try { w.focus(); } catch(_) {}
+            setTimeout(function(){ try { w.print(); } catch(_) {} }, 100);
+          };
+        } catch(_) {
+          try { w.focus(); w.print(); } catch(_) {}
+        }
+        return;
+      }
+      // Fallback: iframe oculto cuando los popups están bloqueados
+      try {
+        const iframe = document.createElement('iframe');
+        iframe.style.position = 'fixed';
+        iframe.style.right = '0';
+        iframe.style.bottom = '0';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = '0';
+        document.body.appendChild(iframe);
+        const doc = iframe.contentWindow || iframe.contentDocument;
+        const idoc = doc.document || doc;
+        idoc.open();
+        idoc.write(html);
+        idoc.close();
+        const cleanup = () => { try { document.body.removeChild(iframe); } catch(_) {} };
+        const iw = iframe.contentWindow;
+        if (iw) {
+          iw.onafterprint = cleanup;
+          iw.focus();
+          setTimeout(() => { try { iw.print(); } catch(_) { cleanup(); } }, 100);
+        } else {
+          cleanup();
+          alert('No se pudo iniciar la impresión.');
+        }
+      } catch(err) {
+        alert('No se pudo imprimir: ' + (err && err.message ? err.message : err));
+      }
+    }
+
+    function init() {
+      const id = qs('id');
+      const order = loadOrder(id);
+      const box = document.getElementById('orderBox');
+      const err = document.getElementById('errorBox');
+      if (!order) {
+        err.style.display = 'block';
+        box.style.display = 'none';
+        return;
+      }
+      err.style.display = 'none';
+      box.style.display = 'block';
+      render(order);
+
+      document.getElementById('btnPrint').onclick = () => {
+        // Imprimir siempre usando el popup local robusto (con fallbacks)
+        openReceiptPrintPopup(order);
+      };
+      // Si viene con flag print=1, abrir automáticamente
+      try {
+        const sp = new URLSearchParams(window.location.search);
+        if (sp.get('print') === '1') {
+          setTimeout(() => openReceiptPrintPopup(order), 150);
+        }
+      } catch(_) {}
+      document.getElementById('btnKDS').onclick = () => {
+        try {
+          const w = window.open('kds.html', '_blank', 'noopener');
+          if (!w) window.location.href = 'kds.html';
+        } catch { window.location.href = 'kds.html'; }
+      };
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

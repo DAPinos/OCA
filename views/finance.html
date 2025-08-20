@@ -1,0 +1,894 @@
+<html>
+  <head>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter%3Awght%40400%3B500%3B700%3B900&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900"
+    />
+
+    <title>Stitch Design</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  </head>
+  <body>
+    <div class="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
+      <div class="layout-container flex h-full grow flex-col">
+        <div class="gap-1 px-6 flex flex-1 justify-center py-5">
+          <div class="layout-content-container flex flex-col w-80">
+            <div class="flex h-full min-h-[700px] flex-col justify-between bg-white p-4">
+              <div class="flex flex-col gap-4">
+                <h1 class="text-[#181710] text-base font-medium leading-normal">OCA Minimarkets</h1>
+                <div class="flex flex-col gap-2">
+                  <a href="index.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="House" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M216,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z"></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Inicio</p>
+                  </a>
+                  <a href="orders.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="Receipt" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M216,40H40A16,16,0,0,0,24,56V208a8,8,0,0,0,11.58,7.15L64,200.94l28.42,14.21a8,8,0,0,0,7.16,0L128,200.94l28.42,14.21a8,8,0,0,0,7.16,0L192,200.94l28.42,14.21A8,8,0,0,0,232,208V56A16,16,0,0,0,216,40ZM176,144H80a8,8,0,0,1,0-16h96a8,8,0,0,1,0,16Zm0-32H80a8,8,0,0,1,0-16h96a8,8,0,0,1,0,16Z"></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Pedidos</p>
+                  </a>
+                  <a href="products.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="Package" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M223.68,66.15,135.68,18a15.88,15.88,0,0,0-15.36,0l-88,48.17a16,16,0,0,0-8.32,14v95.64a16,16,0,0,0,8.32,14l88,48.17a15.88,15.88,0,0,0,15.36,0l88-48.17a16,16,0,0,0,8.32-14V80.18A16,16,0,0,0,223.68,66.15ZM128,32l80.34,44-29.77,16.3-80.35-44ZM128,120,47.66,76l33.9-18.56,80.34,44ZM40,90l80,43.78v85.79L40,175.82Zm176,85.78h0l-80,43.79V133.82l80-43.78Z"></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Productos</p>
+                  </a>
+                  <a href="clients.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="Users" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,1,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Clientes</p>
+                  </a>
+                  <a href="finance.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#f5f4f0] hover:bg-[#e8e6e0] transition-colors">
+                    <div class="text-[#181710]" data-icon="CurrencyDollar" data-size="24px" data-weight="fill">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm40-64a32,32,0,0,1-32,32v8a8,8,0,0,1-16,0v-8H112a8,8,0,0,1,0-16h24a16,16,0,0,0,0-32H128a32,32,0,0,1,0-64v-8a8,8,0,0,1,16,0v8h8a8,8,0,0,1,0,16H128a16,16,0,0,0,0,32h8a32,32,0,0,1,32,32Z"></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Finanzas</p>
+                  </a>
+                  
+                  <!-- Transport Menu Item -->
+                  <a href="transport.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="Truck" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M248,120h-24V88a16,16,0,0,0-16-16H160V64a16,16,0,0,0-16-16H32A16,16,0,0,0,16,64V176a16,16,0,0,0,16,16H56a32,32,0,0,0,64,0h48a32,32,0,0,0,64,0h8a8,8,0,0,0,0-16h-8V136h16a8,8,0,0,0,0-16ZM32,64H144V176H120a32,32,0,0,0-64,0H32ZM208,88v32H160V88ZM88,200a16,16,0,1,1,16-16A16,16,0,0,1,88,200Zm112,0a16,16,0,1,1,16-16A16,16,0,0,1,200,200Z"/>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Transporte y Despacho</p>
+                  </a>
+                  
+                  <!-- Manufacturing Menu Item -->
+                  <a href="manufacturing.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="Factory" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M216,56H184V32a8,8,0,0,0-16,0V56H136V32a8,8,0,0,0-16,0V56H88V32a8,8,0,0,0-16,0V56H40A16,16,0,0,0,24,72V208a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V72A16,16,0,0,0,216,56ZM40,72H216V96H40ZM216,208H40V112H216ZM72,176a8,8,0,0,1,0-16H96a8,8,0,0,1,0,16Zm56,0a8,8,0,0,1,0-16h24a8,8,0,0,1,0,16Z"/>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Manufactura</p>
+                  </a>
+                  <a href="hr.html" data-roles="administracion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="UsersThree" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path
+                          d="M168,120a40,40,0,1,0-40-40A40,40,0,0,0,168,120Zm-80,0A40,40,0,1,0,48,80,40,40,0,0,0,88,120Zm80,16c-22.09,0-64,11.05-64,32v16a8,8,0,0,0,8,8h112a8,8,0,0,0,8-8V168C232,147.05,190.09,136,168,136Zm-80,0c-22.09,0-64,11.05-64,32v16a8,8,0,0,0,8,8h72a8,8,0,0,0,8-8V168C168,147.05,126.09,136,88,136Z"/>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">RRHH</p>
+                  </a>
+                  <a href="settings.html" data-roles="administracion,produccion,cliente" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="Gear" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M230.92,120c0,0-2.2-2.4-6-6.53a94.82,94.82,0,0,0-9.1-8.67,2,2,0,0,1-.55-1.81,97,97,0,0,0,.42-15.37,1.9,1.9,0,0,0-1.32-1.61c-9.36-3.51-15.2-5.6-22.63-10.5a1.9,1.9,0,0,0-2.57.18c-5.9,5.7-9.2,9.07-15.1,10.65a2,2,0,0,1-1.81-.21,103.15,103.15,0,0,0-12.89-8.43,2,2,0,0,1-.68-2.38c2.22-5.52,3.7-9.24,4.42-14.63a1.9,1.9,0,0,0-1.4-2.11c-6.52-1.54-10.7-2.53-17.2-4.8a1.89,1.89,0,0,0-2.17.73c-4.1,6.13-5.9,9.2-10.48,13.46a2,2,0,0,1-1.61.55,100,100,0,0,0-15.36.42,2,2,0,0,1-1.61-1.32c-3.51-9.36-5.6-15.2-10.5-22.63a1.9,1.9,0,0,1,1.4,2.11c-1.54,6.52-2.53,10.7-4.8,17.2a1.89,1.89,0,0,0,1.11,2.52c6.44,2.39,10.58,3.93,15.7,4.62a1.9,1.9,0,0,1,1.33,3.23c-5.38,5.43-8.2,8.27-10.46,13.07a2,2,0,0,0,.55,2.37,100,100,0,0,0,12.89,8.42,2,2,0,0,0,2.38-.68c2.22-5.52,3.7-9.24,4.42-14.63a1.9,1.9,0,0,1,1.4-2.11c6.52-1.54,10.7-2.53,17.2-4.8a1.89,1.89,0,0,0,1.11-2.52c-2.39-6.44-3.93-10.58-4.62-15.7a1.9,1.9,0,0,1,3.23-1.33c5.43,5.38,8.27,8.2,13.07,10.46a2,2,0,0,0,2.37-.55,100,100,0,0,0,12.89-8.42,2,2,0,0,0,.69-2.74c-2.22-5.52-3.7-9.24-4.42-14.63a1.9,1.9,0,0,1,1.4-2.11c6.52-1.54,10.7-2.53,17.2-4.8a1.89,1.89,0,0,0,1.11-2.52c-2.39-6.44-3.93-10.58-4.62-15.7a1.9,1.9,0,0,1,1.33-3.23c5.43,5.38,8.27,8.2,13.07,10.46a2,2,0,0,0,2.37-.55,100,100,0,0,0,8.42-12.89,2,2,0,0,0-.21-2.37c-5.7-5.9-9.07-9.2-10.65-15.1a2,2,0,0,1,.21-1.81c3.51-5.32,5.6-8.65,10.5-12.13a1.9,1.9,0,0,1,2.57.18c5.9,5.7,9.2,9.07,15.1,10.65a2,2,0,0,1,1.21.93A95.5,95.5,0,0,0,230.92,120ZM128,176a56,56,0,1,1,56-56A56.06,56.06,0,0,1,128,176Z"></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Configuración</p>
+                  </a>
+                </div>
+              </div>
+              <div class="flex flex-col gap-4">
+                <button
+                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#ffe342] text-[#181710] text-sm font-bold leading-normal tracking-[0.015em]"
+                >
+                  <span class="truncate">New Expense</span>
+                </button>
+                <div class="flex flex-col gap-1">
+                  <div class="flex items-center gap-3 px-3 py-2">
+                    <div class="text-[#181710]" data-icon="Question" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path
+                          d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"
+                        ></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Help and Docs</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="layout-content-container flex flex-col max-w-[1200px] w-full mx-auto flex-1">
+            <div class="flex flex-wrap justify-between gap-3 p-4">
+              <p class="text-[#181710] tracking-light text-[32px] font-bold leading-tight min-w-72">Operational Expenses</p>
+            </div>
+            <h2 class="text-[#181710] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Cost vs. Sales</h2>
+            <div class="flex flex-wrap gap-4 px-4 py-6">
+              <div id="cardTotalCostsBox" class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#e7e5da] p-6 cursor-pointer">
+                <p class="text-[#181710] text-base font-medium leading-normal">Total Costs</p>
+                <p class="text-[#181710] tracking-light text-[32px] font-bold leading-tight truncate">$12,500</p>
+                <div class="flex gap-1">
+                  <p class="text-[#8d865e] text-base font-normal leading-normal">This Month</p>
+                  <p class="text-[#e71408] text-base font-medium leading-normal">-5%</p>
+                </div>
+                <div class="grid min-h-[180px] grid-flow-col gap-6 grid-rows-[1fr_auto] items-end justify-items-center px-3">
+                  <div class="border-[#8d865e] bg-[#f5f4f0] border-t-2 w-full" style="height: 50%;"></div>
+                  <p class="text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">Jan</p>
+                  <div class="border-[#8d865e] bg-[#f5f4f0] border-t-2 w-full" style="height: 0%;"></div>
+                  <p class="text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">Feb</p>
+                  <div class="border-[#8d865e] bg-[#f5f4f0] border-t-2 w-full" style="height: 100%;"></div>
+                  <p class="text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">Mar</p>
+                  <div class="border-[#8d865e] bg-[#f5f4f0] border-t-2 w-full" style="height: 40%;"></div>
+                  <p class="text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">Apr</p>
+                  <div class="border-[#8d865e] bg-[#f5f4f0] border-t-2 w-full" style="height: 50%;"></div>
+                  <p class="text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">May</p>
+                  <div class="border-[#8d865e] bg-[#f5f4f0] border-t-2 w-full" style="height: 30%;"></div>
+                  <p class="text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">Jun</p>
+                </div>
+              </div>
+              <div id="cardSalesTrendsBox" class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#e7e5da] p-6 cursor-pointer">
+                <p class="text-[#181710] text-base font-medium leading-normal">Sales Trends</p>
+                <p class="text-[#181710] tracking-light text-[32px] font-bold leading-tight truncate">$25,000</p>
+                <div class="flex gap-1">
+                  <p class="text-[#8d865e] text-base font-normal leading-normal">This Month</p>
+                  <p class="text-[#078814] text-base font-medium leading-normal">+10%</p>
+                </div>
+                <div class="flex min-h-[180px] flex-1 flex-col gap-8 py-4">
+                  <svg width="100%" height="148" viewBox="-3 0 478 150" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                    <path
+                      d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25V149H326.769H0V109Z"
+                      fill="url(#paint0_linear_1131_5935)"
+                    ></path>
+                    <path
+                      d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25"
+                      stroke="#8d865e"
+                      stroke-width="3"
+                      stroke-linecap="round"
+                    ></path>
+                    <defs>
+                      <linearGradient id="paint0_linear_1131_5935" x1="236" y1="1" x2="236" y2="149" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#f5f4f0"></stop>
+                        <stop offset="1" stop-color="#f5f4f0" stop-opacity="0"></stop>
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  <div id="salesMonthLabels" class="flex justify-around select-none">
+                    <p class="sales-month text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">Jan</p>
+                    <p class="sales-month text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">Feb</p>
+                    <p class="sales-month text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">Mar</p>
+                    <p class="sales-month text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">Apr</p>
+                    <p class="sales-month text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">May</p>
+                    <p class="sales-month text-[#8d865e] text-[13px] font-bold leading-normal tracking-[0.015em]">Jun</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Detalle inline para los gráficos superiores -->
+            <div id="topChartsDetail" class="mx-4 mb-4 hidden rounded-lg border border-[#e7e5da] bg-white p-4 shadow-sm">
+              <div class="flex items-center justify-between mb-2">
+                <p id="topChartsDetailTitle" class="text-[#181710] font-semibold">Detalle</p>
+                <button id="btnCloseTopDetail" class="text-sm text-[#8d865e] hover:text-[#181710]">Cerrar</button>
+              </div>
+              <div class="overflow-auto">
+                <table class="min-w-full text-sm">
+                  <thead class="text-[#8d865e]">
+                    <tr>
+                      <th class="text-left py-1 pr-2">Fecha</th>
+                      <th class="text-left py-1 pr-2">Descripción</th>
+                      <th class="text-left py-1 pr-2">Categoría</th>
+                      <th class="text-left py-1 pr-2">Tipo</th>
+                      <th class="text-right py-1 pl-2">Monto</th>
+                    </tr>
+                  </thead>
+                  <tbody id="topChartsDetailBody" class="text-[#181710]"></tbody>
+                </table>
+              </div>
+            </div>
+            <h2 class="text-[#181710] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Margin Analysis</h2>
+            <div class="flex flex-wrap gap-4 p-4">
+              <div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg p-6 bg-[#f5f4f0]">
+                <p class="text-[#181710] text-base font-medium leading-normal">Gross Margin</p>
+                <p class="text-[#181710] tracking-light text-2xl font-bold leading-tight">45%</p>
+                <p class="text-[#078814] text-base font-medium leading-normal">+2%</p>
+              </div>
+              <div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg p-6 bg-[#f5f4f0]">
+                <p class="text-[#181710] text-base font-medium leading-normal">Net Margin</p>
+                <p class="text-[#181710] tracking-light text-2xl font-bold leading-tight">20%</p>
+                <p class="text-[#e71408] text-base font-medium leading-normal">-1%</p>
+              </div>
+              <div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg p-6 bg-[#f5f4f0]">
+                <p class="text-[#181710] text-base font-medium leading-normal">Operating Expenses</p>
+                <p class="text-[#181710] tracking-light text-2xl font-bold leading-tight">$12,500</p>
+                <p class="text-[#e71408] text-base font-medium leading-normal">-5%</p>
+              </div>
+            </div>
+            <h2 class="text-[#181710] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">AI Projections</h2>
+            <div class="flex flex-wrap gap-4 p-4">
+              <div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg p-6 border border-[#e7e5da]">
+                <p class="text-[#181710] text-base font-medium leading-normal">Demand Projection</p>
+                <p class="text-[#181710] tracking-light text-2xl font-bold leading-tight">+15%</p>
+                <p class="text-[#078814] text-base font-medium leading-normal">+5%</p>
+              </div>
+              <div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg p-6 border border-[#e7e5da]">
+                <p class="text-[#181710] text-base font-medium leading-normal">Cost Projection</p>
+                <p class="text-[#181710] tracking-light text-2xl font-bold leading-tight">-3%</p>
+                <p class="text-[#e71408] text-base font-medium leading-normal">-1%</p>
+              </div>
+            </div>
+            <h2 class="text-[#181710] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Reports</h2>
+            <div class="flex px-4 py-3 justify-start">
+              <button
+                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#f5f4f0] text-[#181710] text-sm font-bold leading-normal tracking-[0.015em]"
+              >
+                <span class="truncate">Export to Excel/CSV</span>
+              </button>
+            </div>
+
+            <!-- Finanzas - Módulo Funcional -->
+            <h2 class="text-[#181710] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-6">Finanzas</h2>
+            <div class="px-4 pb-6 flex flex-col gap-4">
+              <!-- Resumen -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="rounded-lg p-4 border border-[#e7e5da] bg-white shadow-sm">
+                  <p class="text-sm text-[#8d865e]">Total Ingresos</p>
+                  <p id="cardIngresos" class="text-2xl font-bold text-green-700 mt-1">$0,00</p>
+                </div>
+                <div class="rounded-lg p-4 border border-[#e7e5da] bg-white shadow-sm">
+                  <p class="text-sm text-[#8d865e]">Total Egresos</p>
+                  <p id="cardEgresos" class="text-2xl font-bold text-red-700 mt-1">$0,00</p>
+                </div>
+                <div class="rounded-lg p-4 border border-[#e7e5da] bg-white shadow-sm">
+                  <p class="text-sm text-[#8d865e]">Balance Actual</p>
+                  <p id="cardBalance" class="text-2xl font-bold mt-1">$0,00</p>
+                </div>
+              </div>
+
+              <!-- Barra de acciones -->
+              <div class="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+                <div class="flex flex-wrap gap-2 items-center">
+                  <input id="filterDate" type="date" class="h-10 px-3 border border-[#e7e5da] rounded-lg bg-white" />
+                  <select id="filterCategory" class="h-10 px-3 border border-[#e7e5da] rounded-lg bg-white">
+                    <option value="">Todas las categorías</option>
+                    <option>Ventas</option>
+                    <option>Servicios</option>
+                    <option>Gastos operativos</option>
+                    <option>Sueldos</option>
+                  </select>
+                  <select id="filterType" class="h-10 px-3 border border-[#e7e5da] rounded-lg bg-white">
+                    <option value="">Todos</option>
+                    <option value="ingreso">Ingreso</option>
+                    <option value="egreso">Egreso</option>
+                  </select>
+                  <input id="searchDesc" class="h-10 px-3 border border-[#e7e5da] rounded-lg bg-white" placeholder="Buscar descripción..." />
+                  <input id="excelInput" type="file" accept=".xlsx,.xls,.csv" class="hidden" />
+                </div>
+                <div class="flex gap-2">
+                  <button id="btnToggleInsights" class="h-10 px-4 rounded-lg bg-[#f5f4f0] hover:bg-[#ebe9e2] transition text-[#181710] font-semibold">Ver insights</button>
+                  <button id="btnImportExcel" class="h-10 px-4 rounded-lg bg-[#f5f4f0] hover:bg-[#ebe9e2] transition text-[#181710] font-semibold">Importar Excel</button>
+                  <button id="btnDownloadTemplate" class="h-10 px-4 rounded-lg bg-[#f5f4f0] hover:bg-[#ebe9e2] transition text-[#181710] font-semibold">Descargar plantilla</button>
+                  <button id="btnAddMov" class="h-10 px-4 rounded-lg bg-[#ffe342] hover:bg-[#f7d81f] transition text-[#181710] font-semibold">Agregar Movimiento</button>
+                  <button id="btnExportCSV" class="h-10 px-4 rounded-lg bg-[#f5f4f0] hover:bg-[#ebe9e2] transition text-[#181710] font-semibold">Exportar CSV</button>
+                  <button id="btnExportPDF" class="h-10 px-4 rounded-lg bg-[#f5f4f0] hover:bg-[#ebe9e2] transition text-[#181710] font-semibold">Exportar PDF</button>
+                </div>
+              </div>
+
+              <!-- Panel de Insights (expandible) -->
+              <div id="insightsPanel" class="rounded-lg border border-[#e7e5da] bg-white p-4 hidden shadow-sm">
+                <div class="flex items-center justify-between mb-3">
+                  <p class="text-[#181710] font-semibold">Desglose gráfico</p>
+                  <button id="btnCloseInsights" class="text-sm text-[#8d865e] hover:text-[#181710]">Ocultar</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p class="text-sm text-[#8d865e] mb-2">Distribución por categoría</p>
+                    <canvas id="categoryChart" class="cursor-pointer" height="140"></canvas>
+                  </div>
+                  <div>
+                    <p class="text-sm text-[#8d865e] mb-2">Tendencia (últimos 90 días)</p>
+                    <canvas id="trendChart" class="cursor-pointer" height="140"></canvas>
+                  </div>
+                </div>
+                <!-- Panel de detalle por selección -->
+                <div id="insightsDetail" class="mt-4 rounded-lg border border-[#e7e5da] bg-[#faf9f5] p-3 hidden">
+                  <div class="flex items-center justify-between mb-2">
+                    <p id="insightsDetailTitle" class="text-[#181710] font-semibold">Detalle</p>
+                    <button id="btnCloseInsightDetail" class="text-sm text-[#8d865e] hover:text-[#181710]">Cerrar</button>
+                  </div>
+                  <div class="overflow-auto">
+                    <table class="min-w-full text-sm">
+                      <thead class="text-[#8d865e]">
+                        <tr>
+                          <th class="text-left py-1 pr-2">Fecha</th>
+                          <th class="text-left py-1 pr-2">Descripción</th>
+                          <th class="text-left py-1 pr-2">Categoría</th>
+                          <th class="text-left py-1 pr-2">Tipo</th>
+                          <th class="text-right py-1 pl-2">Monto</th>
+                        </tr>
+                      </thead>
+                      <tbody id="insightsDetailBody" class="text-[#181710]"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Gráfico mensual -->
+              <div class="rounded-lg border border-[#e7e5da] bg-white p-4 shadow-sm">
+                <p class="text-[#181710] font-semibold mb-2">Ingresos vs Egresos (Mensual)</p>
+                <canvas id="financeChart" height="120"></canvas>
+              </div>
+
+              <!-- Tabla de movimientos -->
+              <div class="rounded-lg border border-[#e7e5da] bg-white overflow-auto shadow-sm max-h-[520px]">
+                <table class="min-w-full divide-y divide-[#e7e5da]">
+                  <thead class="bg-[#f5f4f0] sticky top-0 z-10">
+                    <tr>
+                      <th class="px-4 py-3 text-left text-xs font-semibold text-[#8d865e]">Fecha</th>
+                      <th class="px-4 py-3 text-left text-xs font-semibold text-[#8d865e]">Descripción</th>
+                      <th class="px-4 py-3 text-left text-xs font-semibold text-[#8d865e]">Categoría</th>
+                      <th class="px-4 py-3 text-left text-xs font-semibold text-[#8d865e]">Tipo</th>
+                      <th class="px-4 py-3 text-right text-xs font-semibold text-[#8d865e]">Monto</th>
+                      <th class="px-4 py-3 text-right text-xs font-semibold text-[#8d865e]">Opciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="movementsTbody" class="divide-y divide-[#f0eee6]"></tbody>
+                </table>
+                <!-- Paginación -->
+                <div class="flex items-center justify-between px-4 py-3">
+                  <p id="paginationInfo" class="text-sm text-[#8d865e]"></p>
+                  <div class="flex gap-2">
+                    <button id="prevPage" class="h-9 px-3 rounded-lg bg-[#f5f4f0] hover:bg-[#ebe9e2] disabled:opacity-50">Anterior</button>
+                    <button id="nextPage" class="h-9 px-3 rounded-lg bg-[#f5f4f0] hover:bg-[#ebe9e2] disabled:opacity-50">Siguiente</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal Agregar/Editar -->
+            <div id="movementModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm transition hidden items-center justify-center z-50">
+              <div class="bg-white w-full max-w-md rounded-lg shadow-lg transform transition-all">
+                <div class="px-6 py-4 border-b border-[#e7e5da] flex items-center justify-between">
+                  <h3 id="modalTitle" class="text-lg font-semibold">Agregar Movimiento</h3>
+                  <button id="modalClose" class="text-[#8d865e] hover:text-[#181710]">✕</button>
+                </div>
+                <div class="p-6 flex flex-col gap-3">
+                  <input id="movDate" type="date" class="h-10 px-3 border border-[#e7e5da] rounded-lg bg-white" />
+                  <input id="movDesc" class="h-10 px-3 border border-[#e7e5da] rounded-lg bg-white" placeholder="Descripción" />
+                  <select id="movCat" class="h-10 px-3 border border-[#e7e5da] rounded-lg bg-white">
+                    <option>Ventas</option>
+                    <option>Servicios</option>
+                    <option>Gastos operativos</option>
+                    <option>Sueldos</option>
+                  </select>
+                  <select id="movType" class="h-10 px-3 border border-[#e7e5da] rounded-lg bg-white">
+                    <option value="ingreso">Ingreso</option>
+                    <option value="egreso">Egreso</option>
+                  </select>
+                  <input id="movAmount" class="h-10 px-3 border border-[#e7e5da] rounded-lg bg-white" placeholder="Monto" inputmode="decimal" />
+                  <p id="modalError" class="text-sm text-red-600 hidden"></p>
+                </div>
+                <div class="px-6 py-4 border-t border-[#e7e5da] flex justify-end gap-2">
+                  <button id="modalCancel" class="h-10 px-4 rounded-lg bg-[#f5f4f0] hover:bg-[#ebe9e2]">Cancelar</button>
+                  <button id="modalSave" class="h-10 px-4 rounded-lg bg-[#078814] hover:bg-green-700 text-white">Guardar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script>
+      // Simple money formatter CLP
+      const fmtARS = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' });
+
+      // Data layer
+      const LS_KEY = 'finance_movements';
+      let movements = [];
+      let editingId = null;
+      const PAGE_SIZE = 10;
+      let page = 1;
+
+      // Filters
+      const filters = { date: '', category: '', type: '', q: '' };
+
+      // Chart
+      let chart;
+      let categoryChart;
+      let trendChart;
+
+      document.addEventListener('DOMContentLoaded', () => {
+        // Load stored data
+        try { movements = JSON.parse(localStorage.getItem(LS_KEY)) || []; } catch(e) { movements = []; }
+
+        // Wire filters
+        const $ = (id)=>document.getElementById(id);
+        ['filterDate','filterCategory','filterType','searchDesc'].forEach(id => {
+          const el = $(id);
+          if (!el) return;
+          el.addEventListener('input', () => {
+            filters.date = $('filterDate').value;
+            filters.category = $('filterCategory').value;
+            filters.type = $('filterType').value;
+            filters.q = $('searchDesc').value.toLowerCase().trim();
+            page = 1;
+            renderAll();
+          });
+          el.addEventListener('change', () => {
+            filters.date = $('filterDate').value;
+            filters.category = $('filterCategory').value;
+            filters.type = $('filterType').value;
+            filters.q = $('searchDesc').value.toLowerCase().trim();
+            page = 1;
+            renderAll();
+          });
+        });
+
+        // Buttons
+        $('btnAddMov').addEventListener('click', () => openModal());
+        $('btnExportCSV').addEventListener('click', exportCSV);
+        $('btnExportPDF').addEventListener('click', exportPDF);
+        $('btnImportExcel').addEventListener('click', ()=> $('excelInput').click());
+        $('excelInput').addEventListener('change', handleExcelImport);
+        $('btnToggleInsights').addEventListener('click', toggleInsights);
+        $('btnCloseInsights').addEventListener('click', toggleInsights);
+        const btnCloseDetail = document.getElementById('btnCloseInsightDetail');
+        if (btnCloseDetail) btnCloseDetail.addEventListener('click', ()=>{
+          const d = document.getElementById('insightsDetail');
+          if (d) d.classList.add('hidden');
+        });
+        // Top charts: box clicks
+        const costsBox = document.getElementById('cardTotalCostsBox');
+        const salesBox = document.getElementById('cardSalesTrendsBox');
+        const closeTop = document.getElementById('btnCloseTopDetail');
+        if (closeTop) closeTop.addEventListener('click', ()=> document.getElementById('topChartsDetail').classList.add('hidden'));
+        if (costsBox) costsBox.addEventListener('click', ()=>{
+          const now = new Date(); const ym = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+          const rows = movements.filter(m=> (m.type==='egreso') && (m.date||'').startsWith(ym));
+          showTopChartsDetail('Costos de este mes', rows);
+        });
+        if (salesBox) salesBox.addEventListener('click', ()=>{
+          const now = new Date(); const ym = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+          const rows = movements.filter(m=> (m.type==='ingreso') && (m.date||'').startsWith(ym));
+          showTopChartsDetail('Ventas de este mes', rows);
+        });
+        // Month label clicks under sales trends mock
+        const monthMap = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const lblWrap = document.getElementById('salesMonthLabels');
+        if (lblWrap){
+          lblWrap.querySelectorAll('.sales-month').forEach((el)=>{
+            el.classList.add('cursor-pointer');
+            el.addEventListener('click', ()=>{
+              const idx = monthMap.indexOf(el.textContent.trim());
+              if (idx<0) return;
+              const year = new Date().getFullYear();
+              const ym = `${year}-${String(idx+1).padStart(2,'0')}`;
+              const rows = movements.filter(m=> (m.type==='ingreso') && (m.date||'').startsWith(ym));
+              showTopChartsDetail(`Ventas - ${el.textContent.trim()} ${year}`, rows);
+            });
+          });
+        }
+        $('btnDownloadTemplate').addEventListener('click', downloadExcelTemplate);
+        $('prevPage').addEventListener('click', ()=> { if (page>1){ page--; renderTable(); }});
+        $('nextPage').addEventListener('click', ()=> { page++; renderTable(); });
+
+        // Modal wires
+        $('modalClose').addEventListener('click', closeModal);
+        $('modalCancel').addEventListener('click', closeModal);
+        $('modalSave').addEventListener('click', saveMovement);
+
+        // Init chart
+        initChart();
+
+        // First render
+        renderAll();
+      });
+
+      function persist(){ localStorage.setItem(LS_KEY, JSON.stringify(movements)); }
+
+      function filteredMovements(){
+        return movements
+          .slice()
+          .sort((a,b)=> new Date(b.date) - new Date(a.date))
+          .filter(m => !filters.date || (m.date && m.date.substring(0,10) === filters.date))
+          .filter(m => !filters.category || m.category === filters.category)
+          .filter(m => !filters.type || m.type === filters.type)
+          .filter(m => !filters.q || (m.description||'').toLowerCase().includes(filters.q));
+      }
+
+      function showTopChartsDetail(title, rows){
+        const panel = document.getElementById('topChartsDetail');
+        const titleEl = document.getElementById('topChartsDetailTitle');
+        const body = document.getElementById('topChartsDetailBody');
+        if (!panel || !titleEl || !body) return;
+        titleEl.textContent = title;
+        const fmtDate = (s)=>{ const d=new Date(s); return isNaN(d)? (s||'') : d.toISOString().slice(0,10); };
+        body.innerHTML = rows.slice().sort((a,b)=> new Date(b.date||0)-new Date(a.date||0)).map(m=>`
+          <tr>
+            <td class="py-1 pr-2">${fmtDate(m.date)}</td>
+            <td class="py-1 pr-2">${escapeHtml(m.description||'')}</td>
+            <td class="py-1 pr-2">${escapeHtml(m.category||'')}</td>
+            <td class="py-1 pr-2">${m.type==='egreso'?'Egreso':'Ingreso'}</td>
+            <td class="py-1 pl-2 text-right">${fmtARS.format(Number(m.amount||0))}</td>
+          </tr>
+        `).join('');
+        panel.classList.remove('hidden');
+      }
+
+      // ===== Descargar plantilla Excel =====
+      function downloadExcelTemplate(){
+        try {
+          const wb = XLSX.utils.book_new();
+          const headers = ['Fecha','Descripción','Categoría','Tipo','Monto'];
+          const ejemplo1 = [new Date().toISOString().slice(0,10), 'Venta ejemplo', 'Ventas', 'Ingreso', 15000];
+          const ejemplo2 = [new Date().toISOString().slice(0,10), 'Compra de insumos', 'Gastos', 'Egreso', 5000];
+          const ws = XLSX.utils.aoa_to_sheet([
+            headers,
+            ejemplo1,
+            ejemplo2
+          ]);
+          // Ajuste simple de ancho de columnas
+          ws['!cols'] = [
+            { wch: 12 }, { wch: 30 }, { wch: 18 }, { wch: 10 }, { wch: 12 }
+          ];
+          XLSX.utils.book_append_sheet(wb, ws, 'Plantilla Movimientos');
+          XLSX.writeFile(wb, 'plantilla_movimientos_finanzas.xlsx');
+        } catch (e){
+          console.error(e);
+          alert('No se pudo generar la plantilla.');
+        }
+      }
+
+      function renderAll(){
+        renderCards();
+        renderTable();
+        updateChart();
+        renderInsightsCharts();
+      }
+
+      function renderCards(){
+        const totalIn = movements.filter(m=>m.type==='ingreso').reduce((s,m)=>s+Number(m.amount||0),0);
+        const totalOut = movements.filter(m=>m.type==='egreso').reduce((s,m)=>s+Number(m.amount||0),0);
+        const bal = totalIn - totalOut;
+        document.getElementById('cardIngresos').textContent = fmtARS.format(totalIn);
+        document.getElementById('cardEgresos').textContent = fmtARS.format(totalOut);
+        const elBal = document.getElementById('cardBalance');
+        elBal.textContent = fmtARS.format(bal);
+        elBal.classList.toggle('text-green-700', bal>=0);
+        elBal.classList.toggle('text-red-700', bal<0);
+      }
+
+      function renderTable(){
+        const tbody = document.getElementById('movementsTbody');
+        tbody.innerHTML = '';
+        const rows = filteredMovements();
+        // Pagination bounds
+        const total = rows.length;
+        const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+        if (page > totalPages) page = totalPages;
+        const start = (page-1)*PAGE_SIZE;
+        const pageItems = rows.slice(start, start+PAGE_SIZE);
+
+        // Empty state
+        if (pageItems.length === 0) {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td colspan="6" class="px-4 py-6 text-center text-sm text-[#8d865e]">No hay movimientos para mostrar.</td>`;
+          tbody.appendChild(tr);
+        } else {
+          pageItems.forEach(m => {
+            const tr = document.createElement('tr');
+            tr.className = 'odd:bg-[#faf9f5] even:bg-white hover:bg-[#f5f4f0]';
+            const date = new Date(m.date);
+            const dateStr = isNaN(date) ? (m.date||'') : date.toLocaleDateString('es-AR', {year:'numeric',month:'short',day:'numeric'});
+            tr.innerHTML = `
+              <td class="px-4 py-3 text-sm">${dateStr}</td>
+              <td class="px-4 py-3 text-sm">${escapeHtml(m.description||'')}</td>
+              <td class="px-4 py-3 text-sm">${escapeHtml(m.category||'')}</td>
+              <td class="px-4 py-3 text-sm">${m.type==='ingreso'?'<span class="text-green-700 font-semibold">Ingreso</span>':'<span class="text-red-700 font-semibold">Egreso</span>'}</td>
+              <td class="px-4 py-3 text-sm text-right">${fmtARS.format(Number(m.amount||0))}</td>
+              <td class="px-4 py-3 text-sm text-right">
+                <button class="text-blue-600 hover:text-blue-800 mr-2" title="Editar" onclick="editMovement('${m.id}')">Editar</button>
+                <button class="text-red-600 hover:text-red-800" title="Eliminar" onclick="deleteMovement('${m.id}')">Eliminar</button>
+              </td>`;
+            tbody.appendChild(tr);
+          });
+        }
+
+        // Pagination controls
+        document.getElementById('paginationInfo').textContent = `${total?start+1:0}-${Math.min(start+PAGE_SIZE,total)} de ${total}`;
+        document.getElementById('prevPage').disabled = page<=1;
+        document.getElementById('nextPage').disabled = page>=totalPages;
+      }
+
+      function openModal(data){
+        editingId = data ? data.id : null;
+        document.getElementById('modalTitle').textContent = editingId ? 'Editar Movimiento' : 'Agregar Movimiento';
+        document.getElementById('movDate').value = data?.date ? data.date.substring(0,10) : new Date().toISOString().substring(0,10);
+        document.getElementById('movDesc').value = data?.description || '';
+        document.getElementById('movCat').value = data?.category || 'Ventas';
+        document.getElementById('movType').value = data?.type || 'ingreso';
+        document.getElementById('movAmount').value = data?.amount || '';
+        document.getElementById('modalError').classList.add('hidden');
+        document.getElementById('movementModal').classList.remove('hidden');
+        document.getElementById('movementModal').classList.add('flex');
+      }
+
+      function closeModal(){
+        document.getElementById('movementModal').classList.add('hidden');
+        document.getElementById('movementModal').classList.remove('flex');
+      }
+
+      function saveMovement(){
+        const date = document.getElementById('movDate').value;
+        const description = document.getElementById('movDesc').value.trim();
+        const category = document.getElementById('movCat').value;
+        const type = document.getElementById('movType').value;
+        const amount = parseFloat(String(document.getElementById('movAmount').value).replace(',','.'));
+        const err = document.getElementById('modalError');
+        if (!description) { err.textContent = 'La descripción es obligatoria'; err.classList.remove('hidden'); return; }
+        if (!isFinite(amount)) { err.textContent = 'El monto debe ser un número válido'; err.classList.remove('hidden'); return; }
+        const payload = { id: editingId || genId(), date, description, category, type, amount };
+        if (editingId){
+          const idx = movements.findIndex(m=>m.id===editingId);
+          if (idx>-1) movements[idx] = payload;
+        } else {
+          movements.push(payload);
+        }
+        persist();
+        closeModal();
+        renderAll();
+      }
+
+      function editMovement(id){ const m = movements.find(x=>x.id===id); if (m) openModal(m); }
+      function deleteMovement(id){ if(!confirm('¿Eliminar movimiento?')) return; movements = movements.filter(m=>m.id!==id); persist(); renderAll(); }
+      window.editMovement = editMovement; window.deleteMovement = deleteMovement;
+
+      function genId(){ return 'MOV-' + Date.now(); }
+
+      function initChart(){
+        const ctx = document.getElementById('financeChart').getContext('2d');
+        chart = new Chart(ctx, {
+          type: 'bar',
+          data: { labels: [], datasets: [
+            { label: 'Ingresos', backgroundColor: '#16a34a', borderColor: '#16a34a', data: [] },
+            { label: 'Egresos', backgroundColor: '#dc2626', borderColor: '#dc2626', data: [] }
+          ]},
+          options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        });
+      }
+
+      function updateChart(){
+        const byMonth = {};
+        movements.forEach(m=>{
+          const d = new Date(m.date);
+          const key = isNaN(d)? 'Desconocido' : `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+          byMonth[key] ||= { in:0, out:0 };
+          if (m.type==='ingreso') byMonth[key].in += Number(m.amount||0); else byMonth[key].out += Number(m.amount||0);
+        });
+        const labels = Object.keys(byMonth).sort();
+        const dataIn = labels.map(k=>byMonth[k].in);
+        const dataOut = labels.map(k=>byMonth[k].out);
+        chart.data.labels = labels;
+        chart.data.datasets[0].data = dataIn;
+        chart.data.datasets[1].data = dataOut;
+        chart.update();
+      }
+
+      // Toggle insights panel visibility
+      function toggleInsights(){
+        const panel = document.getElementById('insightsPanel');
+        if (!panel) return;
+        panel.classList.toggle('hidden');
+        if (!panel.classList.contains('hidden')) {
+          renderInsightsCharts();
+        }
+      }
+
+      // Build/update Insights charts (category + 90-day trend) with clickable breakdown
+      function renderInsightsCharts(){
+        const panel = document.getElementById('insightsPanel');
+        if (!panel || panel.classList.contains('hidden')) return;
+
+        // Category distribution (signed to reflect net per category; plot absolute values)
+        const byCat = movements.reduce((acc,m)=>{
+          const k = m.category || 'Sin categoría';
+          const delta = (m.type==='egreso'?-1:1) * Number(m.amount||0);
+          acc[k] = (acc[k]||0) + delta;
+          return acc;
+        }, {});
+        const catLabels = Object.keys(byCat);
+        const catValues = catLabels.map(k=> Math.abs(byCat[k]));
+        const catCtx = document.getElementById('categoryChart').getContext('2d');
+        if (categoryChart) categoryChart.destroy();
+        categoryChart = new Chart(catCtx, {
+          type:'doughnut',
+          data:{ labels:catLabels, datasets:[{ data:catValues, backgroundColor:['#78d38c','#f2c94c','#eb5757','#56ccf2','#bb6bd9','#6fcf97','#f2994a'] }] },
+          options:{ plugins:{ legend:{ position:'bottom' } }, onClick:(evt, elements, chartRef)=>{
+            if (!elements || !elements.length) return;
+            const idx = elements[0].index;
+            const label = chartRef.data.labels[idx];
+            const rows = movements.filter(m=> (m.category||'Sin categoría') === label);
+            showInsightsDetail(`Categoría: ${label}`, rows);
+          }}
+        });
+
+        // 90-day trend (daily net balance)
+        const today = new Date();
+        const start = new Date(today); start.setDate(start.getDate()-89);
+        const map = new Map();
+        for(let d=new Date(start); d<=today; d.setDate(d.getDate()+1)){
+          map.set(d.toISOString().slice(0,10), 0);
+        }
+        movements.forEach(m=>{
+          const ds = (m.date||'').slice(0,10);
+          if (map.has(ds)){
+            const delta = m.type==='egreso' ? -Number(m.amount||0) : Number(m.amount||0);
+            map.set(ds, map.get(ds)+delta);
+          }
+        });
+        const labels90 = Array.from(map.keys());
+        const values90 = Array.from(map.values());
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        if (trendChart) trendChart.destroy();
+        trendChart = new Chart(trendCtx, {
+          type:'line',
+          data:{ labels: labels90, datasets:[{ label:'Balance diario', data: values90, borderColor:'#181710', backgroundColor:'rgba(24,23,16,0.08)', fill:true, tension:0.2 }] },
+          options:{ plugins:{ legend:{ display:false } }, scales:{ y:{ ticks:{ callback:(v)=> fmtARS.format(v) } } }, onClick:(evt, elements, chartRef)=>{
+            const points = chartRef.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+            if (!points || !points.length) return;
+            const idx = points[0].index;
+            const day = chartRef.data.labels[idx];
+            const rows = movements.filter(m=> (m.date||'').slice(0,10) === day);
+            showInsightsDetail(`Día: ${day}`, rows);
+          }}
+        });
+      }
+
+      // Inline detail panel rendering
+      function showInsightsDetail(title, rows){
+        const panel = document.getElementById('insightsDetail');
+        const titleEl = document.getElementById('insightsDetailTitle');
+        const body = document.getElementById('insightsDetailBody');
+        if (!panel || !titleEl || !body) return;
+        titleEl.textContent = title;
+        const fmtDate = (s)=>{ const d=new Date(s); return isNaN(d)? (s||'') : d.toISOString().slice(0,10); };
+        const items = (rows||[]).slice().sort((a,b)=> new Date(b.date||0)-new Date(a.date||0)).slice(0,200);
+        body.innerHTML = items.map(m=>`
+          <tr>
+            <td class="py-1 pr-2">${fmtDate(m.date)}</td>
+            <td class="py-1 pr-2">${escapeHtml(m.description||'')}</td>
+            <td class="py-1 pr-2">${escapeHtml(m.category||'')}</td>
+            <td class="py-1 pr-2">${m.type==='egreso'?'Egreso':'Ingreso'}</td>
+            <td class="py-1 pl-2 text-right">${fmtARS.format(Number(m.amount||0))}</td>
+          </tr>
+        `).join('');
+        panel.classList.remove('hidden');
+      }
+
+      // ===== Import Excel =====
+      async function handleExcelImport(evt){
+        const file = evt.target.files && evt.target.files[0];
+        if (!file) return;
+        try {
+          const data = await file.arrayBuffer();
+          const wb = XLSX.read(data, { type:'array' });
+          const sheetName = wb.SheetNames[0];
+          const sheet = wb.Sheets[sheetName];
+          const rows = XLSX.utils.sheet_to_json(sheet, { defval:'', raw:false });
+          const norm = (s)=> String(s||'').trim().toLowerCase();
+          const headerMap = {
+            fecha:['fecha','date','día','dia'],
+            descripcion:['descripcion','descripción','description','detalle','concepto'],
+            categoria:['categoria','categoría','category'],
+            tipo:['tipo','type'],
+            monto:['monto','importe','amount','total']
+          };
+          const guess = (obj, keys)=>{
+            const entries = Object.keys(obj);
+            for (const k of entries){ const nk = norm(k); if (keys.includes(nk)) return k; }
+            return null;
+          };
+          let imported = 0;
+          rows.forEach(r=>{
+            const fK = guess(r, headerMap.fecha);
+            const dK = guess(r, headerMap.descripcion);
+            const cK = guess(r, headerMap.categoria);
+            const tK = guess(r, headerMap.tipo);
+            const mK = guess(r, headerMap.monto);
+            if (!mK || !dK) return; // require monto + descripcion
+            const rawDate = fK ? r[fK] : '';
+            const iso = rawDate ? new Date(rawDate).toISOString() : new Date().toISOString();
+            const desc = String(r[dK]||'').trim();
+            const cat = String(r[cK]||'Ventas').trim() || 'Ventas';
+            const typeRaw = String(r[tK]||'ingreso').toLowerCase();
+            const type = typeRaw.includes('egre') || typeRaw.includes('gasto') ? 'egreso' : 'ingreso';
+            const amount = Number(String(r[mK]).replace(/[^0-9.,-]/g,'').replace('.', '').replace(',', '.')) || 0;
+            const id = `IMP-${Date.now()}-${imported}`;
+            movements.push({ id, date: iso, description: desc, category: cat, type, amount });
+            imported++;
+          });
+          if (imported>0){
+            persist();
+            renderAll();
+            const panel = document.getElementById('insightsPanel');
+            if (panel && panel.classList.contains('hidden')) toggleInsights();
+            alert(`Importación completada: ${imported} filas`);
+          } else {
+            alert('No se pudieron reconocer filas válidas en la planilla. Verifique encabezados.');
+          }
+        } catch (e){
+          console.error(e);
+          alert('Error al importar el archivo.');
+        } finally {
+          evt.target.value = '';
+        }
+      }
+
+      function exportCSV(){
+        const rows = filteredMovements();
+        const header = ['ID','Fecha','Descripción','Categoría','Tipo','Monto'];
+        const csv = [header.join(',')].concat(rows.map(m=>[
+          m.id, m.date, safeCsv(m.description), safeCsv(m.category), m.type, String(m.amount)
+        ].join(','))).join('\n');
+        const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href=url; a.download='movimientos.csv'; a.click(); URL.revokeObjectURL(url);
+      }
+
+      async function exportPDF(){
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.setFontSize(14); doc.text('Reporte de Finanzas', 14, 16);
+        const rows = filteredMovements().slice(0, 30); // simple, primeras 30 filas
+        let y = 26;
+        doc.setFontSize(10);
+        doc.text('Fecha', 14, y); doc.text('Descripción', 40, y); doc.text('Cat.', 110, y); doc.text('Tipo', 140, y); doc.text('Monto', 165, y);
+        y += 4;
+        rows.forEach(m=>{
+          const d = new Date(m.date); const ds = isNaN(d)? (m.date||'') : d.toLocaleDateString('es-AR');
+          doc.text(String(ds), 14, y);
+          doc.text(String((m.description||'').substring(0,38)), 40, y);
+          doc.text(String(m.category||''), 110, y);
+          doc.text(m.type==='ingreso'?'Ingreso':'Egreso', 140, y);
+          doc.text(fmtARS.format(Number(m.amount||0)), 165, y, { align: 'right' });
+          y += 6;
+        });
+        doc.save('finanzas.pdf');
+      }
+
+      function escapeHtml(s){
+        return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
+      }
+      function safeCsv(s){
+        const t = String(s||'').replaceAll('"','""');
+        return '"'+t+'"';
+      }
+    </script>
+  </body>
+</html>

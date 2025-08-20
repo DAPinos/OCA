@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Completar Registro - OCA Minimarkets</title>
+    
+    <!-- Fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Estilos -->
+    <link rel="stylesheet" href="../assets/css/auth.css">
+    
+    <!-- Scripts -->
+    <script src="../assets/js/auth.js" defer></script>
+</head>
+<body>
+    <!-- Contenedor principal de registro completo -->
+    <div class="auth-container" style="max-width: 600px;">
+        <!-- Header con logo -->
+        <div class="auth-header">
+            <img src="../assets/img/logo-oca.svg" alt="OCA Minimarkets" class="auth-logo">
+            <h1 class="auth-title">Completar Registro</h1>
+            <p class="auth-subtitle">Completa tu información para acceder al sistema</p>
+        </div>
+
+        <!-- Formulario de registro completo -->
+        <div id="completeRegistrationContainer" class="form-container active">
+            <form id="completeRegistrationForm" class="auth-form">
+                <!-- Información Personal -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-user"></i> Información Personal
+                    </h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName" class="form-label">Nombre</label>
+                            <input type="text" id="firstName" class="form-input" placeholder="Tu nombre" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="lastName" class="form-label">Apellido</label>
+                            <input type="text" id="lastName" class="form-input" placeholder="Tu apellido" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone" class="form-label">Teléfono</label>
+                            <input type="tel" id="phone" class="form-input" placeholder="+54 9 11 1234-5678" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="birthDate" class="form-label">Fecha de Nacimiento</label>
+                            <input type="date" id="birthDate" class="form-input" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="address" class="form-label">Dirección</label>
+                        <input type="text" id="address" class="form-input" placeholder="Tu dirección completa" required>
+                    </div>
+                </div>
+
+                <!-- Información Profesional -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-briefcase"></i> Información Profesional
+                    </h3>
+                    
+                    <div class="form-group">
+                        <label for="role" class="form-label">Rol en el Sistema</label>
+                        <select id="role" class="form-input" required>
+                            <option value="">Selecciona tu rol</option>
+                            <option value="cliente">Cliente</option>
+                            <option value="vendedor">Vendedor</option>
+                            <option value="cajero">Cajero</option>
+                            <option value="inventario">Gestión de Inventario</option>
+                            <option value="produccion">Producción</option>
+                            <option value="administrador">Administrador</option>
+                        </select>
+                        <small class="form-help">
+                            <i class="fas fa-info-circle"></i>
+                            Los roles de Producción y Administrador requieren verificación adicional
+                        </small>
+                    </div>
+                    
+                    <div class="form-group" id="departmentGroup" style="display: none;">
+                        <label for="department" class="form-label">Departamento</label>
+                        <select id="department" class="form-input">
+                            <option value="">Selecciona un departamento</option>
+                            <option value="ventas">Ventas</option>
+                            <option value="produccion">Producción</option>
+                            <option value="administracion">Administración</option>
+                            <option value="inventario">Inventario</option>
+                            <option value="finanzas">Finanzas</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="experienceGroup" style="display: none;">
+                        <label for="experience" class="form-label">Experiencia Previa</label>
+                        <textarea id="experience" class="form-input" rows="3" placeholder="Describe tu experiencia relevante..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Verificación para roles especiales -->
+                <div class="form-section" id="verificationSection" style="display: none;">
+                    <h3 class="section-title">
+                        <i class="fas fa-shield-alt"></i> Verificación Requerida
+                    </h3>
+                    
+                    <div class="verification-notice">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>
+                            <p><strong>Rol especial seleccionado</strong></p>
+                            <p>Este rol requiere verificación por parte de un administrador. Se enviará una solicitud de aprobación.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="supervisorEmail" class="form-label">Email del Supervisor/Referencia</label>
+                        <input type="email" id="supervisorEmail" class="form-input" placeholder="supervisor@ocaminimarkets.com">
+                        <small class="form-help">
+                            Email de la persona que puede verificar tu solicitud
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="justification" class="form-label">Justificación</label>
+                        <textarea id="justification" class="form-input" rows="4" placeholder="Explica por qué necesitas este rol y tu experiencia relevante..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Términos y condiciones -->
+                <div class="form-section">
+                    <div class="custom-checkbox">
+                        <input type="checkbox" id="acceptTerms" required>
+                        <label for="acceptTerms" class="checkbox-label">
+                            <span class="checkbox-box"></span>
+                            Acepto los <a href="#" class="auth-link">términos y condiciones</a> y la <a href="#" class="auth-link">política de privacidad</a>
+                        </label>
+                    </div>
+                    
+                    <div class="custom-checkbox">
+                        <input type="checkbox" id="acceptCommunications">
+                        <label for="acceptCommunications" class="checkbox-label">
+                            <span class="checkbox-box"></span>
+                            Acepto recibir comunicaciones sobre productos y servicios
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <span class="loading-spinner"></span>
+                    <i class="fas fa-check-circle"></i>
+                    Completar Registro
+                </button>
+            </form>
+            
+            <div class="divider">
+                <span>O completa con</span>
+            </div>
+            
+            <!-- Botones OAuth para completar datos -->
+            <div class="oauth-buttons">
+                <button type="button" id="googleCompleteBtn" class="btn btn-google">
+                    <i class="fab fa-google btn-icon"></i>
+                    Completar con Google
+                </button>
+                
+                <button type="button" id="appleCompleteBtn" class="btn btn-apple">
+                    <i class="fab fa-apple btn-icon"></i>
+                    Completar con Apple
+                </button>
+            </div>
+            
+            <div class="auth-toggle">
+                ¿Ya tienes una cuenta completa? 
+                <a href="login.html" class="auth-link">Iniciar sesión</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts adicionales -->
+    <script>
+        // Mostrar/ocultar campos según el rol seleccionado
+        document.getElementById('role').addEventListener('change', function(e) {
+            const role = e.target.value;
+            const departmentGroup = document.getElementById('departmentGroup');
+            const experienceGroup = document.getElementById('experienceGroup');
+            const verificationSection = document.getElementById('verificationSection');
+            
+            // Mostrar campos adicionales para roles internos
+            if (['vendedor', 'cajero', 'inventario', 'produccion', 'administrador'].includes(role)) {
+                departmentGroup.style.display = 'block';
+                experienceGroup.style.display = 'block';
+            } else {
+                departmentGroup.style.display = 'none';
+                experienceGroup.style.display = 'none';
+            }
+            
+            // Mostrar sección de verificación para roles especiales
+            if (['produccion', 'administrador'].includes(role)) {
+                verificationSection.style.display = 'block';
+                document.getElementById('supervisorEmail').required = true;
+                document.getElementById('justification').required = true;
+            } else {
+                verificationSection.style.display = 'none';
+                document.getElementById('supervisorEmail').required = false;
+                document.getElementById('justification').required = false;
+            }
+        });
+        
+        // Validación de teléfono
+        document.getElementById('phone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 0) {
+                if (value.length <= 10) {
+                    value = value.replace(/(\d{2})(\d{4})(\d{4})/, '$1 $2-$3');
+                } else {
+                    value = value.replace(/(\d{2})(\d{1})(\d{2})(\d{4})(\d{4})/, '+$1 $2 $3 $4-$5');
+                }
+            }
+            e.target.value = value;
+        });
+        
+        // Manejo del formulario de registro completo
+        document.getElementById('completeRegistrationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                phone: document.getElementById('phone').value,
+                birthDate: document.getElementById('birthDate').value,
+                address: document.getElementById('address').value,
+                role: document.getElementById('role').value,
+                department: document.getElementById('department').value,
+                experience: document.getElementById('experience').value,
+                supervisorEmail: document.getElementById('supervisorEmail').value,
+                justification: document.getElementById('justification').value,
+                acceptTerms: document.getElementById('acceptTerms').checked,
+                acceptCommunications: document.getElementById('acceptCommunications').checked
+            };
+            
+            // Validaciones adicionales
+            if (!formData.acceptTerms) {
+                window.authSystem?.showMessage('Debes aceptar los términos y condiciones', 'error');
+                return;
+            }
+            
+            if (['produccion', 'administrador'].includes(formData.role)) {
+                if (!formData.supervisorEmail || !formData.justification) {
+                    window.authSystem?.showMessage('Los campos de verificación son obligatorios para este rol', 'error');
+                    return;
+                }
+            }
+            
+            try {
+                window.authSystem?.showLoading(true);
+                
+                const response = await fetch(`${window.authSystem?.apiUrl || '/api'}/auth/complete-registration`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('tempToken') || localStorage.getItem('authToken')}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    if (['produccion', 'administrador'].includes(formData.role)) {
+                        window.authSystem?.showMessage('Registro enviado para verificación. Recibirás un email cuando sea aprobado.', 'success');
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 3000);
+                    } else {
+                        window.authSystem?.showMessage('¡Registro completado exitosamente! Redirigiendo...', 'success');
+                        localStorage.setItem('authToken', data.token);
+                        localStorage.setItem('userData', JSON.stringify(data.user));
+                        setTimeout(() => {
+                            window.location.href = '../index.html';
+                        }, 2000);
+                    }
+                } else {
+                    window.authSystem?.showMessage(data.message || 'Error al completar el registro', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                window.authSystem?.showMessage('Error de conexión. Intenta de nuevo.', 'error');
+            } finally {
+                window.authSystem?.showLoading(false);
+            }
+        });
+        
+        // OAuth buttons for completing registration
+        document.getElementById('googleCompleteBtn')?.addEventListener('click', function() {
+            // Implementar completar con Google
+            window.authSystem?.showMessage('Funcionalidad en desarrollo', 'info');
+        });
+        
+        document.getElementById('appleCompleteBtn')?.addEventListener('click', function() {
+            // Implementar completar con Apple
+            window.authSystem?.showMessage('Funcionalidad en desarrollo', 'info');
+        });
+        
+        // Cargar datos del usuario si ya están disponibles
+        document.addEventListener('DOMContentLoaded', function() {
+            const tempUserData = localStorage.getItem('tempUserData');
+            if (tempUserData) {
+                const userData = JSON.parse(tempUserData);
+                if (userData.name) {
+                    const nameParts = userData.name.split(' ');
+                    document.getElementById('firstName').value = nameParts[0] || '';
+                    document.getElementById('lastName').value = nameParts.slice(1).join(' ') || '';
+                }
+                if (userData.email) {
+                    // Email ya está registrado, solo mostrar para referencia
+                    console.log('Email registrado:', userData.email);
+                }
+            }
+        });
+    </script>
+
+    <style>
+        /* Estilos adicionales para el formulario de registro completo */
+        .form-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .form-section:last-of-type {
+            border-bottom: none;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        @media (max-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .form-help {
+            display: block;
+            margin-top: 0.25rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        .verification-notice {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .verification-notice i {
+            color: #f59e0b;
+            margin-top: 0.125rem;
+        }
+        
+        .verification-notice p {
+            margin: 0;
+            font-size: 0.875rem;
+        }
+        
+        .verification-notice p:first-child {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        textarea.form-input {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        select.form-input {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+            appearance: none;
+        }
+    </style>
+</body>
+</html>

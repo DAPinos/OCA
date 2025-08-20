@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCA Minimarkets - Dashboard</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
+    
+    <!-- Fuentes de Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Noto+Sans:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="assets/css/main.css">
+    
+    <!-- Scripts -->
+    <script src="assets/js/app.js" defer></script>
+    <script src="../js/session-role.js"></script>
+    <script src="js/config.js"></script>
+  </head>
+  <body class="font-sans antialiased text-gray-900 bg-gray-50">
+    <!-- Contenedor principal -->
+    <div class="min-h-screen flex">
+      <div class="layout-container flex h-full grow flex-col">
+        <div class="gap-1 px-6 flex flex-1 justify-center py-5">
+          <!-- Sidebar Navigation -->
+          <div class="layout-content-container flex flex-col w-80">
+            <div class="flex h-full min-h-[700px] flex-col justify-between bg-white p-4">
+              <div class="flex flex-col gap-4">
+                <h1 class="text-[#181710] text-base font-medium leading-normal">OCA Minimarkets</h1>
+                <div class="flex flex-col gap-2">
+                  <!-- Dashboard Menu Item (Active) -->
+                  <a href="index.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#f5f4f0] hover:bg-[#e8e6e0] transition-colors">
+                    <div class="text-[#181710]" data-icon="House" data-size="24px" data-weight="fill">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55ZM128,32l80.34,44-29.77,16.3-80.35-44ZM128,32l-80.34,44,29.77,16.3,80.35-44ZM128,120,47.66,76l33.9-18.56,80.34,44ZM40,90l80,43.78v85.79L40,175.82Zm176,85.78h0l-80,43.79V133.82l32-17.51V152a8,8,0,0,0,16,0V107.55L216,90v85.77Z"></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-bold leading-normal">Inicio</p>
+                  </a>
+                  
+                  <!-- Orders Menu Item -->
+                  <a href="orders.html" data-roles="administracion, cliente, produccion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="Receipt" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M216,40H40A16,16,0,0,0,24,56V208a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40ZM176,144H80a8,8,0,0,1,0-16h96a8,8,0,0,1,0,16Zm0-32H80a8,8,0,0,1,0-16h96a8,8,0,0,1,0,16Z"></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Pedidos</p>
+                  </a>
+                  
+                  <!-- Products Menu Item -->
+                  <a href="products.html" data-roles="administracion, produccion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="Package" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M223.68,66.15,135.68,18a15.88,15.88,0,0,0-15.36,0l-88,48.17a16,16,0,0,0-8.32,14v95.64a16,16,0,0,0,8.32,14l88,48.17a15.88,15.88,0,0,0,15.36,0l88-48.17a16,16,0,0,0,8.32-14V80.18A16,16,0,0,0,223.68,66.15ZM128,32l80.34,44-29.77,16.3-80.35-44ZM128,32l-80.34,44,29.77,16.3,80.35-44ZM128,120,47.66,76l33.9-18.56,80.34,44ZM40,90l80,43.78v85.79L40,175.82Zm176,85.78h0l-80,43.79V133.82l32-17.51V152a8,8,0,0,0,16,0V107.55L216,90v85.77Z"></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Productos</p>
+                  </a>
+                  
+                  <!-- Clients Menu Item -->
+                  <a href="clients.html" data-roles="administracion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="Users" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Clientes</p>
+                  </a>
+
+                  <!-- Finance Menu Item -->
+                  <a href="finance.html" data-roles="administracion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="CurrencyDollar" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm40-56a40,40,0,0,1-40,40v8a8,8,0,0,1-16,0v-8h-8a8,8,0,0,1,0-16h8v-24h-8a8,8,0,0,1,0-16h8v-8a8,8,0,0,1,16,0v8h8a8,8,0,0,1,0,16h-8v24h8a24,24,0,0,0,0-48h-8a8,8,0,0,1,0-16h8a40,40,0,0,1,0,80Z"></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Finanzas</p>
+                  </a>
+
+                  <!-- Transport Menu Item -->
+                  <a href="transport.html" data-roles="administracion, produccion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="Truck" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M248,120h-24V88a16,16,0,0,0-16-16H160V64a16,16,0,0,0-16-16H32A16,16,0,0,0,16,64V176a16,16,0,0,0,16,16H56a32,32,0,0,0,64,0h48a32,32,0,0,0,64,0h8a8,8,0,0,0,0-16h-8V136h16a8,8,0,0,0,0-16ZM32,64H144V176H120a32,32,0,0,0-64,0H32ZM208,88v32H160V88ZM88,200a16,16,0,1,1,16-16A16,16,0,0,1,88,200Zm112,0a16,16,0,1,1,16-16A16,16,0,0,1,200,200Z"></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Transporte y Despacho</p>
+                  </a>
+
+                  <!-- Manufacturing Menu Item -->
+                  <a href="manufacturing.html" data-roles="administracion, produccion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="Factory" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M216,56H184V32a8,8,0,0,0-16,0V56H136V32a8,8,0,0,0-16,0V56H88V32a8,8,0,0,0-16,0V56H40A16,16,0,0,0,24,72V208a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V72A16,16,0,0,0,216,56ZM40,72H216V96H40ZM216,208H40V112H216ZM72,176a8,8,0,0,1,0-16H96a8,8,0,0,1,0,16Zm56,0a8,8,0,0,1,0-16h24a8,8,0,0,1,0,16Z"></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Manufactura</p>
+                  </a>
+
+                  <a href="hr.html" data-roles="administracion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="UsersThree" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M168,120a40,40,0,1,0-40-40A40,40,0,0,0,168,120Zm-80,0A40,40,0,1,0,48,80,40,40,0,0,0,88,120Zm80,16c-22.09,0-64,11.05-64,32v16a8,8,0,0,0,8,8h112a8,8,0,0,0,8-8V168C232,147.05,190.09,136,168,136Zm-80,0c-22.09,0-64,11.05-64,32v16a8,8,0,0,0,8,8h72a8,8,0,0,0,8-8V168C168,147.05,126.09,136,88,136Z"/>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">RRHH</p>
+                  </a>
+                  <!-- Settings Menu Item -->
+                  <a href="settings.html" data-roles="administracion, produccion, cliente" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="Gear" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M230.92,120c0,0-2.2-2.4-6-6.53a94.82,94.82,0,0,0-9.1-8.67,2,2,0,0,1-.55-1.81,97,97,0,0,0,.42-15.37,1.9,1.9,0,0,0-1.32-1.61c-9.36-3.51-15.2-5.6-22.63-10.5a1.9,1.9,0,0,0-2.57.18c-5.9,5.7-9.2,9.07-15.1,10.65a2,2,0,0,1-1.81-.21,103.15,103.15,0,0,0-12.89-8.43,2,2,0,0,1-.68-2.38c2.22-5.52,3.7-9.24,4.42-14.63a1.9,1.9,0,0,0-1.4-2.11c-6.52-1.54-10.7-2.53-17.2-4.8a1.89,1.89,0,0,0-2.17.73c-4.1,6.13-5.9,9.2-10.48,13.46a2,2,0,0,1-1.61.55,100,100,0,0,0-15.36.42,2,2,0,0,1-1.61-1.32c-3.51-9.36-5.6-15.2-10.5-22.63a1.9,1.9,0,0,1,1.4,2.11c-1.54,6.52-2.53,10.7-4.8,17.2a1.89,1.89,0,0,0,1.11,2.52c6.44,2.39,10.58,3.93,15.7,4.62a1.9,1.9,0,0,1,1.33,3.23c-5.38,5.43-8.2,8.27-10.46,13.07a2,2,0,0,0,.55,2.37,100,100,0,0,0,12.89,8.42,2,2,0,0,0,2.38-.68c2.22-5.52,3.7-9.24,4.42-14.63a1.9,1.9,0,0,1,1.4-2.11c6.52-1.54,10.7-2.53,17.2-4.8a1.89,1.89,0,0,0,1.11-2.52c-2.39-6.44-3.93-10.58-4.62-15.7a1.9,1.9,0,0,1,3.23-1.33c5.43,5.38,8.27,8.2,13.07,10.46a2,2,0,0,0,2.37-.55,100,100,0,0,0,12.89-8.42,2,2,0,0,0,.69-2.74c-2.22-5.52-3.7-9.24-4.42-14.63a1.9,1.9,0,0,1,1.4-2.11c6.52-1.54,10.7-2.53,17.2-4.8a1.89,1.89,0,0,0,1.11-2.52c-2.39-6.44-3.93-10.58-4.62-15.7a1.9,1.9,0,0,1,1.33-3.23c5.43,5.38,8.27,8.2,13.07,10.46a2,2,0,0,0,2.37-.55,100,100,0,0,0,8.42-12.89,2,2,0,0,0-.21-2.37c-5.7-5.9-9.07-9.2-10.65-15.1a2,2,0,0,1,.21-1.81c3.51-5.32,5.6-8.65,10.5-12.13a1.9,1.9,0,0,1,2.57.18c5.9,5.7,9.2,9.07,15.1,10.65a2,2,0,0,1,1.21.93A95.5,95.5,0,0,0,230.92,120ZM128,176a56,56,0,1,1,56-56A56.06,56.06,0,0,1,128,176Z"></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Configuración</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Main Content Area -->
+          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+            <!-- Page Header -->
+            <div class="flex flex-wrap justify-between gap-3 p-4">
+              <h1 class="text-[#181710] tracking-light text-[32px] font-bold leading-tight min-w-72">Dashboard</h1>
+              <div class="flex gap-2">
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 19l-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                    </svg>
+                  </div>
+                  <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5" placeholder="Search...">
+                </div>
+                <a href="transport.html?newDispatch=1" data-roles="administracion, produccion" class="flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300">
+                  🚚 Nuevo Despacho
+                </a>
+                <a href="manufacturing.html?newMfg=1" data-roles="administracion, produccion" class="flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 focus:ring-4 focus:ring-emerald-300">
+                  🏭 Nueva OP
+                </a>
+              </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-4">
+              <!-- Active Orders -->
+              <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm cursor-pointer" role="button" tabindex="0" data-link="orders.html?filter=active">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-sm font-medium text-gray-500">Órdenes Activas</p>
+                    <p class="text-2xl font-bold text-gray-900"><span id="activeOrdersCount">0</span></p>
+                  </div>
+                  <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="mt-2">
+                  <span class="text-xs font-medium text-green-600">Abiertas y en proceso</span>
+                </div>
+              </div>
+              
+              <!-- My Spend (Finance restricted) -->
+              <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm cursor-pointer" role="button" tabindex="0" data-link="finance.html?scope=mine">
+                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                  <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="p-5">
+                      <div class="flex items-center">
+                        <div class="flex-shrink-0 bg-blue-500 rounded-md p-3">
+                          <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                          <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">
+                              Mis Gastos
+                            </dt>
+                            <dd>
+                              <div class="text-lg font-medium text-gray-900">
+                                <span id="mySpendAmount">$0.00</span>
+                              </div>
+                            </dd>
+                          </dl>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="bg-gray-50 px-5 py-3">
+                      <div class="text-sm">
+                        <a href="finance.html?scope=mine" class="font-medium text-blue-600 hover:text-blue-500">
+                          Ver detalle
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-2">
+                  <span class="text-xs font-medium text-green-600">Gasto asociado a tu cuenta</span>
+                </div>
+              </div>
+              
+              <!-- Orders In Transport -->
+              <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm cursor-pointer" role="button" tabindex="0" data-link="transport.html">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-sm font-medium text-gray-500">En Transporte</p>
+                    <p class="text-2xl font-bold text-gray-900"><span id="transportOrdersCount">0</span></p>
+                  </div>
+                  <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13h2l1 3h11l1-3h2M5 13l1-3h12l1 3M7 16a2 2 0 104 0M15 16a2 2 0 104 0" />
+                    </svg>
+                  </div>
+                </div>
+                <div class="mt-2">
+                  <span class="text-xs font-medium text-blue-600">Despachadas / En ruta</span>
+                </div>
+              </div>
+              
+              <!-- Total Clients (hidden for cliente via data-roles) -->
+              <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm cursor-pointer" role="button" tabindex="0" data-link="clients.html" data-roles="administracion, produccion">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-sm font-medium text-gray-500">Total Clientes</p>
+                    <p class="text-2xl font-bold text-gray-900"><span id="totalCustomersCount">0</span></p>
+                  </div>
+                  <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                  </div>
+                </div>
+                <div class="mt-2">
+                  <span class="text-xs font-medium text-green-600">+5% desde el mes pasado</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Recent Orders -->
+            <div class="mt-6 px-4">
+              <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                  <h2 class="text-lg font-semibold text-gray-900">Recent Orders</h2>
+                  <a href="orders.html" class="text-sm font-medium text-blue-600 hover:underline">View all</a>
+                </div>
+                <div class="overflow-x-auto">
+                  <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                      <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody id="recentOrdersTbody" class="bg-white divide-y divide-gray-200">
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Recent Products -->
+            <div class="mt-6 px-4 mb-6">
+              <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+                  <h3 class="text-lg leading-6 font-medium text-gray-900">Top Products</h3>
+                  <a href="products.html" class="text-sm font-medium text-blue-600 hover:text-blue-500">View all</a>
+                </div>
+                <div id="topProductsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    
+    <!-- Scripts adicionales específicos de la página -->
+    <script>
+      // Inicialización de componentes específicos del dashboard
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('Dashboard inicializado');
+        
+        // Verificar y manejar sesión de usuario
+        handleUserSession();
+        
+        // Verificar parámetros de URL del login
+        handleLoginRedirect();
+
+        // Inicializar dashboard dinámico
+        try { initDashboard(); } catch(e) { console.error('initDashboard error', e); }
+      });
+      
+      // Manejar sesión de usuario
+      function handleUserSession() {
+        const authToken = localStorage.getItem('authToken');
+        const userData = localStorage.getItem('userData');
+        const sessionActive = localStorage.getItem('sessionActive');
+        
+        console.log('Verificando sesión:', { authToken: !!authToken, userData: !!userData });
+        
+        if (!authToken || !userData) {
+          // No hay sesión activa, redirigir al login
+          console.log('No hay sesión activa, redirigiendo al login...');
+          console.log('Ruta actual:', window.location.pathname);
+          
+          setTimeout(() => {
+            // Usar ruta relativa para funcionar local y en producción
+            const loginUrl = 'login.html';
+            console.log('Redirigiendo a:', loginUrl);
+            window.location.replace(loginUrl);
+          }, 100);
+          return;
+        }
+
+      // ================== DASHBOARD DINÁMICO ==================
+      function initDashboard() {
+        // Hacer clic en tarjetas superiores
+        document.querySelectorAll('[data-link]')?.forEach(card => {
+          card.addEventListener('click', () => { window.location.href = card.getAttribute('data-link'); });
+          card.addEventListener('keydown', (e) => { if (e.key === 'Enter') window.location.href = card.getAttribute('data-link'); });
+        });
+
+        // Render inicial
+        refreshDashboard();
+
+        // Escuchar cambios en localStorage (otras pestañas)
+        window.addEventListener('storage', (e) => {
+          if (["orders","savedOrders","clients","productos","products","app_settings"].includes(e.key)) {
+            refreshDashboard();
+          }
+        });
+
+        // Evento personalizado cuando orders cambian (memoria previa)
+        window.addEventListener('orderUpdated', () => refreshDashboard());
+      }
+
+      function safeJSON(key, fallback) {
+        try { return JSON.parse(localStorage.getItem(key) || (fallback !== undefined ? JSON.stringify(fallback) : 'null')); } catch(_) { return fallback; }
+      }
+
+      // Session helpers for user-specific filtering
+      function getUserRole(){
+        const r = localStorage.getItem('userRole');
+        return r ? r.toLowerCase() : '';
+      }
+      function getUserName(){
+        return localStorage.getItem('userName') || '';
+      }
+
+      function getAllOrders() {
+        const A = safeJSON('orders', []) || [];
+        const B = safeJSON('savedOrders', []) || [];
+        // Evitar duplicados por id
+        const byId = new Map();
+        [...A, ...B].forEach(o => { if (o && o.id != null) byId.set(String(o.id), o); });
+        return Array.from(byId.values());
+      }
+
+      function formatMoney(amount) {
+        try {
+          // Preferir AppConfig si existe
+          if (window.AppConfig && AppConfig.currency) {
+            const code = (AppConfig.currency.code || 'CLP');
+            return new Intl.NumberFormat(AppConfig.language || 'es-CL', { style: 'currency', currency: code, maximumFractionDigits: 0 }).format(Number(amount) || 0);
+          }
+        } catch(_) {}
+        // Fallback
+        return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(Number(amount) || 0);
+      }
+
+      function normalizeStatus(status) {
+        const s = (status || '').toString().toLowerCase();
+        if (s.includes('complet') || s.includes('final')) return { text: 'Completado', cls: 'bg-green-100 text-green-800' };
+        if (s.includes('ship') || s.includes('env')) return { text: 'Despachado', cls: 'bg-blue-100 text-blue-800' };
+        if (s.includes('proc') || s.includes('pend')) return { text: 'Pendiente', cls: 'bg-yellow-100 text-yellow-800' };
+        return { text: status || 'N/A', cls: 'bg-gray-100 text-gray-800' };
+      }
+
+      function refreshDashboard() {
+        const clients = safeJSON('clients', []) || safeJSON('clientes', []) || [];
+        const products = safeJSON('products', []) || safeJSON('productos', []) || [];
+        const orders = getAllOrders();
+
+        // KPIs
+        try {
+          const totalOrders = orders.length;
+          const totalRevenue = orders.reduce((sum, o) => sum + (Number(o.total) || (Array.isArray(o.items) ? o.items.reduce((s, it) => s + (Number(it.price)||0)*(Number(it.quantity)||0), 0) : 0)), 0);
+          const activeProducts = Array.isArray(products) ? products.filter(p => p && (p.active === undefined || p.active === true)).length : 0;
+          const totalCustomers = Array.isArray(clients) ? clients.length : 0;
+
+          const elOrders = document.getElementById('totalOrdersCount'); if (elOrders) elOrders.textContent = String(totalOrders);
+          const elRevenue = document.getElementById('totalRevenueAmount'); if (elRevenue) elRevenue.textContent = formatMoney(totalRevenue);
+          const elProd = document.getElementById('activeProductsCount'); if (elProd) elProd.textContent = String(activeProducts);
+          const elCust = document.getElementById('totalCustomersCount'); if (elCust) elCust.textContent = String(totalCustomers);
+
+          // Dashboard: My Spend (user-specific)
+          const moves = safeJSON('finance_movements', []) || [];
+          const currentUser = getUserName();
+          const mySpend = (moves || [])
+            .filter(m => m && m.createdBy === currentUser && String(m.type || '').toLowerCase() === 'egreso')
+            .reduce((s, m) => s + (Number(m.amount) || 0), 0);
+          const elMySpend = document.getElementById('mySpendAmount');
+          if (elMySpend) elMySpend.textContent = formatMoney(mySpend);
+        } catch(e) { console.warn('KPI calc error', e); }
+
+        // Recent Orders (top 5 by date)
+        try { renderRecentOrders(orders, clients); } catch(e) { console.warn('renderRecentOrders error', e); }
+
+        // Top Products (by quantity across all orders)
+        try { renderTopProducts(orders, products); } catch(e) { console.warn('renderTopProducts error', e); }
+      }
+
+      function getOrderCustomerName(order, clients) {
+        const direct = order.customer || order.customerName || order.client || (order.customer && order.customer.name);
+        if (direct) return (typeof direct === 'string') ? direct : (direct.name || '');
+        const cid = String(order.customerId || order.clientId || order.clienteId || '').trim();
+        if (!cid) return '—';
+        const c = Array.isArray(clients) ? clients.find(x => String(x.id || x.clientId || x.clienteId || '') === cid) : null;
+        return c ? (c.name || c.nombre || 'Cliente') : 'Cliente';
+      }
+
+      function renderRecentOrders(orders, clients) {
+        const tbody = document.getElementById('recentOrdersTbody');
+        if (!tbody) return;
+        const sorted = [...orders].sort((a,b) => {
+          const da = new Date(a.createdAt || a.date || 0).getTime();
+          const db = new Date(b.createdAt || b.date || 0).getTime();
+          return db - da;
+        }).slice(0,5);
+        if (sorted.length === 0) {
+          tbody.innerHTML = '<tr><td class="px-6 py-4 text-sm text-gray-500" colspan="5">Sin pedidos recientes</td></tr>';
+          return;
+        }
+        tbody.innerHTML = sorted.map(o => {
+          const id = o.id != null ? `#${o.id}` : '#—';
+          const customer = getOrderCustomerName(o, clients);
+          const dateTxt = new Date(o.createdAt || o.date || Date.now()).toLocaleString('es-ES');
+          const st = normalizeStatus(o.status);
+          const total = Number(o.total) || (Array.isArray(o.items) ? o.items.reduce((s, it) => s + (Number(it.price)||0)*(Number(it.quantity)||0), 0) : 0);
+          return `
+            <tr class="hover:bg-gray-50 cursor-pointer" onclick="try{window.openOrderDetails ? openOrderDetails(${JSON.stringify(o.id)}) : (window.location.href='orders.html');}catch(_){window.location.href='orders.html'}">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${id}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${customer}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${dateTxt}</td>
+              <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${st.cls}">${st.text}</span></td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatMoney(total)}</td>
+            </tr>`;
+        }).join('');
+      }
+
+      function renderTopProducts(orders, catalog) {
+        const grid = document.getElementById('topProductsGrid');
+        if (!grid) return;
+        const totals = new Map();
+        (orders || []).forEach(o => (o.items || []).forEach(it => {
+          const pid = String(it.productId || it.id || it.sku || it.code || it.name || it.productName || '').trim();
+          if (!pid) return;
+          const prev = totals.get(pid) || { qty: 0, revenue: 0, name: it.productName || it.name || pid, price: Number(it.price)||0 };
+          const q = Number(it.quantity)||0; const p = Number(it.price)||0;
+          prev.qty += q; prev.revenue += p*q; prev.name = prev.name || it.productName || it.name || pid;
+          totals.set(pid, prev);
+        }));
+
+        const list = Array.from(totals.entries())
+          .map(([pid,meta]) => ({ id: pid, ...meta, product: Array.isArray(catalog) ? catalog.find(p => String(p.id||p.code||p.sku||'') === pid) : null }))
+          .sort((a,b) => b.qty - a.qty)
+          .slice(0, 6);
+
+        if (list.length === 0) {
+          grid.innerHTML = '<div class="p-4 text-sm text-gray-500">Aún no hay productos en pedidos.</div>';
+          return;
+        }
+
+        grid.innerHTML = list.map(x => {
+          const img = (x.product && (x.product.image || x.product.img || x.product.photo)) || 'https://via.placeholder.com/64';
+          const cat = (x.product && (x.product.category || x.product.categoria)) || '';
+          const price = x.product && x.product.price ? Number(x.product.price) : x.price;
+          return `
+            <div class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+              <div class="flex-shrink-0 h-16 w-16 bg-gray-200 rounded-md overflow-hidden">
+                <img src="${img}" alt="Product" class="h-full w-full object-cover">
+              </div>
+              <div class="ml-4 flex-1">
+                <h3 class="text-sm font-medium text-gray-900">${x.name}</h3>
+                <p class="text-xs text-gray-500">${cat || 'Más vendido'} · ${x.qty} u.</p>
+                <div class="mt-1">
+                  <span class="text-sm font-medium text-gray-900">${formatMoney(price)}</span>
+                  <span class="text-xs text-gray-500 ml-2">Subtotal: ${formatMoney(x.revenue)}</span>
+                </div>
+              </div>
+            </div>`;
+        }).join('');
+      }
+        
+        try {
+          const user = JSON.parse(userData);
+          console.log('Usuario autenticado:', user);
+          
+          // Actualizar UI con información del usuario
+          updateUserInterface(user);
+          
+          // Mostrar mensaje de bienvenida si es una nueva sesión
+          if (sessionActive === 'true') {
+            showWelcomeMessage(user);
+            localStorage.removeItem('sessionActive'); // Limpiar flag
+          }
+          
+        } catch (error) {
+          console.error('Error al procesar datos de usuario:', error);
+          localStorage.clear();
+          setTimeout(() => {
+            // Usar ruta relativa para funcionar local y en producción
+            const loginUrl = 'login.html';
+            console.log('Redirigiendo a login tras error:', loginUrl);
+            window.location.replace(loginUrl);
+          }, 100);
+        }
+      }
+      
+      // Manejar redirección desde login
+      function handleLoginRedirect() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('sessionId');
+        const userId = urlParams.get('userId');
+        const role = urlParams.get('role');
+        
+        if (sessionId && userId && role) {
+          console.log('Redirección desde login detectada');
+          
+          // Limpiar parámetros de la URL
+          const cleanUrl = window.location.pathname;
+          window.history.replaceState({}, document.title, cleanUrl);
+          
+          // Mostrar notificación de login exitoso
+          showLoginSuccessNotification(role);
+        }
+      }
+      
+      // Actualizar interfaz con información del usuario
+      function updateUserInterface(user) {
+        // Actualizar nombre de usuario en la interfaz
+        const userNameElements = document.querySelectorAll('.user-name');
+        userNameElements.forEach(element => {
+          element.textContent = user.name || 'Usuario';
+        });
+        
+        // Actualizar rol del usuario
+        const userRoleElements = document.querySelectorAll('.user-role');
+        userRoleElements.forEach(element => {
+          element.textContent = user.role || 'Usuario';
+        });
+        
+        // Mostrar/ocultar elementos según el rol
+        adjustInterfaceByRole(user.role);
+        
+        // Agregar indicador de usuario demo si aplica
+        if (user.isDemo) {
+          addDemoIndicator();
+        }
+      }
+      
+      // Ajustar interfaz según el rol del usuario
+      function adjustInterfaceByRole(role) {
+        const adminElements = document.querySelectorAll('.admin-only');
+        const clientElements = document.querySelectorAll('.client-only');
+        const prodElements = document.querySelectorAll('.production-only');
+        
+        // Mostrar/ocultar elementos según el rol
+        if (role === 'administrador') {
+          adminElements.forEach(el => el.style.display = 'block');
+        } else {
+          adminElements.forEach(el => el.style.display = 'none');
+        }
+        
+        if (role === 'cliente') {
+          clientElements.forEach(el => el.style.display = 'block');
+        } else {
+          clientElements.forEach(el => el.style.display = 'none');
+        }
+        
+        if (role === 'produccion') {
+          prodElements.forEach(el => el.style.display = 'block');
+        } else {
+          prodElements.forEach(el => el.style.display = 'none');
+        }
+      }
+      
+      // Mostrar mensaje de bienvenida
+      function showWelcomeMessage(user) {
+        const welcomeMessages = {
+          administrador: `¡Bienvenido al panel de administración, ${user.name}!`,
+          produccion: `¡Hola ${user.name}! Bienvenido al área de producción.`,
+          cliente: `¡Bienvenido ${user.name}! Tu cuenta está lista.`,
+          vendedor: `¡Hola ${user.name}! Sistema de ventas listo.`,
+          cajero: `¡Bienvenido ${user.name}! Punto de venta activo.`,
+          inventario: `¡Hola ${user.name}! Sistema de inventario disponible.`
+        };
+        
+        const message = welcomeMessages[user.role] || `¡Bienvenido al sistema, ${user.name}!`;
+        
+        showNotification(message, 'success');
+      }
+      
+      // Mostrar notificación de login exitoso
+      function showLoginSuccessNotification(role) {
+        const roleMessages = {
+          administrador: 'Acceso de administrador concedido',
+          produccion: 'Acceso al área de producción',
+          cliente: 'Sesión de cliente iniciada',
+          vendedor: 'Sistema de ventas activo',
+          cajero: 'Punto de venta listo',
+          inventario: 'Sistema de inventario disponible'
+        };
+        
+        const message = roleMessages[role] || 'Sesión iniciada correctamente';
+        showNotification(message, 'info');
+      }
+      
+      // Agregar indicador de usuario demo
+      function addDemoIndicator() {
+        const demoIndicator = document.createElement('div');
+        demoIndicator.className = 'demo-indicator';
+        demoIndicator.innerHTML = `
+          <i class="fas fa-flask"></i>
+          <span>Modo Demo</span>
+        `;
+        demoIndicator.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: linear-gradient(135deg, #f59e0b, #d97706);
+          color: white;
+          padding: 0.5rem 1rem;
+          border-radius: 20px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          z-index: 1000;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        `;
+        
+        document.body.appendChild(demoIndicator);
+      }
+      
+      // Mostrar notificaciones
+      function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+          <div class="notification-content">
+            <i class="fas ${getNotificationIcon(type)}"></i>
+            <span>${message}</span>
+          </div>
+        `;
+        
+        notification.style.cssText = `
+          position: fixed;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: ${getNotificationColor(type)};
+          color: white;
+          padding: 1rem 1.5rem;
+          border-radius: 8px;
+          font-weight: 500;
+          z-index: 1001;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          animation: slideDown 0.3s ease-out;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto-remover después de 4 segundos
+        setTimeout(() => {
+          notification.style.animation = 'slideUp 0.3s ease-in';
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.parentNode.removeChild(notification);
+            }
+          }, 300);
+        }, 4000);
+      }
+      
+      // Obtener icono de notificación
+      function getNotificationIcon(type) {
+        const icons = {
+          success: 'fa-check-circle',
+          error: 'fa-exclamation-circle',
+          warning: 'fa-exclamation-triangle',
+          info: 'fa-info-circle'
+        };
+        return icons[type] || icons.info;
+      }
+      
+      // Obtener color de notificación
+      function getNotificationColor(type) {
+        const colors = {
+          success: '#10b981',
+          error: '#ef4444',
+          warning: '#f59e0b',
+          info: '#3b82f6'
+        };
+        return colors[type] || colors.info;
+      }
+      
+      // Agregar estilos de animación
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+          }
+        }
+        
+        @keyframes slideUp {
+          from {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+          }
+          to {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-20px);
+          }
+        }
+        
+        .notification-content {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+      `;
+      document.head.appendChild(style);
+    </script>
+  </body>
+</html>

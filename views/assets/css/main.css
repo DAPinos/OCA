@@ -1,0 +1,154 @@
+/* Estilos globales */
+:root {
+  --primary-color: #1a365d;
+  --secondary-color: #2c5282;
+  --text-color: #181710;
+  --bg-light: #f5f4f0;
+  --bg-hover: #e8e6e0;
+  --border-color: #e2e8f0;
+}
+
+body {
+  font-family: 'Inter', 'Noto Sans', sans-serif;
+  color: var(--text-color);
+  background-color: #f8fafc;
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+}
+
+/* Estilos de la barra lateral */
+.sidebar {
+  width: 320px;
+  background-color: white;
+  padding: 1.5rem;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  overflow-y: auto;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos de navegación */
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  color: var(--text-color);
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.nav-link:hover {
+  background-color: var(--bg-light);
+}
+
+.nav-link.active {
+  background-color: var(--bg-light);
+  font-weight: 600;
+}
+
+/* Estilos del contenido principal */
+.main-content {
+  margin-left: 320px;
+  padding: 2rem;
+  width: calc(100% - 320px);
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+/* Tarjetas */
+.card {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Botones */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--secondary-color);
+}
+
+/* Formularios */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #4a5568;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+}
+
+/* Tablas */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table th {
+  font-weight: 600;
+  color: #4a5568;
+  background-color: #f8fafc;
+}
+
+/* Utilidades */
+.text-primary {
+  color: var(--primary-color);
+}
+
+.text-secondary {
+  color: var(--secondary-color);
+}
+
+.bg-light {
+  background-color: var(--bg-light);
+}
+
+.rounded {
+  border-radius: 0.375rem;
+}

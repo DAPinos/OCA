@@ -1,0 +1,623 @@
+<html>
+  <head>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&family=Inter%3Awght%40400%3B500%3B700%3B900&family=Noto+Sans%3Awght%40400%3B500%3B700%3B900"
+    />
+
+    <title>OCA Minimarkets - Clientes</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  </head>
+  <body>
+    <div class="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
+      <div class="layout-container flex h-full grow flex-col">
+        <div class="px-6 py-5 flex gap-6 items-start w-full">
+          <!-- Sidebar Navigation -->
+          <div class="layout-content-container flex flex-col w-64 shrink-0">
+            <div class="flex h-full min-h-[700px] flex-col justify-between bg-white p-4">
+              <div class="flex flex-col gap-4">
+                <h1 class="text-[#181710] text-base font-medium leading-normal">OCA Minimarkets</h1>
+                <div class="flex flex-col gap-2">
+                  <!-- Dashboard Menu Item -->
+                  <a href="index.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="House" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M216,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z"></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Inicio</p>
+                  </a>
+                  
+                  <!-- Orders Menu Item -->
+                  <a href="orders.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="Receipt" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M216,40H40A16,16,0,0,0,24,56V208a8,8,0,0,0,11.58,7.15L64,200.94l28.42,14.21a8,8,0,0,0,7.16,0L128,200.94l28.42,14.21a8,8,0,0,0,7.16,0L192,200.94l28.42,14.21A8,8,0,0,0,232,208V56A16,16,0,0,0,216,40ZM176,144H80a8,8,0,0,1,0-16h96a8,8,0,0,1,0,16Zm0-32H80a8,8,0,0,1,0-16h96a8,8,0,0,1,0,16Z"></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Pedidos</p>
+                  </a>
+                  
+                  <!-- Products Menu Item -->
+                  <a href="products.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="Package" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M223.68,66.15,135.68,18a15.88,15.88,0,0,0-15.36,0l-88,48.17a16,16,0,0,0-8.32,14v95.64a16,16,0,0,0,8.32,14l88,48.17a15.88,15.88,0,0,0,15.36,0l88-48.17a16,16,0,0,0,8.32-14V80.18A16,16,0,0,0,223.68,66.15ZM128,32l80.34,44-29.77,16.3-80.35-44ZM128,120,47.66,76l33.9-18.56,80.34,44ZM40,90l80,43.78v85.79L40,175.82Zm176,85.78h0l-80,43.79V133.82l80-43.78Z"></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Productos</p>
+                  </a>
+                  
+                  <!-- Clients Menu Item (Active) -->
+                  <a href="clients.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#f5f4f0] hover:bg-[#e8e6e0] transition-colors">
+                    <div class="text-[#181710]" data-icon="Users" data-size="24px" data-weight="fill">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,1,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-bold leading-normal">Clientes</p>
+                  </a>
+
+                  <!-- Finance Menu Item -->
+                  <a href="finance.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="CurrencyDollar" data-size="24px" data-weight="regular">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                            <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm40-64a32,32,0,0,1-32,32v8a8,8,0,0,1-16,0v-8H112a8,8,0,0,1,0-16h24a16,16,0,0,0,0-32H128a32,32,0,0,1,0-64v-8a8,8,0,0,1,16,0v8h8a8,8,0,0,1,0,16H128a16,16,0,0,0,0,32h8a32,32,0,0,1,32,32Z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Finanzas</p>
+                  </a>
+                  
+                  <!-- Transport Menu Item -->
+                  <a href="transport.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="Truck" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M248,120h-24V88a16,16,0,0,0-16-16H160V64a16,16,0,0,0-16-16H32A16,16,0,0,0,16,64V176a16,16,0,0,0,16,16H56a32,32,0,0,0,64,0h48a32,32,0,0,0,64,0h8a8,8,0,0,0,0-16h-8V136h16a8,8,0,0,0,0-16ZM32,64H144V176H120a32,32,0,0,0-64,0H32ZM208,88v32H160V88ZM88,200a16,16,0,1,1,16-16A16,16,0,0,1,88,200Zm112,0a16,16,0,1,1,16-16A16,16,0,0,1,200,200Z"/>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Transporte y Despacho</p>
+                  </a>
+                  
+                  <!-- Manufacturing Menu Item -->
+                  <a href="manufacturing.html" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="Factory" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M216,56H184V32a8,8,0,0,0-16,0V56H136V32a8,8,0,0,0-16,0V56H88V32a8,8,0,0,0-16,0V56H40A16,16,0,0,0,24,72V208a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V72A16,16,0,0,0,216,56ZM40,72H216V96H40ZM216,208H40V112H216ZM72,176a8,8,0,0,1,0-16H96a8,8,0,0,1,0,16Zm56,0a8,8,0,0,1,0-16h24a8,8,0,0,1,0,16Z"/>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Manufactura</p>
+                  </a>
+                  
+                  <!-- Settings Menu Item -->
+                  <a href="hr.html" data-roles="administracion" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="UsersThree" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M168,120a40,40,0,1,0-40-40A40,40,0,0,0,168,120Zm-80,0A40,40,0,1,0,48,80,40,40,0,0,0,88,120Zm80,16c-22.09,0-64,11.05-64,32v16a8,8,0,0,0,8,8h112a8,8,0,0,0,8-8V168C232,147.05,190.09,136,168,136Zm-80,0c-22.09,0-64,11.05-64,32v16a8,8,0,0,0,8,8h72a8,8,0,0,0,8-8V168C168,147.05,126.09,136,88,136Z"/>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">RRHH</p>
+                  </a>
+                  <a href="settings.html" data-roles="administracion,produccion,cliente" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="text-[#181710]" data-icon="Gear" data-size="24px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M230.92,120c0,0-2.2-2.4-6-6.53a94.82,94.82,0,0,0-9.1-8.67,2,2,0,0,1-.55-1.81,97,97,0,0,0,.42-15.37,1.9,1.9,0,0,0-1.32-1.61c-9.36-3.51-15.2-5.6-22.63-10.5a1.9,1.9,0,0,0-2.57.18c-5.9,5.7-9.2,9.07-15.1,10.65a2,2,0,0,1-1.81-.21,103.15,103.15,0,0,0-12.89-8.43,2,2,0,0,1-.68-2.38c2.22-5.52,3.7-9.24,4.42-14.63a1.9,1.9,0,0,0-1.4-2.11c-6.52-1.54-10.7-2.53-17.2-4.8a1.89,1.89,0,0,0-2.17.73c-4.1,6.13-5.9,9.2-10.48,13.46a2,2,0,0,1-1.61.55,100,100,0,0,0-15.36.42,2,2,0,0,1-1.61-1.32c-3.51-9.36-5.6-15.2-10.5-22.63a1.9,1.9,0,0,0-2.57-.72c-6.3,3.49-10.34,5.72-16.42,7.1a2,2,0,0,1-2-3.31c5.7-5.9,9.07-9.2,10.65-15.1a2,2,0,0,0-.21-1.81A103.15,103.15,0,0,0,88.7,56.59a2,2,0,0,0-2.38-.68c-5.52,2.22-9.24,3.7-14.63,4.42a1.9,1.9,0,0,1-2.11-1.4c-1.54-6.52-2.53-10.7-4.8-17.2a1.89,1.89,0,0,0-2.52-1.11c-6.44,2.39-10.58,3.93-15.7,4.62a1.9,1.9,0,0,0-1.33,3.23c5.38,5.43,8.2,8.27,10.46,13.07a2,2,0,0,1-.55,2.37,100,100,0,0,0-8.42,12.89,2,2,0,0,1-1.81.69c-5.52-1.37-9.24-2.28-14.63-1.57a1.9,1.9,0,0,0-1.4,2.11c9.36,3.51,15.2,5.6,22.63,10.5a1.89,1.89,0,0,0,2.17-.73c4.1-6.13,5.9-9.2,10.48-13.46a2,2,0,0,1,1.61-.55,100,100,0,0,0,15.36-.42,2,2,0,0,1,1.61,1.32c3.51,9.36,5.6,15.2,10.5,22.63a1.9,1.9,0,0,1,1.4,2.11c-1.54,6.52-2.53,10.7-4.8,17.2a1.89,1.89,0,0,0,1.11,2.52c6.44,2.39,10.58,3.93,15.7,4.62a1.9,1.9,0,0,1,1.33,3.23c-5.38,5.43-8.2,8.27-10.46,13.07a2,2,0,0,0,.55,2.37,100,100,0,0,0,8.42,12.89,2,2,0,0,0,2.38-.68c2.22-5.52,3.7-9.24,4.42-14.63a1.9,1.9,0,0,1,1.4-2.11c6.52-1.54,10.7-2.53,17.2-4.8a1.89,1.89,0,0,0,1.11-2.52c-2.39-6.44-3.93-10.58-4.62-15.7a1.9,1.9,0,0,1,3.23-1.33c5.43,5.38,8.27,8.2,13.07,10.46a2,2,0,0,0,2.37-.55,100,100,0,0,0,12.89-8.42,2,2,0,0,0,.69-2.74c-2.22-5.52-3.7-9.24-4.42-14.63a1.9,1.9,0,0,1,1.4-2.11c6.52-1.54,10.7-2.53,17.2-4.8a1.89,1.89,0,0,0,1.11-2.52c-2.39-6.44-3.93-10.58-4.62-15.7a1.9,1.9,0,0,1,1.33-3.23c5.43,5.38,8.27,8.2,13.07,10.46a2,2,0,0,0,2.37-.55,100,100,0,0,0,8.42-12.89,2,2,0,0,0-.21-2.37c-5.7-5.9-9.07-9.2-10.65-15.1a2,2,0,0,1,.21-1.81c3.51-5.32,5.6-8.65,10.5-12.13a1.9,1.9,0,0,1,2.57.18c5.9,5.7,9.2,9.07,15.1,10.65a2,2,0,0,1,1.21.93A95.5,95.5,0,0,0,230.92,120ZM128,176a56,56,0,1,1,56-56A56.06,56.06,0,0,1,128,176Z"></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#181710] text-sm font-medium leading-normal">Configuración</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+            
+            <!-- Main Content Area -->
+            <div class="layout-content-container flex flex-col min-w-0 flex-1">
+              <!-- Page Header -->
+              <div class="flex flex-wrap justify-between gap-3 p-4">
+                <h1 class="text-[#181710] tracking-light text-[32px] font-bold leading-tight min-w-72">Clientes</h1>
+                <div class="flex gap-2">
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                      <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 19l-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                      </svg>
+                    </div>
+                    <input id="clientSearchInput" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5" placeholder="Buscar clientes...">
+                  </div>
+                </div>
+              </div>
+
+            <!-- Client KPIs / Splash Cards -->
+            <div class="px-4 mb-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="clientKpis">
+              <!-- KPI cards will be rendered by JS -->
+            </div>
+
+            <!-- Client Filters -->
+            <div class="flex flex-wrap items-center gap-3 px-4 mb-4">
+              <div class="relative">
+                <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 pr-8">
+                  <option selected>Todos los tipos</option>
+                  <option value="retail">Minorista</option>
+                  <option value="wholesale">Mayorista</option>
+                  <option value="corporate">Corporativo</option>
+                </select>
+              </div>
+              <div class="relative">
+                <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 pr-8">
+                  <option selected>Todos los estados</option>
+                  <option value="active">Activo</option>
+                  <option value="inactive">Inactivo</option>
+                  <option value="pending">Pendiente</option>
+                </select>
+              </div>
+              <button class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                </svg>
+                Más Filtros
+              </button>
+            </div>
+            
+            <!-- Clients List -->
+            <div class="px-4">
+              <div class="flex items-center justify-between mb-3">
+                <h2 class="text-lg font-semibold text-[#181710]">Listado de Clientes</h2>
+                <button id="addClientBtn" class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-[#181710] hover:bg-[#2a2922] rounded-lg">
+                  + Agregar Cliente
+                </button>
+              </div>
+              <div class="overflow-hidden rounded-lg border border-[#e7e5da] bg-white">
+                <div class="overflow-x-auto">
+                  <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                      <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Foto</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID de cliente</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Correo</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teléfono</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo de cliente</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total gastado</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado último pedido</th>
+                        <th scope="col" class="relative px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody id="clientsTableBody" class="bg-white divide-y divide-gray-200"></tbody>
+                  </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                  <div class="flex-1 flex justify-between sm:hidden">
+                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                      Previous
+                    </a>
+                    <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                      Next
+                    </a>
+                  </div>
+                  <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                    <div>
+                      <p class="text-sm text-gray-700">
+                        Showing <span class="font-medium">1</span> to <span class="font-medium">4</span> of <span class="font-medium">24</span> results
+                      </p>
+                    </div>
+                    <div>
+                      <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        <button onclick="window.location.href='clients.html?page=1'" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                          <span class="sr-only">Previous</span>
+                          <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                          </svg>
+                        </button>
+                        <a href="clients.html?page=1" aria-current="page" class="z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                          1
+                        </a>
+                        <a href="clients.html?page=2" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                          2
+                        </a>
+                        <a href="clients.html?page=3" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                          3
+                        </a>
+                        <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                          ...
+                        </span>
+                        <a href="clients.html?page=6" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                          6
+                        </a>
+                        <button onclick="window.location.href='clients.html?page=2'" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                          <span class="sr-only">Next</span>
+                          <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                          </svg>
+                        </button>
+                      </nav>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal: Agregar/Editar Cliente -->
+    <div id="clientModal" class="fixed inset-0 z-50 hidden">
+      <div class="absolute inset-0 bg-black/40" id="clientModalOverlay"></div>
+      <div class="relative mx-auto mt-16 w-full max-w-xl rounded-xl bg-white shadow-lg">
+        <div class="flex items-center justify-between border-b px-6 py-4">
+          <h3 id="clientModalTitle" class="text-lg font-semibold text-[#181710]">Agregar Cliente</h3>
+          <button id="clientModalClose" class="text-gray-500 hover:text-gray-700">✕</button>
+        </div>
+        <div class="p-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+              <input id="clName" type="text" class="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Nombre completo" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Correo</label>
+              <input id="clEmail" type="email" class="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="correo@ejemplo.com" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+              <input id="clPhone" type="text" class="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="+56 9 1234 5678" />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+              <input id="clAddress" type="text" class="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Calle, Número, Comuna, Ciudad" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de cliente</label>
+              <select id="clType" class="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500">
+                <option value="Minorista">Minorista</option>
+                <option value="Wholesale">Wholesale</option>
+                <option value="Corporate">Corporate</option>
+                <option value="Retail">Retail</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Total gastado</label>
+              <input id="clTotal" type="number" min="0" step="0.01" class="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="0.00" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Estado último pedido</label>
+              <select id="clStatus" class="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500">
+                <option value="Activo">Activo</option>
+                <option value="Inactivo">Inactivo</option>
+                <option value="Pendiente">Pendiente</option>
+              </select>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">URL de foto (opcional)</label>
+              <input id="clPhoto" type="url" class="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="https://..." />
+            </div>
+          </div>
+          <p id="clientFormError" class="mt-3 hidden text-sm text-red-600"></p>
+        </div>
+        <div class="flex justify-end gap-3 border-t px-6 py-4">
+          <button id="clientCancelBtn" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">Cancelar</button>
+          <button id="clientSaveBtn" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const LS_KEY = 'clients';
+        let editingId = null;
+
+        function seedSampleClients() {
+          const samples = [
+            {
+              id: 'CLT-1001',
+              name: 'John Doe',
+              email: 'john.doe@example.com',
+              phone: '+1 (555) 123-4567',
+              address: 'Av. Siempre Viva 123, Santiago',
+              type: 'Minorista',
+              totalSpent: 1240.55,
+              lastOrderStatus: 'Activo',
+              photoUrl: 'https://randomuser.me/api/portraits/men/32.jpg',
+              createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString()
+            },
+            {
+              id: 'CLT-1002',
+              name: 'Jane Smith',
+              email: 'jane.smith@example.com',
+              phone: '+1 (555) 987-6543',
+              address: 'Av. Los Leones 456, Providencia',
+              type: 'Wholesale',
+              totalSpent: 8450.0,
+              lastOrderStatus: 'Activo',
+              photoUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
+              createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString()
+            },
+            {
+              id: 'CLT-1003',
+              name: 'Robert Johnson',
+              email: 'robert.j@example.com',
+              phone: '+1 (555) 456-7890',
+              address: 'Calle 7 #890, Ñuñoa',
+              type: 'Corporate',
+              totalSpent: 312.99,
+              lastOrderStatus: 'Pendiente',
+              photoUrl: 'https://randomuser.me/api/portraits/men/75.jpg',
+              createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1).toISOString()
+            },
+            {
+              id: 'CLT-1004',
+              name: 'Maria Brown',
+              email: 'maria.b@example.com',
+              phone: '+1 (555) 234-5678',
+              address: 'Ruta 5 Sur Km 50, Talca',
+              type: 'Retail',
+              totalSpent: 0,
+              lastOrderStatus: 'Inactivo',
+              photoUrl: 'https://randomuser.me/api/portraits/women/68.jpg',
+              createdAt: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString()
+            }
+          ];
+          localStorage.setItem(LS_KEY, JSON.stringify(samples));
+          return samples;
+        }
+
+        function getClients() {
+          try {
+            const raw = localStorage.getItem(LS_KEY);
+            if (!raw) return seedSampleClients();
+            const parsed = JSON.parse(raw);
+            if (!Array.isArray(parsed) || parsed.length === 0) return seedSampleClients();
+            // Migration: ensure createdAt exists
+            let changed = false;
+            const migrated = parsed.map((c, i) => {
+              if (!c.createdAt) {
+                changed = true;
+                return { ...c, createdAt: new Date(Date.now() - i * 1000).toISOString() };
+              }
+              return c;
+            });
+            if (changed) localStorage.setItem(LS_KEY, JSON.stringify(migrated));
+            return migrated;
+          } catch (e) {
+            console.warn('Clientes corruptos, resembrando', e);
+            return seedSampleClients();
+          }
+        }
+
+        function typeTag(type) {
+          const map = {
+            'Minorista': 'bg-blue-100 text-blue-800',
+            'Retail': 'bg-blue-100 text-blue-800',
+            'Wholesale': 'bg-purple-100 text-purple-800',
+            'Corporate': 'bg-gray-100 text-gray-800',
+            'Corporativo': 'bg-gray-100 text-gray-800'
+          };
+          return map[type] || 'bg-gray-100 text-gray-800';
+        }
+
+        function statusTag(status) {
+          const map = {
+            'Activo': 'bg-green-100 text-green-800',
+            'Inactivo': 'bg-red-100 text-red-800',
+            'Pendiente': 'bg-yellow-100 text-yellow-800'
+          };
+          return map[status] || 'bg-gray-100 text-gray-800';
+        }
+
+        function formatCurrency(n) {
+          try { return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'USD' }).format(n || 0); }
+          catch { return `$${Number(n || 0).toFixed(2)}`; }
+        }
+
+        function renderClientsTable(clients) {
+          const tbody = document.getElementById('clientsTableBody');
+          if (!tbody) return;
+          const sorted = [...clients].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+          tbody.innerHTML = sorted.map(c => `
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <img src="${c.photoUrl || 'https://via.placeholder.com/40'}" alt="${c.name || ''}" class="h-10 w-10 rounded-full object-cover">
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900">${c.name || ''}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${c.id || ''}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${c.email || ''}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${c.phone || ''}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${typeTag(c.type)}">${c.type || ''}</span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatCurrency(c.totalSpent)}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusTag(c.lastOrderStatus)}">${c.lastOrderStatus || ''}</span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <button class="text-blue-600 hover:text-blue-900 mr-3" data-action="view" data-id="${c.id}">Ver</button>
+                <button class="text-blue-600 hover:text-blue-900 mr-3" data-action="edit" data-id="${c.id}">Editar</button>
+                <button class="text-red-600 hover:text-red-800" data-action="delete" data-id="${c.id}">Eliminar</button>
+              </td>
+            </tr>
+          `).join('');
+        }
+
+        function renderClientKpis(clients) {
+          const el = document.getElementById('clientKpis');
+          if (!el) return;
+          const total = clients.length;
+          const activos = clients.filter(c => c.lastOrderStatus === 'Activo').length;
+          const inactivos = clients.filter(c => c.lastOrderStatus === 'Inactivo').length;
+          const pendientes = clients.filter(c => c.lastOrderStatus === 'Pendiente').length;
+          const totalGastado = clients.reduce((sum, c) => sum + (Number(c.totalSpent) || 0), 0);
+          el.innerHTML = `
+            <div class="rounded-xl border border-[#e7e5da] bg-white p-4">
+              <p class="text-sm text-gray-500">Total Clientes</p>
+              <p class="mt-1 text-2xl font-bold text-[#181710]">${total}</p>
+            </div>
+            <div class="rounded-xl border border-[#e7e5da] bg-white p-4">
+              <p class="text-sm text-gray-500">Activos</p>
+              <p class="mt-1 text-2xl font-bold text-green-700">${activos}</p>
+            </div>
+            <div class="rounded-xl border border-[#e7e5da] bg-white p-4">
+              <p class="text-sm text-gray-500">Inactivos</p>
+              <p class="mt-1 text-2xl font-bold text-red-700">${inactivos}</p>
+            </div>
+            <div class="rounded-xl border border-[#e7e5da] bg-white p-4">
+              <p class="text-sm text-gray-500">Pendientes</p>
+              <p class="mt-1 text-2xl font-bold text-yellow-700">${pendientes}</p>
+            </div>
+            <div class="rounded-xl border border-[#e7e5da] bg-white p-4 sm:col-span-2 lg:col-span-4">
+              <p class="text-sm text-gray-500">Total Gastado</p>
+              <p class="mt-1 text-2xl font-bold text-[#181710]">${formatCurrency(totalGastado)}</p>
+            </div>
+          `;
+        }
+
+        function fillForm(client) {
+          document.getElementById('clName').value = client.name || '';
+          document.getElementById('clEmail').value = client.email || '';
+          document.getElementById('clPhone').value = client.phone || '';
+          document.getElementById('clAddress').value = client.address || client.direccion || '';
+          document.getElementById('clType').value = client.type || 'Minorista';
+          document.getElementById('clTotal').value = client.totalSpent != null ? client.totalSpent : '';
+          document.getElementById('clStatus').value = client.lastOrderStatus || 'Activo';
+          document.getElementById('clPhoto').value = client.photoUrl || '';
+          const err = document.getElementById('clientFormError');
+          err.textContent = '';
+          err.classList.add('hidden');
+        }
+
+        function showModal(show) {
+          const m = document.getElementById('clientModal');
+          if (!m) return;
+          m.classList.toggle('hidden', !show);
+        }
+
+        function clearForm() {
+          document.getElementById('clName').value = '';
+          document.getElementById('clEmail').value = '';
+          document.getElementById('clPhone').value = '';
+          document.getElementById('clAddress').value = '';
+          document.getElementById('clType').value = 'Minorista';
+          document.getElementById('clTotal').value = '';
+          document.getElementById('clStatus').value = 'Activo';
+          document.getElementById('clPhoto').value = '';
+          const err = document.getElementById('clientFormError');
+          err.textContent = '';
+          err.classList.add('hidden');
+        }
+
+        function validateEmail(email) {
+          return /[^\s@]+@[^\s@]+\.[^\s@]+/.test(email);
+        }
+
+        function saveClient() {
+          const name = document.getElementById('clName').value.trim();
+          const email = document.getElementById('clEmail').value.trim();
+          const phone = document.getElementById('clPhone').value.trim();
+          const address = document.getElementById('clAddress').value.trim();
+          const type = document.getElementById('clType').value;
+          const totalSpent = parseFloat(document.getElementById('clTotal').value || '0');
+          const status = document.getElementById('clStatus').value;
+          const photoUrl = document.getElementById('clPhoto').value.trim();
+
+          const err = document.getElementById('clientFormError');
+          err.textContent = '';
+          err.classList.add('hidden');
+
+          if (!name) { err.textContent = 'El nombre es obligatorio.'; err.classList.remove('hidden'); return; }
+          if (!address) { err.textContent = 'La dirección es obligatoria.'; err.classList.remove('hidden'); return; }
+          if (!email || !validateEmail(email)) { err.textContent = 'Ingrese un correo válido.'; err.classList.remove('hidden'); return; }
+          if (Number.isNaN(totalSpent) || totalSpent < 0) { err.textContent = 'Total gastado debe ser un número válido mayor o igual a 0.'; err.classList.remove('hidden'); return; }
+
+          const clients = getClients();
+          if (editingId) {
+            const idx = clients.findIndex(c => c.id === editingId);
+            if (idx !== -1) {
+              clients[idx] = {
+                ...clients[idx],
+                name, email, phone, address, type,
+                totalSpent, lastOrderStatus: status,
+                photoUrl: photoUrl || clients[idx].photoUrl || 'https://via.placeholder.com/80'
+              };
+            }
+          } else {
+            const newClient = {
+              id: 'CLT-' + Date.now().toString().slice(-6),
+              name, email, phone, address, type,
+              totalSpent, lastOrderStatus: status,
+              photoUrl: photoUrl || 'https://via.placeholder.com/80',
+              createdAt: new Date().toISOString()
+            };
+            clients.push(newClient);
+          }
+          localStorage.setItem(LS_KEY, JSON.stringify(clients));
+          renderClientsTable(clients);
+          renderClientKpis(clients);
+          showModal(false);
+          editingId = null;
+        }
+
+        function init() {
+          const clients = getClients();
+          renderClientsTable(clients);
+          renderClientKpis(clients);
+
+          const addBtn = document.getElementById('addClientBtn');
+          if (addBtn) addBtn.addEventListener('click', () => {
+            document.getElementById('clientModalTitle').textContent = 'Agregar Cliente';
+            clearForm();
+            showModal(true);
+            editingId = null;
+          });
+
+          const closeEls = [
+            document.getElementById('clientModalClose'),
+            document.getElementById('clientCancelBtn'),
+            document.getElementById('clientModalOverlay')
+          ];
+          closeEls.forEach(el => el && el.addEventListener('click', () => showModal(false)));
+
+          const saveBtn = document.getElementById('clientSaveBtn');
+          if (saveBtn) saveBtn.addEventListener('click', saveClient);
+
+          // Actions: view, edit, delete
+          const tbody = document.getElementById('clientsTableBody');
+          if (tbody) {
+            tbody.addEventListener('click', (e) => {
+              const btn = e.target.closest('button[data-action]');
+              if (!btn) return;
+              const action = btn.getAttribute('data-action');
+              const id = btn.getAttribute('data-id');
+              const clients = getClients();
+              const client = clients.find(c => c.id === id);
+              if (action === 'view') {
+                if (client) alert(`${client.name}\n${client.email}\n${client.phone}`);
+              } else if (action === 'edit') {
+                if (!client) return;
+                editingId = id;
+                document.getElementById('clientModalTitle').textContent = 'Editar Cliente';
+                fillForm(client);
+                showModal(true);
+              } else if (action === 'delete') {
+                if (confirm('¿Eliminar este cliente?')) {
+                  const filtered = clients.filter(c => c.id !== id);
+                  localStorage.setItem(LS_KEY, JSON.stringify(filtered));
+                  renderClientsTable(filtered);
+                  renderClientKpis(filtered);
+                }
+              }
+            });
+          }
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+      })();
+    </script>
+  </body>
+</html>

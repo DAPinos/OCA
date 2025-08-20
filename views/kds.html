@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KDS - Pantalla de Pedidos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{ --bg:#f5f4f0; --text:#181710; --muted:#8d865e; --ok:#16a34a; --warn:#f59e0b; --err:#ef4444; --card:#ffffff; --border:#e7e5da; }
+    *{ box-sizing:border-box; }
+    body{ margin:0; font-family: Inter, "Noto Sans", sans-serif; background:var(--bg); color:var(--text); }
+    header{ display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border); background:#fff; position:sticky; top:0; z-index:10; }
+    h1{ margin:0; font-size:20px; font-weight:700; }
+    .actions{ display:flex; gap:8px; align-items:center; }
+    .btn{ height:36px; padding:0 12px; border-radius:8px; border:1px solid var(--border); background:#fff; color:var(--text); font-size:14px; font-weight:600; cursor:pointer; transition:background .15s ease,color .15s ease,border-color .15s ease; }
+    .btn.primary{ background:var(--text); color:#fff; border-color:var(--text); }
+    .btn.active{ background:var(--text); color:#fff; border-color:var(--text); }
+    .container{ padding:16px; max-width:1400px; margin:0 auto; }
+    .filters{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+    .grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:12px; }
+    .card{ background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px; box-shadow:0 1px 2px rgba(0,0,0,.04); display:flex; flex-direction:column; gap:8px; }
+    .card.selected{ outline:2px solid #0ea5e9; border-color:#0ea5e9; background:#f0f9ff; }
+    .row{ display:flex; justify-content:space-between; gap:8px; align-items:center; }
+    .pill{ font-size:12px; padding:2px 8px; border-radius:999px; border:1px solid var(--border); background:#fafafa; }
+    .pill.pendiente{ background:#fff7ed; border-color:#fed7aa; color:#9a3412; }
+    .pill.proceso{ background:#ecfeff; border-color:#a5f3fc; color:#0e7490; }
+    .pill.completado{ background:#ecfdf5; border-color:#bbf7d0; color:#166534; }
+    .items{ font-size:13px; color:#444; max-height:180px; overflow:auto; }
+    .muted{ color:var(--muted); font-size:12px; }
+    .empty{ text-align:center; color:#666; padding:24px; }
+    .footer{ text-align:center; padding:12px; color:#888; font-size:12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>KDS – Pantalla de pedidos</h1>
+    <div class="actions">
+      <button class="btn" onclick="window.location.reload()">Actualizar</button>
+      <a class="btn primary" href="./orders.html">Volver a Pedidos</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="filters">
+      <button class="btn" data-filter="todos" onclick="setFilter('todos')">Todos</button>
+      <button class="btn" data-filter="Pendiente" onclick="setFilter('Pendiente')">Pendientes</button>
+      <button class="btn" data-filter="En Proceso" onclick="setFilter('En Proceso')">En Proceso</button>
+      <button class="btn" data-filter="Completado" onclick="setFilter('Completado')">Completados</button>
+    </div>
+
+    <div class="actions" id="kdsActions" style="margin-bottom:10px;">
+      <span class="muted">Acciones sobre seleccionados:</span>
+      <button class="btn" onclick="setSelectedStatus('Pendiente')">Marcar Pendiente</button>
+      <button class="btn" onclick="setSelectedStatus('En Proceso')">Marcar En Proceso</button>
+      <button class="btn" onclick="setSelectedStatus('Completado')">Marcar Completado</button>
+      <button class="btn" onclick="setSelectedStatus('Cancelado')">Marcar Cancelado</button>
+      <span id="selCount" class="muted">0 seleccionados</span>
+    </div>
+
+    <div id="kdsGrid" class="grid"></div>
+    <div id="kdsEmpty" class="empty" style="display:none;">No hay pedidos para mostrar</div>
+  </main>
+
+  <div class="footer">Actualiza automáticamente cada 10 segundos y al detectar cambios</div>
+
+  <script>
+    let currentFilter = localStorage.getItem('kdsFilter') || 'todos';
+    const selectedIds = new Set();
+
+    // Helpers de clientes
+    function getClientsFromStorage(){
+      try {
+        const clients = JSON.parse(localStorage.getItem('clients') || '[]');
+        if (Array.isArray(clients) && clients.length) return clients;
+      } catch(_) {}
+      try {
+        const clientes = JSON.parse(localStorage.getItem('clientes') || '[]');
+        if (Array.isArray(clientes)) return clientes;
+      } catch(_) {}
+      return [];
+    }
+
+    function getClientDisplayName(c){
+      if (!c) return '';
+      if (typeof c === 'string') return c;
+      return c.name || c.nombre || c.fullName || c.razonSocial || c.email || '';
+    }
+
+    function getAllOrders() {
+      const a = JSON.parse(localStorage.getItem('orders') || '[]');
+      const b = JSON.parse(localStorage.getItem('savedOrders') || '[]');
+      const clients = getClientsFromStorage();
+      const byId = new Map();
+      clients.forEach(c=>{
+        const id = c.id || c.clientId || c.clienteId || c.customerId || c.codigo || c.code;
+        if (id != null) byId.set(String(id), c);
+      });
+
+      // Unificamos estructura esperada: {id, customer, date, status, items:[{name, productName, quantity, price}]}
+      const mapOrder = (o) => {
+        const id = o.id ?? o.orderId ?? '';
+        // Detectar posible cliente desde distintos campos
+        const rawCustomer = o.customer ?? o.cliente ?? o.customerInfo ?? o.customerData ?? null;
+        const customerId = o.customerId ?? o.clientId ?? o.clienteId ?? null;
+        let customerName = '';
+        if (typeof rawCustomer === 'string') {
+          customerName = rawCustomer;
+        } else if (rawCustomer && typeof rawCustomer === 'object') {
+          customerName = getClientDisplayName(rawCustomer);
+        }
+        if (!customerName && customerId != null) {
+          const c = byId.get(String(customerId));
+          customerName = getClientDisplayName(c) || customerName;
+        }
+        if (!customerName && Array.isArray(clients) && clients.length) {
+          // último intento: match la primera coincidencia por nombre aproximado si viene en o.customerName
+          const hint = (o.customerName || o.nombreCliente || '').toLowerCase();
+          if (hint) {
+            const c = clients.find(x => getClientDisplayName(x).toLowerCase() === hint);
+            if (c) customerName = getClientDisplayName(c);
+          }
+        }
+
+        return {
+          id: id,
+          customer: customerName || o.customerName || 'Cliente',
+          date: o.date ?? o.fecha ?? o.createdAt ?? o.updatedAt ?? new Date().toISOString(),
+          status: o.status ?? o.estado ?? 'Pendiente',
+          items: Array.isArray(o.items) ? o.items : [],
+        };
+      };
+      return [...a.map(mapOrder), ...b.map(mapOrder)];
+    }
+
+    function formatDate(d) {
+      try { return new Date(d).toLocaleString('es-AR'); } catch { return d; }
+    }
+
+    function normalize(val) {
+      const s = (val || '').toString().toLowerCase();
+      if (!s) return '';
+      if (s.startsWith('pend')) return 'pendientes';
+      if (s.includes('proce') || s.includes('progress')) return 'en proceso';
+      if (s.startsWith('compl') || s.startsWith('final')) return 'completados';
+      if (s.startsWith('cance') || s.startsWith('retras') || s.startsWith('delay')) return 'retrasados';
+      return s;
+    }
+
+    function matchFilter(o) {
+      const cf = normalize(currentFilter);
+      if (cf === 'todos' || !cf) return true;
+      const st = normalize(o.status);
+      return st === cf;
+    }
+
+    function statusPillClass(status) {
+      const s = (status || '').toLowerCase();
+      if (s.includes('complet')) return 'pill completado';
+      if (s.includes('proce')) return 'pill proceso';
+      return 'pill pendiente';
+    }
+
+    function renderKDS() {
+      const grid = document.getElementById('kdsGrid');
+      const empty = document.getElementById('kdsEmpty');
+      const orders = getAllOrders()
+        .filter(matchFilter)
+        .sort((a,b) => new Date(a.date) - new Date(b.date));
+
+      if (!orders.length) {
+        grid.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      grid.innerHTML = orders.map(o => {
+        const items = (o.items || []).map(it => {
+          const name = it.productName || it.name || 'Producto';
+          const qty = Number(it.quantity) || 0;
+          return `<div>• ${qty} x ${name}</div>`;
+        }).join('');
+
+        return `
+          <div class="card ${selectedIds.has(String(o.id)) ? 'selected' : ''}" data-id="${o.id}">
+            <div class="row">
+              <strong>Pedido #${o.id || '-'} </strong>
+              <span class="${statusPillClass(o.status)}">${o.status}</span>
+            </div>
+            <div class="muted">${formatDate(o.date)}</div>
+            <div><strong>Cliente:</strong> ${o.customer || '—'}</div>
+            <div class="items">${items || '<span class="muted">Sin productos</span>'}</div>
+          </div>
+        `;
+      }).join('');
+
+      highlightActiveFilter();
+
+      // bind selection toggle
+      grid.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('click', () => {
+          const id = String(card.getAttribute('data-id')||'');
+          if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id);
+          updateSelCount();
+          card.classList.toggle('selected');
+        });
+      });
+    }
+
+    function setFilter(f) {
+      currentFilter = f;
+      localStorage.setItem('kdsFilter', f);
+      renderKDS();
+    }
+
+    function highlightActiveFilter() {
+      const btns = document.querySelectorAll('.filters .btn');
+      const cf = (currentFilter || '').toLowerCase();
+      btns.forEach(b => {
+        const val = (b.getAttribute('data-filter') || '').toLowerCase();
+        const active = val === cf;
+        b.classList.toggle('active', active);
+      });
+    }
+
+    function updateSelCount(){
+      const el = document.getElementById('selCount');
+      if (el) el.textContent = `${selectedIds.size} seleccionados`;
+    }
+
+    function setSelectedStatus(newStatus){
+      if (!selectedIds.size) return;
+      const ids = Array.from(selectedIds);
+      const upd = (key) => {
+        const list = JSON.parse(localStorage.getItem(key) || '[]');
+        let changed = false;
+        list.forEach(o => {
+          if (ids.includes(String(o.id))) { o.status = newStatus; changed = true; }
+        });
+        if (changed) localStorage.setItem(key, JSON.stringify(list));
+      };
+      upd('orders');
+      upd('savedOrders');
+      // mantener selección pero refrescar vista
+      renderKDS();
+    }
+
+    // Actualización en tiempo real por eventos de storage y cada 10s
+    window.addEventListener('storage', (e) => {
+      if (['orders','savedOrders','clients','clientes'].includes(e.key)) renderKDS();
+    });
+    setInterval(renderKDS, 10000);
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => {
+      highlightActiveFilter();
+      renderKDS();
+      updateSelCount();
+    });
+  </script>
+</body>
+</html>
